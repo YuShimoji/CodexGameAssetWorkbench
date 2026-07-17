@@ -87,3 +87,5 @@ git diff --check
 PaperGliderCloneや特定ゲームとの統合、Unity/Godot/Unreal Adapter、Scene全体GLB bundle、Blender add-on、Bezier curve editor、任意頂点モデリング、UV/Texture Paint、Morph/Fracture/物理破壊、天候、高度なSpawner、クラウド保存、共同編集、外部AIサービスは実装していません。存在するように見せる無効なUIも置いていません。
 
 詳しい設計は[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)、Recipe契約は[`docs/RECIPE_SCHEMA.md`](./docs/RECIPE_SCHEMA.md)を参照してください。
+
+別端末で現在地点から再開するときは、commit、branch、author設定、検証値、Context mapをまとめた[`docs/PROJECT_HANDOFF.md`](./docs/PROJECT_HANDOFF.md)から読んでください。過去の実装依頼原文は[`docs/ai`](./docs/ai)に保存しています。
