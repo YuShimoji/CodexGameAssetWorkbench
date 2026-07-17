@@ -1,6 +1,6 @@
 # Codex Game Asset Workbench
 
-Codexが編集するJSON Recipeと、人間が操作するブラウザUIを同じ保存・検証経路へ接続する、エンジン非依存のプロシージャル3Dアセット基盤です。v0.1は汎用starter projectをActive Artifactとして読み込み、Primitive、Material、Instance、Spline Sweep、Room、Socket、Seed付き配置を確認・編集できます。
+Codexが編集するJSON Recipeと、人間が操作するブラウザUIを同じ保存・検証経路へ接続する、エンジン非依存のプロシージャル3Dアセット基盤です。v0.2は汎用starter projectをActive Artifactとして読み込み、Primitive、Material、Instance、Room、Socket、Seed付き配置に加え、Splineの作成・control point・profile keyframeをViewportとInspectorから直接編集できます。
 
 ## 起動
 
@@ -38,10 +38,15 @@ npm run test:browser
 - OrbitControlsで回転・パン・ズームする
 - Scene Instanceを選択し、TransformControlsまたは数値入力で移動・回転・拡縮する
 - Scene TreeからPart、Spline、Room、SocketをStable IDのまま選択する
+- 明示的なSpline作成モードでGround Planeをクリックし、確定または取消する
+- 選択Splineのcontrol pointをViewportで選択・gizmo移動し、Ground Planeクリックで追加・segment挿入、ToolbarまたはDeleteキーで削除する
+- Grid snap、control point座標、並べ替え、最低2点制約をInspectorとViewportで共有する
 - box / cylinder / plane / sphereの寸法とPart transformを編集する
 - Materialの色、roughness、metalnessを共有Definitionへ反映する
 - Instance OverrideをDefinitionから分離し、Revertまたは明示的にDefinitionへApplyする
 - 同一Splineをrod / road / corridor断面へ切り替える
+- rodのradius、roadのwidth、corridorのwidth/height keyframeを正規化位置0〜1で追加・選択・編集・削除する
+- 経路長、曲率、profile変化量からadaptive segment数を算出し、vertex/triangle countをInspectorへ表示する
 - Seed付きVariantとSpline Placementを再生成する
 - Room Volumeと壁面SocketをScene上で確認する
 - Recipe変更をUndo/Redoし、JSONへ保存、再読込、Revert、starter Resetする
@@ -77,8 +82,8 @@ git diff --check
 
 実画面証跡、保存→再読込に使ったRecipe、GLB/manifest、機械可読readbackの生出力は`output/playwright/`へ生成され、Gitでは追跡しません。基準版として選別した証跡は[`artifacts`](./artifacts)に保存します。
 
-## v0.1で意図的に扱わないもの
+## v0.2で意図的に扱わないもの
 
-PaperGliderCloneや特定ゲームとの統合、Unity/Godot/Unreal Adapter、Blender add-on、任意頂点モデリング、UV/Texture Paint、Morph/Fracture/物理破壊、天候、高度なSpawner、クラウド保存、共同編集、外部AIサービスは実装していません。存在するように見せる無効なUIも置いていません。
+PaperGliderCloneや特定ゲームとの統合、Unity/Godot/Unreal Adapter、Scene全体GLB bundle、Blender add-on、Bezier curve editor、任意頂点モデリング、UV/Texture Paint、Morph/Fracture/物理破壊、天候、高度なSpawner、クラウド保存、共同編集、外部AIサービスは実装していません。存在するように見せる無効なUIも置いていません。
 
 詳しい設計は[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)、Recipe契約は[`docs/RECIPE_SCHEMA.md`](./docs/RECIPE_SCHEMA.md)を参照してください。

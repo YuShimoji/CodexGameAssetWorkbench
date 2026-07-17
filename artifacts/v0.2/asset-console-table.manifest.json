@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "0.1.0",
+  "projectId": "starter-atelier",
+  "sourceRecipeHash": "fnv1a-59511f4a",
+  "assetIds": [
+    "asset-console-table"
+  ],
+  "generationSeed": 1847,
+  "vertexCount": 112,
+  "triangleCount": 204,
+  "materialCount": 2,
+  "boundingBox": {
+    "min": [
+      -1.6,
+      0,
+      -0.55
+    ],
+    "max": [
+      1.6,
+      1.79,
+      0.55
+    ]
+  },
+  "generatedAt": "2026-07-17T05:15:25.304Z",
+  "generatorVersion": "0.0.0-v0"
+}

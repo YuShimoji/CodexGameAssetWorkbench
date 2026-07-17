@@ -6,7 +6,7 @@ import { validateRecipeShape } from '@cgawe/schema';
 import { getMeshStats, isValidMesh, type MeshData, type MeshStats } from './mesh.js';
 import { createAssetMeshes } from './primitives.js';
 import { SeededRng } from './rng.js';
-import { generateSplineMesh } from './spline.js';
+import { generateSplineMesh, sampleSpline } from './spline.js';
 
 export function stableStringify(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
@@ -88,14 +88,37 @@ export function validateRecipe(recipe: Recipe): ValidationIssue[] {
     if (!materials.has(spline.materialId)) issues.push({ severity: 'error', code: 'SPLINE_MATERIAL_REF_MISSING', assetId: null, recipePath: `/splineDefinitions/${index}/materialId`, message: `Material ${spline.materialId} does not exist.` });
     const mesh = generateSplineMesh(spline);
     if (!isValidMesh(mesh)) issues.push({ severity: 'error', code: 'SPLINE_MESH_INVALID', assetId: null, recipePath: `/splineDefinitions/${index}`, message: 'Spline sweep produced invalid geometry.' });
+    if (mesh.indices.length / 3 > 100_000) issues.push({ severity: 'warning', code: 'SPLINE_TRIANGLE_BUDGET_HIGH', assetId: null, recipePath: `/splineDefinitions/${index}/resolutionPolicy`, message: `Estimated triangle count ${mesh.indices.length / 3} exceeds the v0 review budget.` });
+    const channels = [
+      ['radiusKeyframes', spline.radiusKeyframes], ['widthKeyframes', spline.widthKeyframes], ['heightKeyframes', spline.heightKeyframes],
+    ] as const;
+    for (const [channelName, keyframes] of channels) {
+      const seen = new Set<string>();
+      keyframes.forEach((keyframe, keyframeIndex) => {
+        const path = `/splineDefinitions/${index}/${channelName}/${keyframeIndex}`;
+        if (!Number.isFinite(keyframe.t) || keyframe.t < 0 || keyframe.t > 1) issues.push({ severity: 'error', code: 'SPLINE_KEYFRAME_POSITION_INVALID', assetId: null, recipePath: `${path}/t`, message: 'Profile keyframe position must be within 0..1.' });
+        if (!Number.isFinite(keyframe.value) || keyframe.value <= 0) issues.push({ severity: 'error', code: 'SPLINE_KEYFRAME_VALUE_INVALID', assetId: null, recipePath: `${path}/value`, message: 'Profile keyframe value must be finite and greater than zero.' });
+        const key = keyframe.t.toFixed(6);
+        if (seen.has(key)) issues.push({ severity: 'error', code: 'SPLINE_KEYFRAME_POSITION_CONFLICT', assetId: null, recipePath: `${path}/t`, message: `Multiple ${channelName} keyframes share t=${keyframe.t}.` });
+        seen.add(key);
+      });
+    }
     for (let pointIndex = 1; pointIndex < spline.controlPoints.length; pointIndex += 1) {
       const previous = spline.controlPoints[pointIndex - 1]; const current = spline.controlPoints[pointIndex];
       if (previous && current && Math.hypot(current[0] - previous[0], current[1] - previous[1], current[2] - previous[2]) < 1e-5) {
         issues.push({ severity: 'warning', code: 'SPLINE_DEGENERATE_SEGMENT', assetId: null, recipePath: `/splineDefinitions/${index}/controlPoints/${pointIndex}`, message: 'Adjacent spline points overlap; the local frame may be unstable.' });
       }
     }
+    const frames = sampleSpline(spline);
+    if (frames.some((frame, frameIndex) => frameIndex > 0 && vecDot(frame.normal, frames[frameIndex - 1]?.normal ?? frame.normal) < 0.15)) {
+      issues.push({ severity: 'warning', code: 'SPLINE_FRAME_INSTABILITY_SUSPECTED', assetId: null, recipePath: `/splineDefinitions/${index}/controlPoints`, message: 'Rapid frame rotation may produce an unstable section orientation.' });
+    }
   });
   return issues;
+}
+
+function vecDot(a: [number, number, number], b: [number, number, number]): number {
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
 export function resolveInstanceAsset(recipe: Recipe, instance: SceneInstance): AssetDefinition {

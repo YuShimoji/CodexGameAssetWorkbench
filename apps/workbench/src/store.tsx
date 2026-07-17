@@ -1,12 +1,12 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
-import { diffRecipes, recipeHash } from '@cgawe/core';
-import { parseRecipe, type Recipe } from '@cgawe/schema';
+import { createContext, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createSplineDefinition, diffRecipes, recipeHash, type SplineKeyframeChannel } from '@cgawe/core';
+import { parseRecipe, type Recipe, type Vec3 } from '@cgawe/schema';
 import starterJson from '../../../samples/starter-project/recipe.json';
 
 export type Selection =
   | { kind: 'asset'; id: string; partId?: string }
   | { kind: 'instance'; id: string; partId?: string }
-  | { kind: 'spline'; id: string }
+  | { kind: 'spline'; id: string; pointIndex?: number; keyframe?: { channel: SplineKeyframeChannel; index: number } }
   | { kind: 'room'; id: string }
   | { kind: 'socket'; id: string };
 
@@ -30,10 +30,16 @@ interface WorkbenchContextValue {
   canUndo: boolean;
   canRedo: boolean;
   renderEpoch: number;
+  gridSnap: boolean;
+  splineCreation: { active: boolean; points: Vec3[] };
   setSelection(selection: Selection): void;
   setViewMode(mode: ViewMode): void;
   setTransformMode(mode: TransformMode): void;
   transact(mutator: (draft: Recipe) => void): void;
+  beginGesture(): void;
+  previewTransaction(mutator: (draft: Recipe) => void): void;
+  commitGesture(): void;
+  cancelGesture(): void;
   undo(): void;
   redo(): void;
   reset(): void;
@@ -41,6 +47,11 @@ interface WorkbenchContextValue {
   save(): void;
   load(input: unknown): void;
   regenerate(): void;
+  setGridSnap(enabled: boolean): void;
+  startSplineCreation(): void;
+  addDraftSplinePoint(point: Vec3): void;
+  confirmSplineCreation(): void;
+  cancelSplineCreation(): void;
 }
 
 const starterRecipe = parseRecipe(starterJson);
@@ -57,6 +68,9 @@ export function WorkbenchProvider({ children }: { children: ReactNode }) {
   const [viewMode, setViewMode] = useState<ViewMode>('scene');
   const [transformMode, setTransformMode] = useState<TransformMode>('translate');
   const [renderEpoch, setRenderEpoch] = useState(0);
+  const [gridSnap, setGridSnap] = useState(true);
+  const [splineCreation, setSplineCreation] = useState<{ active: boolean; points: Vec3[] }>({ active: false, points: [] });
+  const gestureBaseline = useRef<Recipe | null>(null);
 
   const value = useMemo<WorkbenchContextValue>(() => ({
     recipe: session.recipe,
@@ -68,6 +82,8 @@ export function WorkbenchProvider({ children }: { children: ReactNode }) {
     canUndo: session.undo.length > 0,
     canRedo: session.redo.length > 0,
     renderEpoch,
+    gridSnap,
+    splineCreation,
     setSelection,
     setViewMode,
     setTransformMode,
@@ -78,6 +94,31 @@ export function WorkbenchProvider({ children }: { children: ReactNode }) {
         if (recipeHash(next) === recipeHash(current.recipe)) return current;
         return { ...current, recipe: next, undo: [...current.undo.slice(-49), current.recipe], redo: [] };
       });
+    },
+    beginGesture() {
+      if (!gestureBaseline.current) gestureBaseline.current = structuredClone(session.recipe);
+    },
+    previewTransaction(mutator) {
+      setSession((current) => {
+        const next = structuredClone(current.recipe);
+        mutator(next);
+        return { ...current, recipe: next };
+      });
+    },
+    commitGesture() {
+      const baseline = gestureBaseline.current;
+      gestureBaseline.current = null;
+      if (!baseline) return;
+      setSession((current) => recipeHash(baseline) === recipeHash(current.recipe) ? current : ({
+        ...current,
+        undo: [...current.undo.slice(-49), baseline],
+        redo: [],
+      }));
+    },
+    cancelGesture() {
+      const baseline = gestureBaseline.current;
+      gestureBaseline.current = null;
+      if (baseline) setSession((current) => ({ ...current, recipe: baseline }));
     },
     undo() {
       setSession((current) => {
@@ -117,9 +158,32 @@ export function WorkbenchProvider({ children }: { children: ReactNode }) {
       setSession((current) => ({ recipe, savedRecipe: structuredClone(recipe), undo: [...current.undo, current.recipe].slice(-50), redo: [] }));
       setSelection({ kind: 'asset', id: recipe.assetDefinitions[0]?.id ?? '', partId: recipe.assetDefinitions[0]?.parts[0]?.id });
       setRenderEpoch((value) => value + 1);
+      setSplineCreation({ active: false, points: [] });
     },
     regenerate() { setRenderEpoch((value) => value + 1); },
-  }), [renderEpoch, selection, session, transformMode, viewMode]);
+    setGridSnap,
+    startSplineCreation() {
+      setSplineCreation({ active: true, points: [] });
+      setViewMode('scene');
+    },
+    addDraftSplinePoint(point) {
+      const snapped = gridSnap ? point.map((value) => Math.round(value * 4) / 4) as Vec3 : [...point] as Vec3;
+      setSplineCreation((current) => current.active ? { ...current, points: [...current.points, snapped] } : current);
+    },
+    confirmSplineCreation() {
+      if (splineCreation.points.length < 2) return;
+      let suffix = session.recipe.splineDefinitions.length + 1;
+      let id = `spline-${suffix}`;
+      while (session.recipe.splineDefinitions.some((spline) => spline.id === id)) { suffix += 1; id = `spline-${suffix}`; }
+      const material = session.recipe.materialDefinitions.find((item) => item.id === 'mat-slate') ?? session.recipe.materialDefinitions[0];
+      if (!material) return;
+      const spline = createSplineDefinition({ id, name: `Spline ${suffix}`, controlPoints: splineCreation.points, material, seed: session.recipe.generationSeed + suffix });
+      setSession((current) => ({ ...current, recipe: { ...current.recipe, splineDefinitions: [...current.recipe.splineDefinitions, spline] }, undo: [...current.undo.slice(-49), current.recipe], redo: [] }));
+      setSelection({ kind: 'spline', id, pointIndex: spline.controlPoints.length - 1 });
+      setSplineCreation({ active: false, points: [] });
+    },
+    cancelSplineCreation() { setSplineCreation({ active: false, points: [] }); },
+  }), [gridSnap, renderEpoch, selection, session, splineCreation, transformMode, viewMode]);
 
   return <WorkbenchContext.Provider value={value}>{children}</WorkbenchContext.Provider>;
 }

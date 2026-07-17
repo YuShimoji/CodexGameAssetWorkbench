@@ -2,7 +2,7 @@
 
 ## Recipeを中心にした対称性
 
-Workbenchの入力欄、TransformControls、Undo/RedoはすべてRecipe全体に対するtransactionとして扱われます。Three.jsのObject3DやReact stateを永続化せず、保存ファイルを再読込したときはRecipeだけから同じSceneを再構築します。CodexがJSONを直接編集した場合も`parseRecipe`と`validateRecipe`を通るため、人間のUI操作と検証経路が分岐しません。
+Workbenchの入力欄、Spline作成・点操作、TransformControls、Undo/RedoはすべてRecipe全体に対するtransactionとして扱われます。Three.jsのObject3DやReact stateを永続化せず、保存ファイルを再読込したときはRecipeだけから同じSceneを再構築します。CodexがJSONを直接編集した場合も`parseRecipe`と`validateRecipe`を通るため、人間のUI操作と検証経路が分岐しません。
 
 ```mermaid
 flowchart LR
@@ -29,13 +29,26 @@ Spline samplingは制御点数だけでなく、概算経路長、接線角度�
 
 共通frame列から次の断面を作ります。
 
-| sweepType | 断面 | 主な用途 | v0.1の端部 |
+| sweepType | 断面 | 主な用途 | v0.2の端部 |
 |---|---|---|---|
 | rod | 10角形の閉断面 | 杖、レール、配管 | 開放 |
 | road | 左右2頂点の平面 | 道、帯状面 | 開放 |
 | corridor | 床・右壁・天井・左壁 | 通路volume | 入口・出口を開放 |
 
-連続する制御点が重なる場合はValidation warningを返します。自己交差する極端な曲率や、幅が曲率半径を大きく超える入力の完全な解消はv0.1の対象外です。
+連続する制御点が重なる場合はValidation warningを返します。自己交差する極端な曲率や、幅が曲率半径を大きく超える入力の完全な解消はv0.2の対象外です。
+
+## Spline編集transaction
+
+Splineの純粋操作は`packages/core/src/spline-edit.ts`へ置き、WorkbenchはStable IDで対象を選んでRecipeへ適用します。Viewportの作成draftと点配置modeは確定前だけの一時UI状態であり、確定時に初めてRecipe transactionになります。control pointのgizmo dragは開始時Recipeをbaselineとしてpreviewし、終了時に履歴を1件だけ積むため、毎frameの履歴増加を避けます。
+
+| 操作経路 | Recipeへの反映 | Undo単位 | 不正入力の扱い |
+|---|---|---|---|
+| Spline新規作成 | Confirm時にStable ID付きDefinitionを追加 | Spline 1本 | 2点未満はConfirm不可 |
+| Viewport点追加・挿入・削除 | Ground Plane clickまたはToolbar/Delete keyで即時反映 | 1操作 | 最低2点を維持 |
+| gizmo点移動 | drag中はpreview、mouse upでcommit | 1 drag | finite座標だけをCore operationへ渡す |
+| Inspector数値・profile・keyframe | 入力確定ごとに反映 | 1変更 | 範囲外、競合、非正値を保存しない |
+
+radius/width/heightはSchema 0.1.0ですべて保持されますが、Inspectorは現在の断面に必要なchannelだけを表示します。profileを切り替えても非表示channelを破棄しないため、同じSplineDefinitionをlosslessに往復できます。
 
 ## DefinitionとInstance Override
 
@@ -57,8 +70,9 @@ Node版GLTFExporterへ依存せず、ブラウザ実行でArrayBufferが空で�
 ## 現在の制約
 
 - JSON Schema 0.1.0は明示的version gateを持ちますが、過去versionからのmigrationはまだありません。
-- Spline control pointとprofile keyframeはRecipeで表現できますが、v0.1 UIは断面切替と先頭profile値の編集までです。
+- Splineの作業平面はv0.2ではY=0のGround Planeです。任意平面、surface snap、Bezier tangent editorは未対応です。
+- Viewportの点追加・挿入は1 clickで完了し、挿入対象segmentは選択点の直後（末尾選択時は最後のsegment）です。
 - GLB export対象は選択Asset Definitionです。Scene bundleやplacement展開結果は未対応です。
 - Primitive geometryはレビュー用途の中立MeshDataで、UVやtangent、textureは持ちません。
-- 初期JavaScript bundleはThree/R3Fを含むため約1.3 MB（gzip約369 KB）です。v0.1ではローカルworkbenchの機能一貫性を優先しています。
+- 初期JavaScript bundleはThree/R3Fを含むため約1.36 MB（gzip約380 KB）です。v0.2ではローカルworkbenchの機能一貫性を優先しています。
 - レスポンシブ表示ではviewportを守るためside panelを隠しますが、詳細編集はdesktopを主対象にしています。

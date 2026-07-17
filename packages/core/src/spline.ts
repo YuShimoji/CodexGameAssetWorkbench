@@ -45,7 +45,7 @@ export function valueAt(keyframes: DimensionKeyframe[], t: number, fallback: num
   return sorted.at(-1)?.value ?? fallback;
 }
 
-function segmentCount(spline: SplineDefinition): number {
+export function estimateSplineSegments(spline: SplineDefinition): number {
   const samples = Array.from({ length: 25 }, (_, index) => pointAt(spline.controlPoints, index / 24, spline.interpolation, spline.closed));
   let length = 0; let curvature = 0;
   for (let i = 1; i < samples.length; i += 1) length += vec.length(vec.sub(samples[i] ?? [0,0,0], samples[i - 1] ?? [0,0,0]));
@@ -61,7 +61,7 @@ function segmentCount(spline: SplineDefinition): number {
 }
 
 export function sampleSpline(spline: SplineDefinition): SplineFrame[] {
-  const segments = segmentCount(spline);
+  const segments = estimateSplineSegments(spline);
   const count = spline.closed ? segments : segments + 1;
   const positions = Array.from({ length: count }, (_, index) => pointAt(spline.controlPoints, index / segments, spline.interpolation, spline.closed));
   const frames: SplineFrame[] = [];

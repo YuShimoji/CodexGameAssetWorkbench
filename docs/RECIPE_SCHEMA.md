@@ -2,6 +2,8 @@
 
 正本Schemaは`packages/schema/src/schema.ts`です。配布・他言語参照用の`schemas/recipe-0.1.0.schema.json`は`npm run schema:sync`で生成し、`npm run schema:check`で同期を検証します。
 
+v0.2のSpline直接編集は0.1.0に既存の`controlPoints`、`sweepType`、各profile keyframe、`resolutionPolicy`、`seed`だけで表現できるため、Schema versionは変更していません。変更不能な互換性入力は`packages/schema/test/fixtures/recipe-0.1.0.golden.json`へ固定し、現行loaderで同じ意味内容とhashへround-tripできることをテストします。
+
 ## 現在のtop-level要素
 
 | 要素 | 役割 | 安定性 |
@@ -24,6 +26,8 @@
 ## Stable IDと参照検証
 
 Asset、Part、Material、Variant、Instance、Spline、Room、Socket、Placement Ruleは表示名とは別の`id`を持ちます。Core validationはtop-level種類内のID重複と、Material/Asset/Variant/Spline/Room参照の解決を検査します。Part IDはAsset内で安定していることを前提とし、Instance OverrideとVariant targetに使われます。
+
+Splineにはshape検証に加えて、Coreでcontrol point不足、重複・ゼロ長segment、profile keyframeの範囲・同一位置競合・非正値、推定triangle過多、frame不安定化の兆候を検査します。UIは現在のprofileに必要なchannelだけを編集対象として表示しますが、profile切替をlosslessにするため他channelもRecipe内に保持します。
 
 ## 互換性方針
 

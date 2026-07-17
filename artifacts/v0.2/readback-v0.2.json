@@ -1,0 +1,294 @@
+{
+  "capturedAt": "2026-07-17T05:15:26.060Z",
+  "baseUrl": "http://127.0.0.1:4173",
+  "browser": "chromium",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "schemaVersion": "0.1.0",
+  "recipeHash": "fnv1a-59511f4a",
+  "seed": 1847,
+  "splineId": "spline-2",
+  "controlPointCount": 4,
+  "profile": "corridor",
+  "keyframeCount": {
+    "radius": 2,
+    "width": 3,
+    "height": 3,
+    "total": 8
+  },
+  "vertexCount": 320,
+  "triangleCount": 632,
+  "boundingBox": {
+    "min": [
+      -1.1864926024628022,
+      -0.36061944393840195,
+      -1.095448818486449
+    ],
+    "max": [
+      3.8502510932622656,
+      4.244833105219226,
+      5.804549972114362
+    ]
+  },
+  "validation": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "saveReload": {
+    "beforeHash": "fnv1a-59511f4a",
+    "afterHash": "fnv1a-59511f4a",
+    "equal": true
+  },
+  "transaction": {
+    "beforeMoveHash": "fnv1a-e8352574",
+    "movedHash": "fnv1a-a5ffeb2a",
+    "undoHash": "fnv1a-e8352574",
+    "redoHash": "fnv1a-a5ffeb2a",
+    "undoRestored": true,
+    "redoRestored": true
+  },
+  "viewportOperations": {
+    "creationCancelled": true,
+    "createdPointCount": 3,
+    "afterAppend": 4,
+    "afterInsert": 5,
+    "afterDelete": 4
+  },
+  "consoleErrorCount": 0,
+  "browserConsoleErrors": [],
+  "regression": {
+    "v01Summary": {
+      "projectId": "starter-atelier",
+      "schemaVersion": "0.1.0",
+      "seed": 1847,
+      "assetCount": 2,
+      "partCount": 7,
+      "materialCount": 5,
+      "splineCount": 2,
+      "roomCount": 1,
+      "socketCount": 2,
+      "instanceCount": 2,
+      "placementRuleCount": 1,
+      "recipeHash": "fnv1a-59511f4a",
+      "triangleCount": 1264,
+      "vertexCount": 769,
+      "boundingBox": {
+        "min": [
+          -4.425366306264165,
+          -0.36061944393840195,
+          -1.095448818486449
+        ],
+        "max": [
+          4.666544385236002,
+          4.244833105219226,
+          5.804549972114362
+        ]
+      },
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "glbExport": true,
+    "manifestExport": true
+  },
+  "screenshots": [
+    "v02-01-create-mode.png",
+    "v02-02-control-point-edit.png",
+    "v02-03-curved-rod.png",
+    "v02-04-curved-road.png",
+    "v02-05-keyframed-corridor.png",
+    "v02-06-integrated-scene.png",
+    "v02-07-reloaded-state.png"
+  ],
+  "evidenceStates": {
+    "v02-01-create-mode.png": {
+      "recipeHash": "fnv1a-3a095d6f",
+      "draftControlPointCount": 3,
+      "creationMode": true
+    },
+    "v02-02-control-point-edit.png": {
+      "recipeHash": "fnv1a-e8352574",
+      "splineId": "spline-2",
+      "controlPointCount": 3,
+      "profile": "road",
+      "keyframeCount": {
+        "radius": 2,
+        "width": 2,
+        "height": 2
+      },
+      "vertexCount": 76,
+      "triangleCount": 74,
+      "boundingBox": {
+        "min": [
+          -0.8366110480182863,
+          0,
+          0.9396664077270888
+        ],
+        "max": [
+          2.2145336197294405,
+          0,
+          4.376045540749714
+        ]
+      },
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "selectedControlPoint": 3
+    },
+    "v02-03-curved-rod.png": {
+      "recipeHash": "fnv1a-6e3c809c",
+      "splineId": "spline-2",
+      "controlPointCount": 4,
+      "profile": "rod",
+      "keyframeCount": {
+        "radius": 2,
+        "width": 2,
+        "height": 2
+      },
+      "vertexCount": 700,
+      "triangleCount": 1380,
+      "boundingBox": {
+        "min": [
+          -0.49412226743455445,
+          -0.3608852050743709,
+          -1.043080791555563
+        ],
+        "max": [
+          2.735481500118362,
+          1.7461358696230098,
+          4.408308289413366
+        ]
+      },
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "v02-04-curved-road.png": {
+      "recipeHash": "fnv1a-3ec62071",
+      "splineId": "spline-2",
+      "controlPointCount": 4,
+      "profile": "road",
+      "keyframeCount": {
+        "radius": 2,
+        "width": 2,
+        "height": 2
+      },
+      "vertexCount": 140,
+      "triangleCount": 138,
+      "boundingBox": {
+        "min": [
+          -0.8358934418429306,
+          -0.3093404831963149,
+          -1.0939506643974246
+        ],
+        "max": [
+          3.0586426280493937,
+          1.5826033825299226,
+          4.379340151559539
+        ]
+      },
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "v02-05-keyframed-corridor.png": {
+      "recipeHash": "fnv1a-59511f4a",
+      "splineId": "spline-2",
+      "controlPointCount": 4,
+      "profile": "corridor",
+      "keyframeCount": {
+        "radius": 2,
+        "width": 3,
+        "height": 3
+      },
+      "vertexCount": 320,
+      "triangleCount": 632,
+      "boundingBox": {
+        "min": [
+          -1.1864926024628022,
+          -0.36061944393840195,
+          -1.095448818486449
+        ],
+        "max": [
+          3.8502510932622656,
+          4.244833105219226,
+          5.804549972114362
+        ]
+      },
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "v02-06-integrated-scene.png": {
+      "recipeHash": "fnv1a-6b4eacae",
+      "splineId": "spline-2",
+      "controlPointCount": 4,
+      "profile": "road",
+      "keyframeCount": {
+        "radius": 2,
+        "width": 3,
+        "height": 3
+      },
+      "vertexCount": 160,
+      "triangleCount": 158,
+      "boundingBox": {
+        "min": [
+          -0.8354921431376331,
+          -0.36061944393840195,
+          -1.095448818486449
+        ],
+        "max": [
+          3.057017292475414,
+          1.611355480552292,
+          4.381144768573136
+        ]
+      },
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "v02-07-reloaded-state.png": {
+      "recipeHash": "fnv1a-59511f4a",
+      "splineId": "spline-2",
+      "controlPointCount": 4,
+      "profile": "corridor",
+      "keyframeCount": {
+        "radius": 2,
+        "width": 3,
+        "height": 3
+      },
+      "vertexCount": 320,
+      "triangleCount": 632,
+      "boundingBox": {
+        "min": [
+          -1.1864926024628022,
+          -0.36061944393840195,
+          -1.095448818486449
+        ],
+        "max": [
+          3.8502510932622656,
+          4.244833105219226,
+          5.804549972114362
+        ]
+      },
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      },
+      "saveReloadHashMatch": true
+    }
+  },
+  "exports": [
+    "starter-atelier.recipe.json",
+    "asset-console-table.glb",
+    "asset-console-table.manifest.json"
+  ]
+}

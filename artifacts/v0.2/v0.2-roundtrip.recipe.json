@@ -1,0 +1,601 @@
+{
+  "schemaVersion": "0.1.0",
+  "projectId": "starter-atelier",
+  "generationSeed": 1847,
+  "materialDefinitions": [
+    {
+      "id": "mat-walnut",
+      "name": "Warm Walnut",
+      "color": "#8f5435",
+      "roughness": 0.72,
+      "metalness": 0.02
+    },
+    {
+      "id": "mat-brass",
+      "name": "Brushed Brass",
+      "color": "#d7a84c",
+      "roughness": 0.34,
+      "metalness": 0.76
+    },
+    {
+      "id": "mat-clay",
+      "name": "Glazed Clay",
+      "color": "#4e9e91",
+      "roughness": 0.42,
+      "metalness": 0.08
+    },
+    {
+      "id": "mat-slate",
+      "name": "Slate Path",
+      "color": "#607080",
+      "roughness": 0.86,
+      "metalness": 0.02
+    },
+    {
+      "id": "mat-room",
+      "name": "Room Guide",
+      "color": "#7695c8",
+      "roughness": 0.9,
+      "metalness": 0
+    }
+  ],
+  "assetDefinitions": [
+    {
+      "id": "asset-console-table",
+      "name": "Atelier Console",
+      "parts": [
+        {
+          "id": "part-top",
+          "name": "Top",
+          "primitive": {
+            "type": "box",
+            "size": [
+              3.2,
+              0.28,
+              1.1
+            ]
+          },
+          "materialId": "mat-walnut",
+          "transform": {
+            "position": [
+              0,
+              1.65,
+              0
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "id": "part-leg-a",
+          "name": "Leg A",
+          "primitive": {
+            "type": "cylinder",
+            "radiusTop": 0.13,
+            "radiusBottom": 0.18,
+            "height": 1.6,
+            "radialSegments": 12
+          },
+          "materialId": "mat-brass",
+          "transform": {
+            "position": [
+              -1.3,
+              0.8,
+              -0.35
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "id": "part-leg-b",
+          "name": "Leg B",
+          "primitive": {
+            "type": "cylinder",
+            "radiusTop": 0.13,
+            "radiusBottom": 0.18,
+            "height": 1.6,
+            "radialSegments": 12
+          },
+          "materialId": "mat-brass",
+          "transform": {
+            "position": [
+              1.3,
+              0.8,
+              -0.35
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "id": "part-leg-c",
+          "name": "Leg C",
+          "primitive": {
+            "type": "cylinder",
+            "radiusTop": 0.13,
+            "radiusBottom": 0.18,
+            "height": 1.6,
+            "radialSegments": 12
+          },
+          "materialId": "mat-brass",
+          "transform": {
+            "position": [
+              -1.3,
+              0.8,
+              0.35
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "id": "part-leg-d",
+          "name": "Leg D",
+          "primitive": {
+            "type": "cylinder",
+            "radiusTop": 0.13,
+            "radiusBottom": 0.18,
+            "height": 1.6,
+            "radialSegments": 12
+          },
+          "materialId": "mat-brass",
+          "transform": {
+            "position": [
+              1.3,
+              0.8,
+              0.35
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "asset-marker",
+      "name": "Path Marker",
+      "parts": [
+        {
+          "id": "part-marker-base",
+          "name": "Base",
+          "primitive": {
+            "type": "cylinder",
+            "radiusTop": 0.32,
+            "radiusBottom": 0.4,
+            "height": 0.18,
+            "radialSegments": 10
+          },
+          "materialId": "mat-brass",
+          "transform": {
+            "position": [
+              0,
+              0.09,
+              0
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "id": "part-marker-orb",
+          "name": "Orb",
+          "primitive": {
+            "type": "sphere",
+            "radius": 0.25,
+            "widthSegments": 12,
+            "heightSegments": 8
+          },
+          "materialId": "mat-clay",
+          "transform": {
+            "position": [
+              0,
+              0.47,
+              0
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variantSets": [
+    {
+      "id": "variant-marker-tones",
+      "name": "Marker Tones",
+      "assetId": "asset-marker",
+      "partIds": [
+        "part-marker-orb"
+      ],
+      "hue": {
+        "min": -0.08,
+        "max": 0.1
+      },
+      "saturation": {
+        "min": -0.08,
+        "max": 0.12
+      },
+      "brightness": {
+        "min": -0.06,
+        "max": 0.12
+      },
+      "materialOverride": {
+        "roughness": 0.36
+      },
+      "seed": 310
+    }
+  ],
+  "sceneInstances": [
+    {
+      "id": "instance-console",
+      "name": "Console 01",
+      "assetId": "asset-console-table",
+      "transform": {
+        "position": [
+          -1.5,
+          0,
+          -0.7
+        ],
+        "rotation": [
+          0,
+          0.18,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "partOverrides": {}
+    },
+    {
+      "id": "instance-marker",
+      "name": "Hero Marker",
+      "assetId": "asset-marker",
+      "variantSetId": "variant-marker-tones",
+      "transform": {
+        "position": [
+          1.7,
+          0,
+          0.3
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1.25,
+          1.25,
+          1.25
+        ]
+      },
+      "partOverrides": {}
+    }
+  ],
+  "splineDefinitions": [
+    {
+      "id": "spline-gallery",
+      "name": "Gallery Sweep",
+      "controlPoints": [
+        [
+          -4,
+          0.08,
+          3
+        ],
+        [
+          -2.3,
+          0.45,
+          1.4
+        ],
+        [
+          0,
+          0.2,
+          2.2
+        ],
+        [
+          2.5,
+          0.72,
+          0.9
+        ],
+        [
+          4.2,
+          0.15,
+          2.5
+        ]
+      ],
+      "closed": false,
+      "interpolation": "catmull-rom",
+      "sweepType": "road",
+      "radiusKeyframes": [
+        {
+          "t": 0,
+          "value": 0.22
+        },
+        {
+          "t": 0.55,
+          "value": 0.42
+        },
+        {
+          "t": 1,
+          "value": 0.26
+        }
+      ],
+      "widthKeyframes": [
+        {
+          "t": 0,
+          "value": 1.2
+        },
+        {
+          "t": 0.5,
+          "value": 1.9
+        },
+        {
+          "t": 1,
+          "value": 1.35
+        }
+      ],
+      "heightKeyframes": [
+        {
+          "t": 0,
+          "value": 2.2
+        },
+        {
+          "t": 0.5,
+          "value": 2.9
+        },
+        {
+          "t": 1,
+          "value": 2.3
+        }
+      ],
+      "resolutionPolicy": {
+        "minSegments": 18,
+        "maxSegments": 160,
+        "segmentsPerUnit": 3,
+        "curvatureWeight": 10,
+        "dimensionChangeWeight": 5
+      },
+      "materialId": "mat-slate",
+      "seed": 991
+    },
+    {
+      "id": "spline-2",
+      "name": "Spline 2",
+      "controlPoints": [
+        [
+          -0.25,
+          0,
+          4.25
+        ],
+        [
+          0.25,
+          1.5,
+          2.25
+        ],
+        [
+          2,
+          0,
+          1.5
+        ],
+        [
+          2.5,
+          0,
+          -1
+        ]
+      ],
+      "closed": false,
+      "interpolation": "catmull-rom",
+      "sweepType": "corridor",
+      "radiusKeyframes": [
+        {
+          "t": 0,
+          "value": 0.25
+        },
+        {
+          "t": 1,
+          "value": 0.25
+        }
+      ],
+      "widthKeyframes": [
+        {
+          "t": 0,
+          "value": 1.2
+        },
+        {
+          "t": 0.5,
+          "value": 1.8
+        },
+        {
+          "t": 1,
+          "value": 1.2
+        }
+      ],
+      "heightKeyframes": [
+        {
+          "t": 0,
+          "value": 2.4
+        },
+        {
+          "t": 0.5,
+          "value": 2.8
+        },
+        {
+          "t": 1,
+          "value": 2.4
+        }
+      ],
+      "resolutionPolicy": {
+        "minSegments": 12,
+        "maxSegments": 160,
+        "segmentsPerUnit": 3,
+        "curvatureWeight": 10,
+        "dimensionChangeWeight": 5
+      },
+      "materialId": "mat-slate",
+      "seed": 1849
+    }
+  ],
+  "roomDefinitions": [
+    {
+      "id": "room-atrium",
+      "name": "Atrium Volume",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "width": 10,
+      "height": 4.2,
+      "depth": 7,
+      "floorY": 0,
+      "materialId": "mat-room"
+    }
+  ],
+  "socketDefinitions": [
+    {
+      "id": "socket-west-door",
+      "name": "West Door",
+      "roomId": "room-atrium",
+      "type": "door",
+      "position": [
+        -5,
+        1.1,
+        0
+      ],
+      "orientation": [
+        0,
+        0,
+        0
+      ],
+      "compatibleTags": [
+        "door",
+        "corridor"
+      ]
+    },
+    {
+      "id": "socket-east-door",
+      "name": "East Door",
+      "roomId": "room-atrium",
+      "type": "door",
+      "position": [
+        5,
+        1.1,
+        0
+      ],
+      "orientation": [
+        0,
+        3.14159,
+        0
+      ],
+      "compatibleTags": [
+        "door",
+        "corridor"
+      ]
+    }
+  ],
+  "placementRules": [
+    {
+      "id": "placement-spline-markers",
+      "name": "Spline Markers",
+      "type": "spline",
+      "assetId": "asset-marker",
+      "splineId": "spline-gallery",
+      "count": 9,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "direction": [
+        1,
+        0,
+        0
+      ],
+      "jitter": {
+        "position": [
+          0.12,
+          0,
+          0.12
+        ],
+        "rotation": [
+          0,
+          0.35,
+          0
+        ],
+        "scale": [
+          0.08,
+          0.08,
+          0.08
+        ]
+      },
+      "variantSetId": "variant-marker-tones",
+      "seed": 4401
+    }
+  ],
+  "extensions": {
+    "lodPolicies": [],
+    "morphDefinitions": [],
+    "destructionDefinitions": [],
+    "environmentDefinitions": [],
+    "spawnerDefinitions": []
+  }
+}
