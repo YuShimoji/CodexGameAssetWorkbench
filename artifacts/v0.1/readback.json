@@ -1,0 +1,127 @@
+{
+  "capturedAt": "2026-07-17T04:20:08.162Z",
+  "baseUrl": "http://127.0.0.1:4173",
+  "browser": "chromium",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "projectId": "starter-atelier",
+  "schemaVersion": "0.1.0",
+  "seed": 1847,
+  "assetCount": 2,
+  "partCount": 7,
+  "materialCount": 5,
+  "splineCount": 1,
+  "roomCount": 1,
+  "socketCount": 2,
+  "instanceCount": 2,
+  "placementRuleCount": 1,
+  "recipeHash": "fnv1a-6c2199f3",
+  "triangleCount": 1220,
+  "vertexCount": 647,
+  "boundingBox": {
+    "min": [
+      -4.677862985028115,
+      0,
+      -0.55
+    ],
+    "max": [
+      5.2478701049228,
+      3.3320250147717947,
+      3.6769727504563754
+    ]
+  },
+  "validation": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "recipeSnapshot": "roundtrip.recipe.json",
+  "generatedPlacementCount": 9,
+  "validationIssues": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "smokeChecks": {
+    "canvasVisible": true,
+    "assetIsolation": true,
+    "sweepModes": [
+      "rod",
+      "road",
+      "corridor"
+    ],
+    "recipeSaveReload": true,
+    "glbExport": true,
+    "manifestExport": true,
+    "browserConsoleErrors": []
+  },
+  "evidenceStates": {
+    "01-scene-array-room.png": {
+      "sweepType": "road",
+      "recipeHash": "fnv1a-3a095d6f",
+      "triangleCount": 632,
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "02-asset-catalog.png": {
+      "sweepType": "road",
+      "recipeHash": "fnv1a-3a095d6f",
+      "triangleCount": 632,
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "03-spline-rod.png": {
+      "sweepType": "rod",
+      "recipeHash": "fnv1a-eb70c074",
+      "triangleCount": 2396,
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "04-spline-road.png": {
+      "sweepType": "road",
+      "recipeHash": "fnv1a-3a095d6f",
+      "triangleCount": 632,
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "05-spline-corridor.png": {
+      "sweepType": "corridor",
+      "recipeHash": "fnv1a-6c2199f3",
+      "triangleCount": 1220,
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    },
+    "06-room-sockets.png": {
+      "sweepType": "road",
+      "recipeHash": "fnv1a-3a095d6f",
+      "triangleCount": 632,
+      "validation": {
+        "errors": 0,
+        "warnings": 0
+      }
+    }
+  },
+  "screenshots": [
+    "01-scene-array-room.png",
+    "02-asset-catalog.png",
+    "03-spline-rod.png",
+    "04-spline-road.png",
+    "05-spline-corridor.png",
+    "06-room-sockets.png"
+  ],
+  "exports": [
+    "starter-atelier.recipe.json",
+    "asset-console-table.glb",
+    "asset-console-table.manifest.json"
+  ]
+}

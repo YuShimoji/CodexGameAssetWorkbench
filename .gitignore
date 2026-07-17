@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.vite/
+coverage/
+playwright-report/
+test-results/
+output/playwright/.session/
+output/playwright/
+*.tsbuildinfo
+*.tmp
+*.temp
+downloads/
+*.log
+.DS_Store
