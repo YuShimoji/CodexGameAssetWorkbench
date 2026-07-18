@@ -1,32 +1,106 @@
-# 次のAgentへ渡す単一Prompt
+# Paper Gliderへ最初のWorkbench-authored roomを統合する次Prompt
 
-以下をそのまま次のAgentへ渡してください。
+以下を単独で次のAgentへ渡してください。
 
 ---
 
-`CodexGameAssetWorkbench` v0.2の次の安全なsliceとして、`PaperGliderClone`に変更を加えない読み取り専用互換性監査を行い、将来の統合判断に使える実測ベースの契約表を作成してください。今回の目的は統合実装ではなく、v0.2 Recipe/Spline/GLB/manifest/Room/Socketのどこをそのまま利用でき、どこにadapterまたは新しいexport契約が必要かを明らかにすることです。PaperGliderCloneへの変更、コピー、依存追加、submodule化、PR作成を完了条件にしないでください。
+Paper Gliderへ、CodexGameAssetWorkbenchの確定済み`PaperGlider Compatibility Packet v1`と`Archive Gate` canaryを使った最初のプレイ可能なWorkbench-authored room archetypeを統合してください。
 
-開始時に両リポジトリの絶対パス、branch、HEAD、upstream、remote、worktree、untrackedを個別に実測し、それぞれの`AGENTS.md`、README、architecture、license、package/build設定、asset loader、scene/runtime入口を読んでください。`PaperGliderClone`の場所はユーザーが明示したパス、現在のworkspace root、または同じ親ディレクトリに実在する同名ディレクトリだけを対象とし、見つからない場合は推測でclone、Web検索、別名リポジトリの採用をせず停止してください。dirtyな対象リポジトリをcleanだと仮定せず、既存変更は所有者不明として扱ってください。
+## Repositoryと固定基準
 
-`CodexGameAssetWorkbench`側ではv0.1 checkpointとv0.2 Spline直接編集commitが存在し、Schema 0.1.0 golden fixture、Coreのengine-independent boundary、`npm run verify`が成立していることを前提にせず再確認してください。監査中はgit pull、stash、stash pop、merge、rebase、reset、checkoutによる破棄、履歴改変、remote変更、tag、push、PR作成を行わないでください。`PaperGliderClone`配下にはファイル生成、formatter、install、build、test、lockfile更新を含む一切のwriteを行わないでください。認証、課金API、秘密情報、ゲーム固有データの外部送信を行わないでください。
+- 編集対象Paper Glider: `C:\Users\thank\Storage\Game Projects\paper-glider`
+- 読み取り専用Workbench: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench`
+- Paper Glider開始基準commit: `3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750`
+- Workbench contract: `paper-glider-compat-v1`
+- Workbench packet entrypoint: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\compat\paper-glider-v1\README.md`
+- compatibility matrix: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md`
+- manifest schema: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\compat\paper-glider-v1\paper-glider-compat-manifest-v1.schema.json`
+- runtime canary GLB: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\compat\paper-glider-v1\paper-glider-archive-gate.glb`
+- runtime manifest: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\compat\paper-glider-v1\paper-glider-archive-gate.manifest.json`
+- authoring/provenance Recipe（runtimeへは入れない）: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\compat\paper-glider-v1\paper-glider-canary.recipe.json`
+- expected content hash: `sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b`
+- expected GLB SHA-256: `sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019`
 
-監査では少なくとも次を実測してください。
+Workbenchはこのターンではread-onlyです。Workbench配下の編集、install、build、生成、commit、branch操作、pushを行わないでください。Paper Glider側だけを変更します。
 
-1. PaperGliderCloneのruntime/engine、座標系、up軸、単位、forward方向、transform表現、material/lighting前提、GLB/glTF loader、procedural mesh入力、scene/level記述、asset IDの扱い。
-2. CodexGameAssetWorkbenchのRecipe 0.1.0、Stable ID、generationSeed、Spline MeshData、選択Asset GLB+manifest、Room/Socket、Placementの各契約が、無変換・薄いadapter・新規export・非互換のどれに当たるか。
-3. Splineのrod/road/corridorについて、PaperGliderCloneが必要とする用途がrender mesh、collision、flight path、camera path、spawn path、level boundaryのどれか。コード上の証拠がない用途は「不明」とし、推測を事実として書かないこと。
-4. GLBだけでは失われるStable ID、Socket、Room、Placement、Seed、profile keyframe等のmetadataと、sidecar manifestまたはRecipe参照が必要な箇所。
-5. license、第三者asset、配布形態、runtime依存、bundle/性能制約から見た統合上の停止条件。
-6. 最小の互換性spikeを行う場合の入力fixture、期待出力、adapter責任、検証方法。ただし今回そのspike自体は実装しないこと。
+## 開始時確認
 
-主成果物は`CodexGameAssetWorkbench/docs/PAPER_GLIDER_COMPATIBILITY_AUDIT.md`とし、ファイルを開かなくても判断できる概要、両側の実測commit、契約比較表、座標/単位変換表、利用可能な既存出力、欠けている契約、重大度付きrisk、推奨する最小spike、明示的な非対象を含めてください。各判断には両リポジトリ内の具体的なファイル/関数/設定を根拠として示してください。将来Schema変更が必要そうでも、監査だけでSchema versionを上げたり未実装migrationを書いたりせず、変更候補・互換性影響・代替案を表に分離してください。
+1. 両repositoryで最寄りの`AGENTS.md`と、それが指す正本文書を読む。Paper Gliderでは`PROJECT_HANDOFF.md`、README、package scripts、Vite/Pages設定、runtime入口、`PaperGliderGame`、`CorridorWorld`、`RingPathPlanner`、既存testsを読む。Workbenchでは上記packet README、manifest/schema、compatibility matrixだけをread-onlyで読む。
+2. 両repositoryのbranch、HEAD、upstream、origin parity、worktreeを実測する。Paper Glider HEADが固定commitと異なる場合は勝手にcheckout/resetせず、差分と現在のauthorityを確認する。未知のlocal変更は上書きしない。
+3. Paper Gliderの基準がcleanかつpush済みであれば、`codex/workbench-archive-gate-room-v1`のようなfocused branchを作成する。mainへのmerge、tag、deployment、PR作成は行わない。
+4. npm操作は直列化する。既存preview processや別repositoryのprocessを停止・変更しない。port競合時は空きportを使う。
+5. Workbench bundleをコピーする前にGLBとmanifestのSHA-256を再計算して上記値と照合する。Recipeはprovenance確認用でありPaper Glider runtime/public assetsへコピーしない。
 
-必要なら`CodexGameAssetWorkbench`内だけに、既存fixtureを入力とするread-only解析scriptまたはcontract testを追加できます。ただし新規依存は追加せず、PaperGliderCloneのコードをimport/copyせず、CoreへThree.js/React/DOM/WebGL依存を持ち込まないでください。文書だけで十分に結論できる場合は、無理にコードを増やさないでください。
+## 実装目的
 
-検証は、変更が文書のみならMarkdown link/pathの存在確認と`git diff --check`を最低限実行してください。解析script/testを追加した場合は`npm run schema:check`、`npm run build`、`npm run typecheck`、`npm run lint`、`npm test`、`npm run test:browser`、`git diff --check`を実行し、既存v0.2 Active Artifactを壊していないことを確認してください。PaperGliderClone側のbuild/testはwriteを完全に防げることを確認できない限り実行せず、未実行理由を監査文書へ残してください。
+現在のprocedural roomsを安全なfallbackとして残しながら、run開始前に検証済みのGLB + manifestをpreloadし、決定論的に選ばれたroom segmentへArchive Gateを配置してください。アセットの取得・検証・描画・collision・ring clearance・room recyclingまでを薄いPaper Glider所有adapterで接続し、実際にプレイ可能であることを証拠化します。
 
-次の場合は監査結果を作り話で補わず、確認できた事実、blocking path、ユーザーが与えれば再開できる最小情報を報告して停止してください。PaperGliderCloneがローカルに存在しない、対象名/remoteが曖昧、読み取りだけでworktreeを保護できない、licenseまたは認証情報の扱いが不明、unrelated変更と成果物が衝突する、現在のv0.2検証が失敗する場合です。
+runtime assetはPaper Gliderのsource/public asset領域のversion付きdirectory、推奨`public/assets/workbench/paper-glider-v1/`へ配置し、Vite build後の`docs/assets/workbench/paper-glider-v1/`へ正しく複製される構成にしてください。URLは必ず`import.meta.env.BASE_URL`を基準に構築し、root absolute `/assets/...`やrepository名のhardcodeを使わないでください。
 
-終了時は、開始/終了の両Git状態、読み取った境界、変更したのがWorkbench側だけである証拠、比較で判明した互換/変換/不足、Schema変更の有無、検証結果、未解決事項、最小spikeへ進めるかを自然文と実体ある比較表で報告してください。次候補は、違うbottleneckを解く入口として最大3件に絞ってください。ユーザーの追加承認なしにcommit、push、PR、PaperGliderClone変更、統合実装へ進まないでください。
+## 固定asset contract
+
+- Three右手系、`+Y` up、`-Z` forward、scale 1。
+- placementはmanifestのposition/rotation/scaleをそのまま適用する。床面placement Yは`-0.52`。
+- room contractはwidth 11.2、height 6.8、length 18。
+- 必須visual nodeは8件。Stable IDがGLB node nameとglTF extrasに入っているため、load後に全IDを解決する。
+- collisionはmanifestの3 AABBが正本。render mesh boundsから推測しない。各recordのcenter/halfExtentsとvisualNodeIdsを検証してPaper Gliderの`WorldCollider`へ変換する。
+- Recipeをruntimeでparseしない。generic Workbench schemaへPaper Glider固有ルールを追加しない。
+- materialはtextureなしのsolid MeshStandard。loaded meshをtraverseしてPaperのlighting/fog/shadow契約に合わせ、geometry/materialをcacheしてroom clone間で再利用する。
+- manifest/GLB fetch、schema/contract/hash、parse、required node、finite transform、scale、collider参照のどれかが失敗したら、そのrunではcanaryを採用せず現在のprocedural roomへfallbackする。network完了後のmid-run差し替えは禁止。
+
+## 必須実装
+
+1. Paper Glider所有の小さなmanifest型/validatorと`WorkbenchRoomAssetLoader`相当を追加する。過剰な汎用asset frameworkやWorkbenchコードのcopyは避ける。
+2. `main.ts`からgame/worldを構築する前にmanifestとGLBを一度preloadする。成功時はvalidated immutable asset library、失敗時は`null`または明示的failure resultを渡す。failureはユーザーのrunを止めずprocedural fallbackへ進める。
+3. Web Crypto等で配布GLBのSHA-256を検証し、contract version、Paper baseline compatibility、relative path、hash、required node、finite transform/scale、collider visual refsを確認する。productionで不要なRecipeやWorkbench依存を持ち込まない。
+4. loaded rootはcacheし、選択されたroom group配下へcloneする。各room recycleで再fetch/reparseせず、geometry/materialを共有する。library shutdown以外で共有resourceをdisposeしない。
+5. manifest AABBごとにroom-local anchorを作り、既存の`WorldCollider`形式へ変換する。game固有のplayer clearance/tuningはPaper Glider側の責任として既存collision contractに統合する。
+6. 同じAABBを純データとしてring route計画へ渡し、ring生成前にcanary障害物を回避させる。飛行tuning、seed、ring、score、visibilityの既存契約を変更しない。
+7. room archetype選択はrun seedとroom sequenceの既存`randomUnit`座標だけで決める。`Math.random()`、fetch順、load時間、frame時間で選択しない。同じseed/sequenceではasset availabilityが同じなら同じ配置・ring pathになることをtestする。
+8. assetあり/なしの両方で現行procedural pathを維持する。error diagnosticはlocal/開発用途に限定し、外部telemetry、backend、login、CDNを追加しない。
+9. READMEまたはasset contract文書と`PROJECT_HANDOFF.md`を更新し、copy元hash、配置先、loader/fallback、collision/ring/recycling、Pages URL、license gate、検証方法を単独再開可能に記録する。
+
+## License gate
+
+bundle provenanceはrepository-owned Recipeでthird-party assetなしですが、Workbench repositoryには明示的asset licenseがなくmanifestは`NOASSERTION`です。local integrationと検証は進めてよいですが、ownerが再配布許諾を記録するまではGitHub Pagesへのpublic deploymentを実行せず、public release readinessをPASSにしないでください。既に明示的許諾がrepository-local authorityに追加されている場合だけ、その根拠を記録してgateを更新します。
+
+## 必須検証
+
+- repositoryで定められたclean installと`npm ls --depth=0`
+- typecheck、lint、unit/integration tests、production build
+- manifest valid/invalid、GLB hash mismatch、missing node、failed fetchのloader tests
+- Pages base `/paper-glider/`を通るmanifest/GLB URLとproduction preview load
+- asset availability確定後の同seed/sequence同一room選択・ring path
+- 3 colliderが正しいroom-local/world位置へ変換され、ring clearanceが侵入しないこと
+- 9 room recycling中のclone再利用、fetch/parseが一度だけであること、共有resourceを早期disposeしないこと
+- asset failure時にcurrent procedural roomが継続し、runが開始できること
+- desktopとmobile portraitのPlaywright smoke、console errors 0、validation errors/warnings 0
+- 実プレイでgate中央を通過でき、pier/top beam collisionが発火し、ring/score/visibility/fair-speed契約に回帰がないこと
+- `git diff --check`、staged diff review、secret scan、不要生成物確認
+
+visual proofには少なくとも、room内のArchive Gate全体、collider debug表示、Paper flight cameraからの見え方、ringがcolliderを避ける状態、recycle後の再出現、mobile portraitを残してください。desktop/browser証跡をphysical-device proofと表現しないでください。
+
+## 禁止事項
+
+- Workbench repositoryを変更しない。
+- Paper Gliderのmainへmergeしない、tag/PR/deployを行わない。
+- GitHub Pages方式を変更しない。
+- flight tuning、run seed意味論、ring、score、visibility契約を無関係に変更しない。
+- colliderをrender meshから暗黙生成しない。
+- async load timingを決定論へ混ぜない。
+- 外部telemetry、backend、login、asset CDN、大規模refactor、UI再設計、無関係な依存更新を追加しない。
+- local/browser検証だけでphysical device、public deployment、license acceptanceを主張しない。
+
+## Commitと完了判定
+
+変更はasset + loader contract、world/collision/ring integration、tests/visual proof、handoffの意味ある単位でcommitし、focused branchへpushしてください。各commit前にdiffを確認します。main merge、tag、PR、deploymentは行いません。
+
+最後に次のいずれかを明示してください。
+
+- `READY_FOR_LOCAL_PLAYTEST`: loader/fallback、決定論、world/collision/ring/recycle、automated/browser evidenceがgreenでlocalプレイ可能。license/public deploymentは別owner gateとして残せる。
+- `CONDITIONAL`: 実装は進んだがplayable acceptanceに必要な具体的contractが残る。
+- `BLOCKED`: 安全な統合を開始または検証できない。
+
+`CONDITIONAL`/`BLOCKED`ではblocking contract、owner、対象file、最小修正、再実行commandを示してください。完了報告は結論を先頭に置き、開始/終了Git状態、copyした全assetとhash、実装変更、fallback/決定論/collision/ring/recycleの証拠、自動green、visual確認、未確認、test件数、全command、commit/push、Workbench無変更証拠、license/public/device gateを分離してください。
 
 ---

@@ -6,6 +6,7 @@ playwright-report/
 test-results/
 output/playwright/.session/
 output/playwright/
+output/compat/
 *.tsbuildinfo
 *.tmp
 *.temp

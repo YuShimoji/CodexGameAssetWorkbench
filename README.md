@@ -82,9 +82,20 @@ git diff --check
 
 実画面証跡、保存→再読込に使ったRecipe、GLB/manifest、機械可読readbackの生出力は`output/playwright/`へ生成され、Gitでは追跡しません。基準版として選別した証跡は[`artifacts`](./artifacts)に保存します。
 
+## Paper Glider compatibility packet
+
+Paper Glider `3ad5ac1`をread-onlyの実装基準として検証した`paper-glider-compat-v1` contract、再生成可能なArchive Gate canary、GLB、manifest、schema、視覚証跡を[`docs/compat/paper-glider-v1`](./docs/compat/paper-glider-v1)に保存しています。runtime境界はGLB + validated manifestであり、Recipe 0.1.0はWorkbench側のbuild-time正本です。
+
+```powershell
+npm run compat:generate
+npm run compat:check
+```
+
+`compat:generate`はcanonical bundleと5状態の画像証跡を再生成します。`compat:check`はmanifest schema、実GLB load、node/collider参照、finite transform、scale、Recipe Save→Reload、hash、Windows空白入りpath、GitHub Pages base URLを検証します。互換性表と統合境界は[`docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md`](./docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md)を参照してください。これはPaper Glider runtimeへの統合済み証明ではありません。
+
 ## v0.2で意図的に扱わないもの
 
-PaperGliderCloneや特定ゲームとの統合、Unity/Godot/Unreal Adapter、Scene全体GLB bundle、Blender add-on、Bezier curve editor、任意頂点モデリング、UV/Texture Paint、Morph/Fracture/物理破壊、天候、高度なSpawner、クラウド保存、共同編集、外部AIサービスは実装していません。存在するように見せる無効なUIも置いていません。
+Paper Glider runtimeへのloader/world統合、Unity/Godot/Unreal Adapter、汎用Scene全体GLB bundle、Blender add-on、Bezier curve editor、任意頂点モデリング、UV/Texture Paint、Morph/Fracture/物理破壊、天候、高度なSpawner、クラウド保存、共同編集、外部AIサービスは実装していません。存在するように見せる無効なUIも置いていません。
 
 詳しい設計は[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)、Recipe契約は[`docs/RECIPE_SCHEMA.md`](./docs/RECIPE_SCHEMA.md)を参照してください。
 

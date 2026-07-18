@@ -1,0 +1,220 @@
+{
+  "contractVersion": "paper-glider-compat-v1",
+  "contentHash": "sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b",
+  "recipeHash": "fnv1a-3383aa61",
+  "glbSha256": "sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019",
+  "evidenceBoundary": "Workbench-hosted GLB preview using Paper Glider camera and coordinate assumptions; not runtime integration or physical-device proof.",
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 900
+    },
+    "mobilePortrait": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "screenshots": [
+    {
+      "name": "canary-overview.png",
+      "bytes": 99314,
+      "sha256": "sha256:6691f310204d24b42e7c5465aa99ab324db1e7ddd3c9f1ef9784100aadd78ecd"
+    },
+    {
+      "name": "canary-colliders.png",
+      "bytes": 115470,
+      "sha256": "sha256:69b5b1e2e7af82113fb619cc5c0eb61c8997f10de972a11f47da2ff4cc6e72f8"
+    },
+    {
+      "name": "canary-flight-camera.png",
+      "bytes": 84012,
+      "sha256": "sha256:98da9425ec34aeaf1216972eb9bc46df2c75c80a8f651bf68d94cf8afd32878d"
+    },
+    {
+      "name": "canary-reloaded.png",
+      "bytes": 99314,
+      "sha256": "sha256:6691f310204d24b42e7c5465aa99ab324db1e7ddd3c9f1ef9784100aadd78ecd"
+    },
+    {
+      "name": "canary-mobile-portrait.png",
+      "bytes": 47280,
+      "sha256": "sha256:6e11c08962d557de89f39482b7fcdcd7f0086dba343b7c43d0a2c4b46ba0d06a"
+    }
+  ],
+  "evidence": {
+    "canary-overview.png": {
+      "ready": true,
+      "mode": "overview",
+      "contentHash": "sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b",
+      "recipeHash": "fnv1a-3383aa61",
+      "loadedNodeIds": [
+        "part-left-beacon",
+        "part-left-pier",
+        "part-left-plinth",
+        "part-right-beacon",
+        "part-right-pier",
+        "part-right-plinth",
+        "part-top-beam",
+        "spline-route-arch"
+      ],
+      "colliderCount": 3,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "camera": {
+        "fov": 48,
+        "position": [
+          8.5,
+          6.4,
+          5.8
+        ],
+        "target": [
+          0,
+          2.25,
+          -10
+        ]
+      }
+    },
+    "canary-colliders.png": {
+      "ready": true,
+      "mode": "colliders",
+      "contentHash": "sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b",
+      "recipeHash": "fnv1a-3383aa61",
+      "loadedNodeIds": [
+        "part-left-beacon",
+        "part-left-pier",
+        "part-left-plinth",
+        "part-right-beacon",
+        "part-right-pier",
+        "part-right-plinth",
+        "part-top-beam",
+        "spline-route-arch"
+      ],
+      "colliderCount": 3,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "camera": {
+        "fov": 48,
+        "position": [
+          7.7,
+          5.4,
+          5.8
+        ],
+        "target": [
+          0,
+          2.25,
+          -10
+        ]
+      }
+    },
+    "canary-flight-camera.png": {
+      "ready": true,
+      "mode": "flight-camera",
+      "contentHash": "sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b",
+      "recipeHash": "fnv1a-3383aa61",
+      "loadedNodeIds": [
+        "part-left-beacon",
+        "part-left-pier",
+        "part-left-plinth",
+        "part-right-beacon",
+        "part-right-pier",
+        "part-right-plinth",
+        "part-top-beam",
+        "spline-route-arch"
+      ],
+      "colliderCount": 3,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "camera": {
+        "fov": 58,
+        "position": [
+          0,
+          2.95,
+          7.65
+        ],
+        "target": [
+          0,
+          2.35,
+          -11
+        ]
+      }
+    },
+    "canary-reloaded.png": {
+      "ready": true,
+      "mode": "overview",
+      "contentHash": "sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b",
+      "recipeHash": "fnv1a-3383aa61",
+      "loadedNodeIds": [
+        "part-left-beacon",
+        "part-left-pier",
+        "part-left-plinth",
+        "part-right-beacon",
+        "part-right-pier",
+        "part-right-plinth",
+        "part-top-beam",
+        "spline-route-arch"
+      ],
+      "colliderCount": 3,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "camera": {
+        "fov": 48,
+        "position": [
+          8.5,
+          6.4,
+          5.8
+        ],
+        "target": [
+          0,
+          2.25,
+          -10
+        ]
+      },
+      "reloadStateEqual": true
+    },
+    "canary-mobile-portrait.png": {
+      "ready": true,
+      "mode": "flight-camera",
+      "contentHash": "sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b",
+      "recipeHash": "fnv1a-3383aa61",
+      "loadedNodeIds": [
+        "part-left-beacon",
+        "part-left-pier",
+        "part-left-plinth",
+        "part-right-beacon",
+        "part-right-pier",
+        "part-right-plinth",
+        "part-top-beam",
+        "spline-route-arch"
+      ],
+      "colliderCount": 3,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "camera": {
+        "fov": 58,
+        "position": [
+          0,
+          2.95,
+          7.65
+        ],
+        "target": [
+          0,
+          2.35,
+          -11
+        ]
+      }
+    }
+  },
+  "consoleErrors": 0,
+  "validationErrors": 0,
+  "validationWarnings": 0
+}
