@@ -18,14 +18,18 @@
     "lint": "eslint .",
     "test": "npm run build:packages && vitest run",
     "test:browser": "npm run build && node scripts/browser-smoke.mjs",
-    "verify": "npm run schema:check && npm run build && npm run typecheck && npm run lint && npm run test && npm run test:browser && git diff --check"
+    "compat:generate:bundle": "npm run build:packages && node scripts/generate-paper-glider-compat.mjs",
+    "compat:check": "npm run build:packages && node scripts/verify-paper-glider-compat.mjs",
+    "verify": "npm run schema:check && npm run build && npm run typecheck && npm run lint && npm run test && npm run compat:check && npm run test:browser && git diff --check"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
     "@types/node": "^24.0.15",
+    "ajv": "^8.20.0",
     "eslint": "^9.31.0",
     "globals": "^16.3.0",
     "playwright": "^1.54.1",
+    "three": "^0.178.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
     "vitest": "^3.2.4"

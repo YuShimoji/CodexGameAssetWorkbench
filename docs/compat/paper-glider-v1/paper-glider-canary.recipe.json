@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "0.1.0",
+  "projectId": "paper-glider-archive-gate-v1",
+  "generationSeed": 464367618,
+  "materialDefinitions": [
+    { "id": "mat-paper-cream", "name": "Paper Cream", "color": "#e5d8bd", "roughness": 0.92, "metalness": 0 },
+    { "id": "mat-warm-wood", "name": "Warm Wood", "color": "#76513c", "roughness": 0.86, "metalness": 0.02 },
+    { "id": "mat-clay-accent", "name": "Clay Accent", "color": "#b86547", "roughness": 0.9, "metalness": 0.01 },
+    { "id": "mat-route-gold", "name": "Route Gold", "color": "#f6c66d", "roughness": 0.38, "metalness": 0.12 }
+  ],
+  "assetDefinitions": [
+    {
+      "id": "asset-archive-gate",
+      "name": "Archive Gate",
+      "parts": [
+        { "id": "part-left-pier", "name": "Left Pier", "primitive": { "type": "box", "size": [1.1, 4.4, 1.4] }, "materialId": "mat-warm-wood", "transform": { "position": [-3.65, 2.2, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "part-right-pier", "name": "Right Pier", "primitive": { "type": "box", "size": [1.1, 4.4, 1.4] }, "materialId": "mat-warm-wood", "transform": { "position": [3.65, 2.2, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "part-top-beam", "name": "Top Beam", "primitive": { "type": "box", "size": [8.4, 0.55, 1.4] }, "materialId": "mat-paper-cream", "transform": { "position": [0, 4.65, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "part-left-plinth", "name": "Left Plinth", "primitive": { "type": "box", "size": [1.6, 0.25, 1.8] }, "materialId": "mat-paper-cream", "transform": { "position": [-3.65, 0.125, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "part-right-plinth", "name": "Right Plinth", "primitive": { "type": "box", "size": [1.6, 0.25, 1.8] }, "materialId": "mat-paper-cream", "transform": { "position": [3.65, 0.125, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "part-left-beacon", "name": "Left Beacon", "primitive": { "type": "sphere", "radius": 0.28, "widthSegments": 12, "heightSegments": 8 }, "materialId": "mat-clay-accent", "transform": { "position": [-2.65, 3.45, 0.82], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "part-right-beacon", "name": "Right Beacon", "primitive": { "type": "sphere", "radius": 0.28, "widthSegments": 12, "heightSegments": 8 }, "materialId": "mat-clay-accent", "transform": { "position": [2.65, 3.45, 0.82], "rotation": [0, 0, 0], "scale": [1, 1, 1] } }
+      ]
+    }
+  ],
+  "variantSets": [
+    {
+      "id": "variant-archive-beacons",
+      "name": "Archive Beacon Tones",
+      "assetId": "asset-archive-gate",
+      "partIds": ["part-left-beacon", "part-right-beacon"],
+      "hue": { "min": -0.035, "max": 0.035 },
+      "brightness": { "min": -0.03, "max": 0.05 },
+      "materialOverride": { "roughness": 0.82 },
+      "seed": 4401
+    }
+  ],
+  "sceneInstances": [
+    {
+      "id": "instance-archive-gate",
+      "name": "Archive Gate Room Instance",
+      "assetId": "asset-archive-gate",
+      "variantSetId": "variant-archive-beacons",
+      "transform": { "position": [0, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] },
+      "partOverrides": {}
+    }
+  ],
+  "splineDefinitions": [
+    {
+      "id": "spline-route-arch",
+      "name": "Route Arch",
+      "controlPoints": [[-3.3, 3.8, 0.78], [-1.8, 4.5, 0.78], [0, 5.1, 0.78], [1.8, 4.5, 0.78], [3.3, 3.8, 0.78]],
+      "closed": false,
+      "interpolation": "catmull-rom",
+      "sweepType": "rod",
+      "radiusKeyframes": [{ "t": 0, "value": 0.1 }, { "t": 0.5, "value": 0.14 }, { "t": 1, "value": 0.1 }],
+      "widthKeyframes": [{ "t": 0, "value": 0.3 }, { "t": 1, "value": 0.3 }],
+      "heightKeyframes": [{ "t": 0, "value": 0.3 }, { "t": 1, "value": 0.3 }],
+      "resolutionPolicy": { "minSegments": 18, "maxSegments": 96, "segmentsPerUnit": 3, "curvatureWeight": 8, "dimensionChangeWeight": 4 },
+      "materialId": "mat-route-gold",
+      "seed": 1849
+    }
+  ],
+  "roomDefinitions": [
+    { "id": "room-paper-glider-segment", "name": "Paper Glider Room Segment", "position": [0, 2.88, 0], "width": 11.2, "height": 6.8, "depth": 18, "floorY": -0.52, "materialId": "mat-paper-cream" }
+  ],
+  "socketDefinitions": [
+    { "id": "socket-room-entry", "name": "Room Entry", "roomId": "room-paper-glider-segment", "type": "room-boundary", "position": [0, 2.35, 9], "orientation": [0, 3.141592653589793, 0], "compatibleTags": ["paper-glider", "room-segment", "entry"] },
+    { "id": "socket-room-exit", "name": "Room Exit", "roomId": "room-paper-glider-segment", "type": "room-boundary", "position": [0, 2.35, -9], "orientation": [0, 0, 0], "compatibleTags": ["paper-glider", "room-segment", "exit"] }
+  ],
+  "placementRules": [],
+  "extensions": { "lodPolicies": [], "morphDefinitions": [], "destructionDefinitions": [], "environmentDefinitions": [], "spawnerDefinitions": [] }
+}
