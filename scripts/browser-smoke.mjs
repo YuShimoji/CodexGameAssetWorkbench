@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
@@ -8,7 +9,8 @@ import { generateSplineMesh, getMeshStats, recipeHash, summarizeRecipe, validate
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = resolve(root, 'output/playwright');
-const baseUrl = 'http://127.0.0.1:4173';
+const previewPort = await findAvailablePort();
+const baseUrl = `http://127.0.0.1:${previewPort}`;
 const viteBin = resolve(root, 'node_modules/vite/bin/vite.js');
 const appRoot = resolve(root, 'apps/workbench');
 const screenshots = [
@@ -28,13 +30,31 @@ for (const name of [
   'readback-v0.2.json', 'starter-atelier.recipe.json',
 ]) await rm(resolve(outputDir, name), { force: true });
 
-const server = spawn(process.execPath, [viteBin, 'preview', '--host', '127.0.0.1', '--port', '4173'], {
+const server = spawn(process.execPath, [viteBin, 'preview', '--host', '127.0.0.1', '--port', String(previewPort), '--strictPort'], {
   cwd: appRoot,
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 let serverLog = '';
 server.stdout.on('data', (chunk) => { serverLog += chunk.toString(); });
 server.stderr.on('data', (chunk) => { serverLog += chunk.toString(); });
+
+function findAvailablePort() {
+  return new Promise((resolvePromise, reject) => {
+    const probe = createServer();
+    probe.unref();
+    probe.on('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const address = probe.address();
+      if (!address || typeof address === 'string') {
+        probe.close();
+        reject(new Error('Unable to allocate a local preview port.'));
+        return;
+      }
+      const port = address.port;
+      probe.close((error) => error ? reject(error) : resolvePromise(port));
+    });
+  });
+}
 
 async function waitForServer() {
   const deadline = Date.now() + 20_000;

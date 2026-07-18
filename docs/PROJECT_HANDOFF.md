@@ -15,6 +15,20 @@
 | Node.js | 22以上 |
 | PR / merge / tag | 未作成。`main`はv0.1、v0.2は専用branchに分離 |
 
+## 2026-07-18 ローカル再開検証
+
+`git fetch --prune origin`後、`origin/main`はローカル`main`と`0/0` parityでした。ただし最新の実装と引き継ぎは`origin/codex/spline-direct-edit-v0-2`にあるため、同名のローカルbranchを作成してtrackingを設定しました。現在のHEADとupstreamはともに`403b028c67d4eaff847df5f086f53bbedb448d64`です。
+
+Windowsの`core.autocrlf=true`では生成済みRecipe SchemaがCRLFへ変換され、LF固定の`schema:check`が内容差分なしでも失敗しました。このrepositoryだけ`core.autocrlf=false`へ設定し、`.gitattributes`でもtextをLFへ固定しています。また、空白を含むWindows pathをCLI testが`URL.pathname`で`Game%20Projects`へ変換していたため、`packages/cli/test/cli.test.ts`を`fileURLToPath`へ変更しました。別projectのpreviewが4173番を使用中でも誤接続しないよう、browser smokeは空きloopback portを確保して`--strictPort`で起動します。
+
+Node.js `v24.13.0`、npm `11.6.2`で`npm ci`（274 packages、audit 0 vulnerabilities）、`npm ls --depth=0`、`npx playwright install chromium`を完了しました。その後の`npm run verify`はSchema同期、build、typecheck、lint、5 test files / 20 tests、Playwright smoke、`git diff --check`を含めて成功しています。ブラウザreadbackはRecipe hash `fnv1a-59511f4a`、編集対象`spline-2`で、7 screenshotsとRecipe/GLB/manifestを`output/playwright/`へ再生成しました。
+
+| 残作業 | 目的 | 効果 | 要件 | 状態 | Owner | 次のmove |
+|---|---|---|---|---|---|---|
+| Windows検証closeout | 空白path、改行、preview port競合を除去する | Windows上で他projectと併存しても`npm run verify`を再現できる | author/remote/staged scopeを確認して継続branchへpush | 実装・フル検証済み | Workbench | このhandoff更新と同じcommitでcloseout |
+| v0.2の受入とmain統合判断 | v0.2を基準branchへ昇格するか決める | clone直後に最新Active Artifactへ到達可能になる | 創作的受入、merge/tag方針 | 未判断 | repository owner | `codex/spline-direct-edit-v0-2`をreview後、merge/tagを明示承認 |
+| Paper Glider compatibility packet | 将来統合の契約差分を実測しcanary bundleへ固定する | adapter/export要件を統合前に確定できる | `C:\Users\thank\Storage\Game Projects\paper-glider`の`3ad5ac1`をread-only参照 | 開始条件を確認済み | Workbench / Paper Glider owner | focused branchでpacket v1を作成 |
+
 v0.1はPrimitive、Material、Definition/Instance Override、Variant、Placement、Spline Sweep、Room/Socket、Recipe保存、CLI、選択Asset GLB+manifestを含む最初のdurable checkpointです。v0.2では同じRecipe First境界を保ち、ViewportからのSpline作成、control point選択・gizmo移動・追加・挿入・削除、profile keyframe編集、rod/road/corridor切替、adaptive resolution、transaction、保存再読込を追加しました。
 
 ## 別端末での再開
