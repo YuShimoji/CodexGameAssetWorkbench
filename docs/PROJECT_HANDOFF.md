@@ -1,82 +1,83 @@
 # CodexGameAssetWorkbench project handoff
 
-この文書は、別端末のAgentまたは開発者が外部添付や過去のCodex taskなしで現在地点から再開するための正本です。2026-07-18時点の結論は **READY_FOR_PAPERGLIDER_INTEGRATION** です。これは実物のcanary bundle、再生成経路、実行可能fixture、Paper Glider側adapter設計が揃ったことを意味します。Paper Glider runtimeへの統合済み、公開可能、実機受入済みを意味しません。
+この文書は、別端末のAgentまたは開発者が外部添付や過去のCodex taskなしで現在地点から再開する正本です。2026-07-19時点の判定は **READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION** です。Owner Decision AによりArchive GateのPaper Glider project-scoped public-use rightsが正本化され、実物bundle、再生成、fixture、hash、次Promptと一致しています。
 
-## Gitとauthority
+この判定はPaper Glider側で統合・main merge・GitHub Pages deploymentを開始できることを意味します。Paper Glider runtime統合済み、technical acceptance済み、physical-device受入済み、公開済みを意味しません。
+
+## Gitとscope
 
 | 項目 | 確定状態 |
 |---|---|
-| GitHub | `https://github.com/YuShimoji/CodexGameAssetWorkbench`（public） |
-| main | v0.1基準。今回mergeしていない |
-| v0.2 continuation | `codex/spline-direct-edit-v0-2`、Windows closeout `ff25c6d`までpush済み |
-| 現在のfocused branch | `codex/paper-glider-compat-v1` |
-| packet実装commit | `c981865` — contract/schema/generator/fixture/canary Recipe・GLB・manifest |
-| packet証跡commit | `ed6922f` — visual fixture/5 screenshots/matrix/次Prompt |
-| upstream | `origin/codex/paper-glider-compat-v1` |
-| Recipe schema | `0.1.0`。packetのための汎用schema変更なし |
-| PR / merge / tag | 未作成 |
+| Workbench GitHub | `https://github.com/YuShimoji/CodexGameAssetWorkbench` |
+| 作業branch | `codex/paper-glider-compat-v1` |
+| rights closeout開始HEAD | `ab659854d418fa8700d9806416c246d55ff0f13e`、upstream parity `0/0`、clean |
+| v0.2 Windows closeout | `ff25c6d`、`origin/codex/spline-direct-edit-v0-2`へpush済み |
+| packet contract実装 | `c981865` |
+| visual packet | `ed6922f` |
+| pre-rights handoff | `2fc5982` / `ab65985` |
+| rights closeout | この文書を含む現在のbranch tip。正確なIDは`git rev-parse HEAD`で読む |
+| main / PR / tag / release | 今回未変更・未作成 |
+| Recipe schema | `0.1.0`、変更なし |
 
-この作業の開始時は`codex/spline-direct-edit-v0-2`、HEAD/upstream `403b028c67d4eaff847df5f086f53bbedb448d64`、parity `0/0`でした。既知の未commit変更はWindows空白入りpath testとこのhandoffの2件でした。`.gitattributes`のbinary/LF契約と空きportを使うbrowser smokeも含めて`npm run verify`を通し、`ff25c6d fix: harden Windows verification paths`として同branchへpushしました。そこからfocused branchを作成しています。
+Paper Gliderは`C:\Users\thank\Storage\Game Projects\paper-glider`をread-only参照しました。開始・終了監査ともbranch `main`、HEAD/upstream `3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750`、parity `0/0`、cleanです。file write、install、build、checkout、branch、commit、push、deploymentを行わず、既存preview processも停止していません。
 
-Paper Gliderは`C:\Users\thank\Storage\Game Projects\paper-glider`をread-only参照しました。確認時から終了監査までbranch `main`、HEAD/upstream `3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750`、parity `0/0`、cleanです。fetch、checkout、branch、install、build、formatter、file write、commit、pushは一切実行していません。4173番で既に動いていたPaper Glider preview processも停止・変更していません。
+## Owner Decision A
 
-## Packet v1の結論
+Rights identifierは`LicenseRef-PaperGlider-Project-Asset`、完全な文面は`docs/compat/paper-glider-v1/RIGHTS.md`、owner decision記録日は2026-07-19です。
 
-runtime境界は **GLB + schema-validated compatibility manifest** です。Recipe 0.1.0はWorkbenchの編集・provenance・再生成正本として保持し、Paper Glider runtimeは読みません。Paper Glider固有のroom placement、AABB collision、fallback、Pages URL契約は専用manifestへ分離し、汎用Recipe schemaへ混ぜていません。
+許可範囲:
 
-Paper Glider `3ad5ac1`との実コード比較で確定したadapter ownershipは次の通りです。
+- CodexGameAssetWorkbenchからPaper Gliderへの複製、変換、調整、組み込み。
+- Paper Glider Git repository、development branch、`main`、releaseへの格納。
+- Paper Glider GitHub Pagesおよび公開ゲームの一部としての配信と、実行に必要なbrowser delivery。
+- Paper Gliderの保守、最適化、collision調整に必要な派生変更。
 
-- Workbench: Recipe編集、Spline/direct-edit生成、決定論的GLB/manifest生成、schema/hash/node/collider validation。
-- Paper Glider: `import.meta.env.BASE_URL`を使うpreload loader、room clone/recycle、shadow flags、manifest AABBから`WorldCollider`への変換、ring plannerへの同AABB入力、run seed/room sequenceだけを使うvariant選択、procedural fallback。
-- Repository owner: `NOASSERTION`となっているasset licenseをpublic redistribution前に明示する。
+これはPaper Gliderのゲームと開発・配布に限定したproject-scoped permissionです。CC0、CC BY、MIT等の一般ライセンス、第三者向け素材集、standalone assetの無制限再利用許諾ではありません。Paper Glider source codeのlicenseもこのassetへ自動的に一般適用されません。rights許可はtechnical acceptanceを代替しません。
 
-Paper Gliderの現行worldは11.2 x 6.8 x 18のroomを9件recycleし、Three右手系、`+Y` up、cameraは`-Z`方向、床面topは約Y `-0.52`です。collisionはrender meshではなくanchor + half extentsのAABBで、ring pathはrun seed/sequence/speedと既知obstacleから決定論的に計画されます。現在GLTFLoader経路はないため、実統合時はrun生成前にload結果を確定し、network timingによるmid-run切替を禁止します。
+## Packet contract
 
-## Canary bundle: Archive Gate
-
-canonical entrypointは`docs/compat/paper-glider-v1/README.md`です。二本のpier、top beam、plinth、beacon、v0.2のdirect-edit Catmull-Rom rod Spline archを含む低poly room archetypeで、中央を通過できる輪郭と3つの明示AABBを持ちます。
+runtime境界は **pinned GLB + pinned/schema-validated manifest** です。Recipe 0.1.0はWorkbench build-timeの編集・provenance・再生成正本であり、Paper Glider runtimeへコピー・parseしません。`RIGHTS.md`はrights正本、manifestはLicenseRef、repository-relative rights path、rights file bytes/SHA-256、Owner Decision A/date/scopeを保持します。
 
 | Metric | Value |
 |---|---|
-| Contract | `paper-glider-compat-v1` |
-| Recipe hash | `fnv1a-3383aa61` |
-| Content hash | `sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b` |
-| GLB SHA-256 | `sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019` |
-| GLB size | 30,172 bytes |
-| Visual / mesh nodes | 8 / 8 |
-| Vertices / triangles | 594 / 1,064 |
-| GLB material slots / logical definitions | 8 / 4 |
-| Collider AABBs | 3 |
-| Axes / scale | right-handed、`+Y` up、`-Z` forward、scale 1 |
-| Placement | room-local position `[0, -0.52, 0]`、rotation `[0,0,0]`、scale `[1,1,1]` |
+| Contract / generator | `paper-glider-compat-v1` / `1.1.0` |
+| Recipe hash | `fnv1a-3383aa61`（旧値と同一） |
+| Content hash | `sha256:04461554becd391625cc834460196186e32a6c08a393e34c210bd1d45503d397`（旧`f866...`からrights/schema分だけ更新） |
+| GLB SHA-256 | `sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019`（旧値と同一） |
+| Manifest SHA-256 | `sha256:b9c41a053e97d061ac4795c77d8f628e93f0a40adef6f718614e614c861e1bd5` |
+| Schema SHA-256 | `sha256:abbd570b742de3ae87904069dfd0b27f26a0e223999e1cfa760dec81a26a4e39` |
+| Rights SHA-256 | `sha256:481eb1980eb1728eefb84c6a5fb5bdf307185e99e7089e511e927ebf49958c9f` |
+| Geometry | 30,172 bytes、594 vertices、1,064 triangles、8 visual/mesh nodes、8 GLB material slots / 4 logical materials、3 AABB |
+| Axes / placement | right-handed、`+Y` up、`-Z` forward、scale 1、room-local `[0,-0.52,0]` |
 
-Tracked bundle files:
+GLB geometryはrights closeoutで変化していません。Recipe hashとGLB byte SHA-256が旧値と一致します。manifestは7,345 bytes、schemaは9,028 bytes、rightsは2,657 bytesです。
 
-| File | Bytes | SHA-256 / role |
-|---|---:|---|
-| `paper-glider-canary.recipe.json` | 4,841 | `a757b3421d46aadc7b5d2b34cdd3adfbed72efb6cfae131ec9ed5833373e1486`、authoring正本 |
-| `paper-glider-archive-gate.glb` | 30,172 | `e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019`、runtime visual |
-| `paper-glider-archive-gate.manifest.json` | 6,717 | `2df0a9c0b021857833636311560961f718d9ecf0671b48d7209d2f09cbdeded9`、runtime contract |
-| `paper-glider-compat-manifest-v1.schema.json` | 8,634 | `775708ca3a25189ec938192509ff9a545a88ef9f6415498bbfdf03f768f7d17c`、manifest schema |
-| `canary-overview.png` | 99,314 | canary全体とroom scale |
-| `canary-colliders.png` | 115,470 | 3 AABBとvisual alignment |
-| `canary-flight-camera.png` | 84,012 | desktop Paper flight camera相当 |
-| `canary-reloaded.png` | 99,314 | overviewと同じimage hash、reload state一致 |
-| `canary-mobile-portrait.png` | 47,280 | 390 x 844 portrait |
-| `visual-readback.json` | 5,407 | viewport/node/hash/reload/consoleのmachine readback |
-| `README.md` | 3,704 | bundle-local handoff |
+## Hash boundary
 
-画像別hashは`visual-readback.json`に記録されています。Workbench-hosted previewであり、Paper Glider gameplay、physical device、public deploymentの証拠ではありません。
+Manifest `contentHash`はWorkbench再生成整合値です。`contentHash` fieldを除いたmanifestをCore `stableStringify`で再帰的にobject-key sort、array-order維持、JSON primitive encodingし、そのUTF-8 bytesをSHA-256化します。このcanonicalizationは独立versionのcross-repository runtime standardではないため、Paper Gliderに再実装を要求しません。
 
-## Executable compatibility fixture
+Paper Glider integrationはpinned manifest file SHA-256とGLB file SHA-256をruntime正本とし、build/testでfull JSON Schemaとschema/rights SHA-256、runtimeでsmall structural validationを行います。
 
-- `scripts/generate-paper-glider-compat.mjs`: Recipeからcanonical GLB/manifestを決定論的に生成する。
-- `scripts/verify-paper-glider-compat.mjs`: AJV schema、real GLB header/GLTFLoader、required nodes、finite transforms、scale、collider refs、Recipe Save→Reload、byte-identical regeneration、content/file hash、Windows空白path、Pages URLを検証する。
-- `packages/cli/test/paper-glider-compat.test.ts`: 上のverifierをVitestから実pathで実行するintegration test。
-- `apps/workbench/compat.html` / `src/compatPreview.ts`: 実GLBとmanifestをPaper相当のcamera/light/fog/roomで表示する小さなfixture。
-- `scripts/paper-glider-compat-smoke.mjs`: 空きloopback portでfixtureを起動し、overview/collider/flight/reload/mobileを撮影してconsole error 0を要求する。
+## Visual evidence
 
-Commands:
+`npm run compat:generate`でcanonical 5状態を再生成し、実画像を目視確認しました。
+
+| Evidence | SHA-256 | Result |
+|---|---|---|
+| `canary-overview.png` | `189e2d33fa4804f431a35694592a792fd558f288a1ff8fc86e1cd1320e78d850` | full gate/room、正常 |
+| `canary-colliders.png` | `2e392f8d9a55518b06db6ad2a1540f106fbdb46646a031881aac39bdf8a55156` | 3 AABB alignment、正常 |
+| `canary-flight-camera.png` | `ca588365bf9b34988a4869a02e18712612574c83dd1be6b49151a348ad75a90b` | desktop flight camera、正常 |
+| `canary-reloaded.png` | `189e2d33fa4804f431a35694592a792fd558f288a1ff8fc86e1cd1320e78d850` | overviewとbyte-identical |
+| `canary-mobile-portrait.png` | `6e11c08962d557de89f39482b7fcdcd7f0086dba343b7c43d0a2c4b46ba0d06a` | 390 x 844、旧hashと同一 |
+
+Desktop画像のbyte hash変化はreadback panelに表示するcontent hash文字列の更新によるものです。GLB、camera、geometry、collider、visual compositionは不変です。これはWorkbench-hosted proofであり、Paper Glider gameplay、physical device、main integration、deploymentの証拠ではありません。
+
+## Executable fixtureと最終検証
+
+- `scripts/paper-glider-compat-lib.mjs`: Recipe/schema/rightsからmanifestとGLBを決定論的に生成。
+- `scripts/verify-paper-glider-compat.mjs`: manifest/schema/rights/hash、byte-identical regeneration、real GLB load、nodes/transforms/scales/collider refs、Recipe Save→Reload、Pages URL、Windows空白pathを検証。
+- `packages/cli/test/paper-glider-compat.test.ts`: verifier integration test。
+- `scripts/paper-glider-compat-smoke.mjs`: actual GLBのoverview/collider/flight/reload/mobile、rights readback、console error 0。
 
 ```powershell
 npm ci
@@ -86,30 +87,32 @@ npm run compat:check
 npm run verify
 ```
 
-Node `v24.13.0`、npm `11.6.2`で最終clean installは276 packages、audit 0 vulnerabilities、`npm ls --depth=0`はvalidです。最終`npm run verify`はSchema同期、production build、typecheck、lint、6 test files / 21 tests、compat verifier、既存Workbench Playwright 7状態、compat Playwright 5状態、console errors 0、validation errors 0、validation warnings 0、`git diff --check`を含めて成功しました。Viteの既知の約1.36 MB chunk warningはありますがbuild failureではなく、packet固有の新規warningではありません。
+Node `v24.13.0`、npm `11.6.2`。最終gateはSchema同期、production build、typecheck、lint、6 test files / 21 tests、既存Playwright 7状態、compatibility visual 5状態、console errors 0、validation errors 0、validation warnings 0、`git diff --check`を含めてgreenです。既知のVite chunk-size warningはbuild failureでもcompat validation warningでもありません。
 
-## Context map
+## Paper Glider次slice
 
-| Path | Authority |
-|---|---|
-| `README.md` | 起動、package境界、v0.2操作、packet commands |
-| `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | 実コード調査、compatibility matrix、owner/adapter/gate |
-| `docs/compat/paper-glider-v1/README.md` | bundle contract、全canonical files、再生成、evidence boundary |
-| `docs/NEXT_AGENT_PROMPT.md` | 確定asset contractを使うPaper Glider側の単独実行可能な次Prompt |
-| `docs/ARCHITECTURE.md` | Recipe transaction、Core/Three境界、GLB派生物 |
-| `docs/RECIPE_SCHEMA.md` | Schema 0.1.0、Stable ID、互換性、golden fixture |
-| `artifacts/v0.2/` | v0.2 editorの選別済みVisual Proof |
+`docs/NEXT_AGENT_PROMPT.md`が単独実行可能な正本です。5,000 msのAbortController-backed preload timeout、timeout/hash/parse/node failure時のprocedural fallback、pinned manifest/GLB hash、build/test full schema + runtime small validation、seeded room selection、3 AABB、ring clearance、9-room recyclingを要求します。
+
+Owner Decision Aによりfocused branchへのasset commit/push、technical green後の`main`統合とGitHub Pages公開はrights上許可済みです。ただしtechnical green前にmain/deployへ進みません。
 
 ## 残作業
 
 | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|
-| Archive GateをPaper runtimeへ統合 | 最初のWorkbench-authored playable roomを得る | Packet hashを照合し、GLB+manifestをpreload、clone/recycle、AABB collision、ring clearance、deterministic selection、fallbackを実装 | 未着手。packetはREADY | Paper Glider | `docs/NEXT_AGENT_PROMPT.md`をPaper repositoryで実行 |
-| Asset licenseを明示 | GitHub Pagesからbundleを安全に再配布できる | ownerの明示的license/authorization | `NOASSERTION` | Repository owner | public deployment前にmanifest/provenanceとPaper側asset noticeを更新 |
-| Paper gameplay受入 | collision fairness、ring passage、mobile performanceを確定 | 実統合後のdesktop/mobile playtest、可能ならphysical device | 未確認 | Paper Glider / owner | integration branchで自動・visual・human feelを分離して検証 |
-| v0.2/main昇格判断 | clone直後に最新Workbenchへ到達可能にする | owner reviewと明示的merge/tag判断 | 未判断 | Repository owner | `codex/spline-direct-edit-v0-2`とpacket branchをreview。今回merge/tagしない |
+| Archive Gate Active Artifact | 最初のWorkbench-authored playable room | finite preload/fallback、hash/structure、clone/recycle、AABB collision、ring clearance、deterministic selection | Packet/rights READY、Paper未実装 | Paper Glider | `docs/NEXT_AGENT_PROMPT.md`を実行 |
+| Paper `main`とPages公開 | 公開ゲームでArchive Gateを配信 | focused branch全gate、main再検証、committed `docs/`、live URL/console | rights許可済み、technical未確認 | Paper Glider | integration green後だけmain/build/push/live verify |
+| Physical-device受入 | touch/performance/fairnessを確定 | 実機mobile、長時間・高speed playtest | 未確認 | Paper Glider / owner | browser証拠と分離して実施 |
+| Workbench v0.2/main判断 | 最新Workbenchをmain authorityへ昇格 | owner review | 未判断 | Repository owner | 今回merge/tagしない |
 
-## 再開
+## Context mapと再開
+
+| Path | Authority |
+|---|---|
+| `docs/compat/paper-glider-v1/RIGHTS.md` | Owner Decision Aの完全なproject-scoped rights text |
+| `docs/compat/paper-glider-v1/README.md` | bundle files、hash、rights、regeneration、evidence boundary |
+| `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | compatibility matrix、adapter ownership、technical gate |
+| `docs/NEXT_AGENT_PROMPT.md` | Paper integration→main→Pagesの単独Prompt |
+| `docs/RECIPE_SCHEMA.md` | 汎用Recipe 0.1.0 authority |
 
 ```powershell
 git clone https://github.com/YuShimoji/CodexGameAssetWorkbench.git
@@ -120,4 +123,4 @@ npx playwright install chromium
 npm run verify
 ```
 
-commit前にrepository-local author `YuShimoji <160492991+YuShimoji@users.noreply.github.com>`、remote、staged scopeを確認します。Windowsではnpm操作を直列化し、他repositoryのprocessやproject外Tempへ退避された`node_modules`を削除・回収・変更しません。次の作業でPaper Gliderへ移る場合、Workbenchはread-onlyに切り替え、`docs/NEXT_AGENT_PROMPT.md`の境界を守ってください。
+Paper Glider作業へ移る場合、Workbenchはread-onlyへ切り替えます。Windowsではnpm操作を直列化し、他repositoryのprocessやproject外Tempへ退避された`node_modules`を削除・回収・変更しません。

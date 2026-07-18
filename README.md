@@ -86,6 +86,8 @@ git diff --check
 
 Paper Glider `3ad5ac1`をread-onlyの実装基準として検証した`paper-glider-compat-v1` contract、再生成可能なArchive Gate canary、GLB、manifest、schema、視覚証跡を[`docs/compat/paper-glider-v1`](./docs/compat/paper-glider-v1)に保存しています。runtime境界はGLB + validated manifestであり、Recipe 0.1.0はWorkbench側のbuild-time正本です。
 
+Owner Decision A（2026-07-19）により、Archive GateをPaper Gliderのrepository、release、GitHub Pages、公開ゲームで利用・調整・配信するproject-scoped permissionを[`RIGHTS.md`](./docs/compat/paper-glider-v1/RIGHTS.md)へ記録しました。これは一般的なopen asset licenseや第三者向け素材再利用許諾ではなく、Paper Glider technical integrationの成功を自動的に証明するものでもありません。
+
 ```powershell
 npm run compat:generate
 npm run compat:check

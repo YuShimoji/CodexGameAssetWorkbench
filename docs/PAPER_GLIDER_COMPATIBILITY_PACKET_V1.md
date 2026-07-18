@@ -2,7 +2,7 @@
 
 ## Conclusion
 
-**READY_FOR_PAPERGLIDER_INTEGRATION** means the next Paper Glider implementation turn can begin from an actual, regenerable canary bundle and executable green fixture. It does **not** mean the asset is already integrated, playable in the Paper Glider runtime, physically device-tested, licensed for public redistribution, or deployed.
+**READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION** means the next Paper Glider implementation turn can use an actual, regenerable canary bundle, executable green fixture, and explicit Paper Glider project-scoped public-use rights. Owner Decision A resolved the former `NOASSERTION` gate on 2026-07-19. It does **not** mean the asset is already integrated, playable, technically accepted, merged to Paper Glider `main`, physically device-tested, or deployed.
 
 The runtime boundary is **GLB + validated compatibility manifest**. The Workbench Recipe remains the editable build-time authority and provenance record. Paper Glider does not need to parse Recipe 0.1.0 at runtime.
 
@@ -11,6 +11,7 @@ The runtime boundary is **GLB + validated compatibility manifest**. The Workbenc
 | Repository | Observed state | Role in this packet |
 |---|---|---|
 | CodexGameAssetWorkbench | Work began from `ff25c6d14b40c82fc21f79fd8361384417e344e7` on `codex/paper-glider-compat-v1`, derived from the pushed v0.2 continuation branch | Only repository changed |
+| Rights closeout | Began clean at reported HEAD/upstream `ab659854d418fa8700d9806416c246d55ff0f13e` | Owner Decision A recorded in the Workbench packet authority |
 | Paper Glider | clean `main`; HEAD/upstream `3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750` | Read-only compatibility authority; no fetch, checkout, install, build, file write, commit, or push |
 
 No `AGENTS.md` exists in either repository; the user-supplied project-local instructions and each canonical handoff were used. Paper Glider's existing preview process on port 4173 was deliberately left running and untouched.
@@ -43,8 +44,11 @@ The canary is a low-poly gate archetype sized for one Paper Glider room segment.
 | Metric | Value |
 |---|---|
 | Recipe hash | `fnv1a-3383aa61` |
-| Content hash | `sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b` |
+| Content hash | `sha256:04461554becd391625cc834460196186e32a6c08a393e34c210bd1d45503d397` |
 | GLB SHA-256 | `sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019` |
+| Manifest SHA-256 | `sha256:b9c41a053e97d061ac4795c77d8f628e93f0a40adef6f718614e614c861e1bd5` |
+| Manifest schema SHA-256 | `sha256:abbd570b742de3ae87904069dfd0b27f26a0e223999e1cfa760dec81a26a4e39` |
+| Rights identifier / SHA-256 | `LicenseRef-PaperGlider-Project-Asset` / `sha256:481eb1980eb1728eefb84c6a5fb5bdf307185e99e7089e511e927ebf49958c9f` |
 | GLB size | 30,172 bytes |
 | Visual / mesh nodes | 8 / 8 |
 | Vertices / triangles | 594 / 1,064 |
@@ -72,13 +76,13 @@ Canonical files and visual evidence are in `docs/compat/paper-glider-v1/`; its R
 | Seeded variant selection | Canary visual variant is baked by Workbench generation seed | Runtime room routes use 32-bit run seed and coordinate-addressed random | Compatible with rule | Select among versioned bundle manifests using existing `randomUnit`; never load-timing | Paper Glider | Add deterministic asset-room selection test | Blocking for replay integrity |
 | GitHub Pages URL | Manifest declares relative asset path and `/paper-glider/` base | Vite base is `/paper-glider/`, deployed from `main/docs` | Compatible with helper | Resolve from `import.meta.env.BASE_URL`, not site root | Paper Glider | Copy approved bundle under source/public assets and verify built URL | Blocking for deployment |
 | Failure fallback | Manifest requires current procedural room on fetch/schema/hash/node failure | Current procedural room path is already playable | Compatible | Catch preload failure, record local diagnostic, retain current room | Paper Glider | Add failed-fetch/hash test with console error policy | Blocking for safe integration |
-| Public asset license | Provenance has no third-party files; license is `NOASSERTION` | Public GitHub Pages redistributes copied GLB/manifest | Owner decision required | No technical adapter | Repository owner | Confirm and record intended asset license before public deploy | Blocking for public redistribution only |
+| Public asset rights | `LicenseRef-PaperGlider-Project-Asset`; Owner Decision A permits copy, modification, Git storage/release, GitHub Pages/public game/browser delivery, maintenance/optimization/collision derivatives | Public GitHub Pages redistributes copied GLB/manifest under a project-scoped record | Compatible for Paper Glider public use | Preserve `RIGHTS.md` and LicenseRef; do not describe it as a general open license | Paper Glider | Copy GLB, manifest, schema, and rights record; publish only after technical gates pass | Rights non-blocking; technical acceptance blocking |
 
 ## Minimal Paper Glider adapter blueprint
 
 1. Add a manifest type/validator and `WorkbenchRoomAssetLoader` owned by Paper Glider. Resolve manifest/GLB URLs from `import.meta.env.BASE_URL`.
-2. Preload once before constructing the deterministic run world. On any failure, pass `null` and use the existing procedural rooms; do not let network completion switch rooms mid-run.
-3. Validate contract version, full Paper baseline expectation, file hash, required node IDs, finite transforms, scale, colliders, and visual references before accepting the asset.
+2. Preload once before constructing the deterministic run world, with an `AbortController`-backed finite timeout. The current boot constructs immediately and existing Playwright uses a 5-second outcome poll, so the next prompt starts with a testable 5,000 ms timeout. On any failure, pass `null` and use the existing procedural rooms; do not let network completion switch rooms mid-run.
+3. Validate the pinned manifest and GLB SHA-256 values, contract version, baseline expectation, required node IDs, finite transforms, scale, colliders, and visual references before accepting the asset. Run full JSON Schema validation in build/test; do not reimplement the Workbench `contentHash` canonicalization in the runtime.
 4. Cache the loaded root and share geometry/materials. Clone the root per selected room sequence, apply manifest placement, and enable shadows on loaded meshes.
 5. Convert each manifest AABB to a room-local Object3D anchor and `Vector3` half extent. Keep collision tuning and player clearance in Paper Glider.
 6. Extend pure room planning so the same canary AABBs are considered before ring coordinates are finalized. Do not infer colliders from render bounds.
@@ -92,6 +96,7 @@ Canonical files and visual evidence are in `docs/compat/paper-glider-v1/`; its R
 | `npm ci` / `npm ls --depth=0` | serialized clean install; dependency tree valid; audit 0 |
 | `npm run compat:generate` | GLB/manifest and five visual states regenerated |
 | `npm run compat:check` | schema, byte-identical GLB regeneration, GLTFLoader, nodes, transforms, scale, colliders, Recipe reload, hashes, URL, Windows spaces all green |
+| Rights validation | LicenseRef, repository-relative rights path, Owner Decision A/date, rights bytes, SHA-256, and manifest/schema regeneration all green |
 | Vitest compatibility fixture | real verifier executed from the space-containing workspace path; green |
 | Visual smoke | actual GLB loaded; overview/collider/flight/reload/mobile states; console errors 0 |
 
@@ -107,6 +112,8 @@ Final full `npm run verify`, exact final test counts, commit IDs, parity, and st
 
 These are Workbench-hosted render checks. They do not prove Paper Glider gameplay collision, route fairness, runtime fallback, public deployment, physical touch, or physical-device performance.
 
-## Remaining owner gate
+## Resolved rights gate and remaining technical gate
 
-The technical packet is ready. Before Paper Glider publishes the copied asset, the repository owner must replace `NOASSERTION` with the intended asset license or otherwise record explicit redistribution authorization. The next integration turn may proceed locally while keeping public deployment gated.
+The former `NOASSERTION`/owner-permission blocker is resolved by Owner Decision A and the complete text in `docs/compat/paper-glider-v1/RIGHTS.md`. This is project-scoped Paper Glider permission, not a general third-party asset license.
+
+Paper Glider may commit and push the asset on a focused branch. Main integration and GitHub Pages deployment become eligible only after loader timeout/fallback, pinned file hashes, runtime structure, deterministic selection, collision, ring clearance, recycling, production build, and desktop/mobile browser checks are green. Paper Glider runtime integration and publication have not been performed in this Workbench-only closeout.

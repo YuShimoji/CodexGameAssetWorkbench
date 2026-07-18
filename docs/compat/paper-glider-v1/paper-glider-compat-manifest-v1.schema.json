@@ -141,22 +141,27 @@
     "files": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["recipe", "glb", "schema"],
+      "required": ["recipe", "glb", "rights", "schema"],
       "properties": {
         "recipe": { "$ref": "#/definitions/fileRecord" },
         "glb": { "$ref": "#/definitions/fileRecord" },
+        "rights": { "$ref": "#/definitions/fileRecord" },
         "schema": { "$ref": "#/definitions/fileRecord" }
       }
     },
     "provenance": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["author", "method", "thirdPartyAssets", "license", "publicationGate"],
+      "required": ["author", "method", "thirdPartyAssets", "license", "rightsDocument", "ownerDecision", "ownerDecisionDate", "rightsScope", "publicationGate"],
       "properties": {
         "author": { "type": "string", "minLength": 1 },
         "method": { "type": "string", "minLength": 1 },
         "thirdPartyAssets": { "type": "array", "maxItems": 0 },
-        "license": { "type": "string", "minLength": 1 },
+        "license": { "const": "LicenseRef-PaperGlider-Project-Asset" },
+        "rightsDocument": { "const": "docs/compat/paper-glider-v1/RIGHTS.md" },
+        "ownerDecision": { "const": "A" },
+        "ownerDecisionDate": { "const": "2026-07-19" },
+        "rightsScope": { "type": "string", "minLength": 1 },
         "publicationGate": { "type": "string", "minLength": 1 }
       }
     },

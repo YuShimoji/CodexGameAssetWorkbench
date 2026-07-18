@@ -8,6 +8,8 @@ import {
   buildCompatibilityBundle,
   calculateManifestContentHash,
   compatibilityPaths,
+  PAPER_GLIDER_RIGHTS_IDENTIFIER,
+  PAPER_GLIDER_RIGHTS_REPOSITORY_PATH,
   resolvePaperGliderAssetUrl,
   sha256,
 } from './paper-glider-compat-lib.mjs';
@@ -35,10 +37,13 @@ async function loadGlb(glb, warnings) {
   }
 }
 
-const canonicalManifest = JSON.parse(await readFile(compatibilityPaths.manifest, 'utf8'));
+const canonicalManifestBytes = await readFile(compatibilityPaths.manifest);
+const canonicalManifest = JSON.parse(canonicalManifestBytes.toString('utf8'));
 const canonicalGlb = await readFile(compatibilityPaths.glb);
 const canonicalRecipeText = await readFile(compatibilityPaths.recipe, 'utf8');
-const canonicalSchema = JSON.parse(await readFile(compatibilityPaths.schema, 'utf8'));
+const canonicalRights = await readFile(compatibilityPaths.rights);
+const canonicalSchemaBytes = await readFile(compatibilityPaths.schema);
+const canonicalSchema = JSON.parse(canonicalSchemaBytes.toString('utf8'));
 const generated = await buildCompatibilityBundle(canonicalRecipeText);
 
 const ajv = new Ajv({ allErrors: true, strict: true });
@@ -46,7 +51,46 @@ assert(ajv.validate(canonicalSchema, canonicalManifest), `Manifest schema valida
 assert(stableStringify(generated.manifest) === stableStringify(canonicalManifest), 'Regenerated manifest differs from the canonical manifest.');
 assert(generated.glb.equals(canonicalGlb), 'Regenerated GLB differs from the canonical GLB.');
 assert(sha256(canonicalGlb) === canonicalManifest.files.glb.sha256, 'Canonical GLB SHA-256 does not match the manifest.');
+assert(sha256(canonicalRights) === canonicalManifest.files.rights.sha256, 'Canonical rights SHA-256 does not match the manifest.');
+assert(canonicalRights.byteLength === canonicalManifest.files.rights.bytes, 'Canonical rights byte count does not match the manifest.');
+assert(sha256(canonicalSchemaBytes) === canonicalManifest.files.schema.sha256, 'Canonical schema SHA-256 does not match the manifest.');
+assert(canonicalManifest.provenance.license === PAPER_GLIDER_RIGHTS_IDENTIFIER, 'Manifest rights identifier is not the approved LicenseRef.');
+assert(canonicalManifest.provenance.rightsDocument === PAPER_GLIDER_RIGHTS_REPOSITORY_PATH, 'Manifest rights document path is not repository-relative canonical path.');
+assert(canonicalManifest.files.rights.path === 'RIGHTS.md', 'Manifest bundle-relative rights path is invalid.');
+assert(canonicalManifest.provenance.ownerDecision === 'A' && canonicalManifest.provenance.ownerDecisionDate === '2026-07-19', 'Owner Decision A metadata is missing or incorrect.');
+assert(canonicalRights.toString('utf8').includes(PAPER_GLIDER_RIGHTS_IDENTIFIER), 'Canonical rights text does not contain its identifier.');
 assert(calculateManifestContentHash(canonicalManifest) === canonicalManifest.contentHash, 'Manifest contentHash is invalid.');
+
+const pinnedDocumentation = [
+  compatibilityPaths.bundleReadme,
+  compatibilityPaths.matrix,
+  compatibilityPaths.nextPrompt,
+  compatibilityPaths.handoff,
+];
+const manifestSha256 = sha256(canonicalManifestBytes);
+const requiredDocumentationValues = [
+  canonicalManifest.source.recipeHash,
+  canonicalManifest.contentHash,
+  canonicalManifest.files.glb.sha256,
+  manifestSha256,
+  canonicalManifest.files.schema.sha256,
+  canonicalManifest.files.rights.sha256,
+  canonicalManifest.provenance.license,
+];
+for (const path of pinnedDocumentation) {
+  const document = await readFile(path, 'utf8');
+  for (const value of requiredDocumentationValues) {
+    assert(document.includes(value), `${path} does not contain pinned packet value ${value}.`);
+  }
+}
+
+const visualReadback = JSON.parse(await readFile(compatibilityPaths.visualReadback, 'utf8'));
+assert(visualReadback.contentHash === canonicalManifest.contentHash, 'Visual readback content hash is stale.');
+assert(visualReadback.glbSha256 === canonicalManifest.files.glb.sha256, 'Visual readback GLB hash is stale.');
+assert(visualReadback.manifestSha256 === manifestSha256, 'Visual readback manifest hash is stale.');
+assert(visualReadback.schemaSha256 === canonicalManifest.files.schema.sha256, 'Visual readback schema hash is stale.');
+assert(visualReadback.rightsIdentifier === canonicalManifest.provenance.license, 'Visual readback rights identifier is stale.');
+assert(visualReadback.rightsSha256 === canonicalManifest.files.rights.sha256, 'Visual readback rights hash is stale.');
 
 const recipe = parseRecipe(JSON.parse(canonicalRecipeText));
 const savedRecipe = `${JSON.stringify(recipe, null, 2)}\n`;
@@ -91,6 +135,11 @@ process.stdout.write(`${JSON.stringify({
   recipeHash: canonicalManifest.source.recipeHash,
   contentHash: canonicalManifest.contentHash,
   glbSha256: canonicalManifest.files.glb.sha256,
+  manifestSha256,
+  schemaSha256: canonicalManifest.files.schema.sha256,
+  rightsIdentifier: canonicalManifest.provenance.license,
+  rightsSha256: canonicalManifest.files.rights.sha256,
+  documentationFilesChecked: pinnedDocumentation.length,
   loadedNodes: [...nodes.keys()].sort(),
   counts: canonicalManifest.counts,
   publishedGlbUrl,

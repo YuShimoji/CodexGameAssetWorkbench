@@ -18,16 +18,24 @@ import { parseRecipe } from '@cgawe/schema';
 
 export const PAPER_GLIDER_BASELINE_COMMIT = '3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750';
 export const COMPAT_CONTRACT_VERSION = 'paper-glider-compat-v1';
-export const COMPAT_GENERATOR_VERSION = '1.0.0';
+export const COMPAT_GENERATOR_VERSION = '1.1.0';
+export const PAPER_GLIDER_RIGHTS_IDENTIFIER = 'LicenseRef-PaperGlider-Project-Asset';
+export const PAPER_GLIDER_RIGHTS_REPOSITORY_PATH = 'docs/compat/paper-glider-v1/RIGHTS.md';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const compatibilityPaths = {
   root,
   bundleDir: resolve(root, 'docs/compat/paper-glider-v1'),
+  bundleReadme: resolve(root, 'docs/compat/paper-glider-v1/README.md'),
+  handoff: resolve(root, 'docs/PROJECT_HANDOFF.md'),
+  matrix: resolve(root, 'docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md'),
+  nextPrompt: resolve(root, 'docs/NEXT_AGENT_PROMPT.md'),
   recipe: resolve(root, 'docs/compat/paper-glider-v1/paper-glider-canary.recipe.json'),
+  rights: resolve(root, 'docs/compat/paper-glider-v1/RIGHTS.md'),
   schema: resolve(root, 'docs/compat/paper-glider-v1/paper-glider-compat-manifest-v1.schema.json'),
   glb: resolve(root, 'docs/compat/paper-glider-v1/paper-glider-archive-gate.glb'),
   manifest: resolve(root, 'docs/compat/paper-glider-v1/paper-glider-archive-gate.manifest.json'),
+  visualReadback: resolve(root, 'docs/compat/paper-glider-v1/visual-readback.json'),
 };
 
 const colliderDefinitions = [
@@ -172,7 +180,7 @@ async function exportCanaryGlb(rootObject) {
   return Buffer.from(result);
 }
 
-function buildManifest(recipe, scene, glb, recipeBytes, schemaBytes) {
+function buildManifest(recipe, scene, glb, recipeBytes, rightsBytes, schemaBytes) {
   const assetMeshes = createAssetMeshes(scene.resolvedAsset);
   const splineMesh = generateSplineMesh(scene.spline);
   const stats = getMeshStats([...assetMeshes, splineMesh]);
@@ -260,14 +268,19 @@ function buildManifest(recipe, scene, glb, recipeBytes, schemaBytes) {
     files: {
       recipe: { path: 'paper-glider-canary.recipe.json', bytes: recipeBytes.byteLength, sha256: sha256(recipeBytes) },
       glb: { path: 'paper-glider-archive-gate.glb', bytes: glb.byteLength, sha256: sha256(glb) },
+      rights: { path: 'RIGHTS.md', bytes: rightsBytes.byteLength, sha256: sha256(rightsBytes) },
       schema: { path: 'paper-glider-compat-manifest-v1.schema.json', bytes: schemaBytes.byteLength, sha256: sha256(schemaBytes) },
     },
     provenance: {
       author: 'YuShimoji',
       method: 'Generated from the versioned Workbench Recipe using engine-neutral MeshData and Three GLTFExporter; no copied Paper Glider code or third-party asset files.',
       thirdPartyAssets: [],
-      license: 'NOASSERTION',
-      publicationGate: 'Repository owner must confirm the intended asset license before public redistribution from Paper Glider.',
+      license: PAPER_GLIDER_RIGHTS_IDENTIFIER,
+      rightsDocument: PAPER_GLIDER_RIGHTS_REPOSITORY_PATH,
+      ownerDecision: 'A',
+      ownerDecisionDate: '2026-07-19',
+      rightsScope: 'Paper Glider project development, repository storage, releases, GitHub Pages/public game distribution, browser delivery, maintenance, optimization, and collision-related derivative changes; no general-purpose third-party asset-library license.',
+      publicationGate: 'Rights gate resolved by Owner Decision A on 2026-07-19; publication still requires successful Paper Glider runtime integration and technical acceptance.',
     },
     fallback: {
       required: true,
@@ -289,6 +302,7 @@ function buildManifest(recipe, scene, glb, recipeBytes, schemaBytes) {
 export async function buildCompatibilityBundle(recipeText) {
   const sourceText = recipeText ?? await readFile(compatibilityPaths.recipe, 'utf8');
   const recipeBytes = Buffer.from(sourceText, 'utf8');
+  const rightsBytes = await readFile(compatibilityPaths.rights);
   const schemaBytes = await readFile(compatibilityPaths.schema);
   const recipe = parseRecipe(JSON.parse(sourceText));
   const issues = validateRecipe(recipe);
@@ -297,8 +311,9 @@ export async function buildCompatibilityBundle(recipeText) {
   const scene = buildCanaryScene(recipe);
   try {
     const glb = await exportCanaryGlb(scene.rootObject);
-    const manifest = buildManifest(recipe, scene, glb, recipeBytes, schemaBytes);
-    return { recipe, recipeText: sourceText, recipeBytes, schemaBytes, glb, manifest };
+    const manifest = buildManifest(recipe, scene, glb, recipeBytes, rightsBytes, schemaBytes);
+    const manifestBytes = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+    return { recipe, recipeText: sourceText, recipeBytes, rightsBytes, schemaBytes, glb, manifest, manifestBytes };
   } finally {
     disposeObject(scene.rootObject);
   }
@@ -306,7 +321,7 @@ export async function buildCompatibilityBundle(recipeText) {
 
 export async function writeCompatibilityBundle(bundle) {
   await writeFile(compatibilityPaths.glb, bundle.glb);
-  await writeFile(compatibilityPaths.manifest, `${JSON.stringify(bundle.manifest, null, 2)}\n`, 'utf8');
+  await writeFile(compatibilityPaths.manifest, bundle.manifestBytes);
 }
 
 export function resolvePaperGliderAssetUrl(origin, basePath, relativePath) {

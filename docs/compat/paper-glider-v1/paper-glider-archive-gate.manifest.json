@@ -1,7 +1,7 @@
 {
   "contractVersion": "paper-glider-compat-v1",
   "paperGliderBaselineCommit": "3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750",
-  "generatorVersion": "1.0.0",
+  "generatorVersion": "1.1.0",
   "source": {
     "recipeFile": "paper-glider-canary.recipe.json",
     "recipeSchemaVersion": "0.1.0",
@@ -270,18 +270,27 @@
       "bytes": 30172,
       "sha256": "sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019"
     },
+    "rights": {
+      "path": "RIGHTS.md",
+      "bytes": 2657,
+      "sha256": "sha256:481eb1980eb1728eefb84c6a5fb5bdf307185e99e7089e511e927ebf49958c9f"
+    },
     "schema": {
       "path": "paper-glider-compat-manifest-v1.schema.json",
-      "bytes": 8634,
-      "sha256": "sha256:775708ca3a25189ec938192509ff9a545a88ef9f6415498bbfdf03f768f7d17c"
+      "bytes": 9028,
+      "sha256": "sha256:abbd570b742de3ae87904069dfd0b27f26a0e223999e1cfa760dec81a26a4e39"
     }
   },
   "provenance": {
     "author": "YuShimoji",
     "method": "Generated from the versioned Workbench Recipe using engine-neutral MeshData and Three GLTFExporter; no copied Paper Glider code or third-party asset files.",
     "thirdPartyAssets": [],
-    "license": "NOASSERTION",
-    "publicationGate": "Repository owner must confirm the intended asset license before public redistribution from Paper Glider."
+    "license": "LicenseRef-PaperGlider-Project-Asset",
+    "rightsDocument": "docs/compat/paper-glider-v1/RIGHTS.md",
+    "ownerDecision": "A",
+    "ownerDecisionDate": "2026-07-19",
+    "rightsScope": "Paper Glider project development, repository storage, releases, GitHub Pages/public game distribution, browser delivery, maintenance, optimization, and collision-related derivative changes; no general-purpose third-party asset-library license.",
+    "publicationGate": "Rights gate resolved by Owner Decision A on 2026-07-19; publication still requires successful Paper Glider runtime integration and technical acceptance."
   },
   "fallback": {
     "required": true,
@@ -300,5 +309,5 @@
     "relativeManifestPath": "assets/workbench/paper-glider-v1/paper-glider-archive-gate.manifest.json",
     "variantSelection": "Select the manifest by the existing deterministic room sequence/seed contract; do not call Math.random()."
   },
-  "contentHash": "sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b"
+  "contentHash": "sha256:04461554becd391625cc834460196186e32a6c08a393e34c210bd1d45503d397"
 }
