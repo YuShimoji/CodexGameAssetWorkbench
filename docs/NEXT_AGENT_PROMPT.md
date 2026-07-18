@@ -20,6 +20,8 @@ Paper Gliderへ、CodexGameAssetWorkbenchの確定済み`PaperGlider Compatibili
 - authoring/provenance Recipe（runtimeへは入れない）: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\compat\paper-glider-v1\paper-glider-canary.recipe.json`
 - expected content hash: `sha256:f866eacf62263b24d5a102d9460a95d9ab3bc0a803c8159078b17bdc4fb3810b`
 - expected GLB SHA-256: `sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019`
+- expected manifest file SHA-256: `sha256:2df0a9c0b021857833636311560961f718d9ecf0671b48d7209d2f09cbdeded9`
+- expected manifest schema file SHA-256: `sha256:775708ca3a25189ec938192509ff9a545a88ef9f6415498bbfdf03f768f7d17c`
 
 Workbenchはこのターンではread-onlyです。Workbench配下の編集、install、build、生成、commit、branch操作、pushを行わないでください。Paper Glider側だけを変更します。
 
