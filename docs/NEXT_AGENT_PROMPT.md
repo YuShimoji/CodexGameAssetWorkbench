@@ -12,6 +12,7 @@ Paper Gliderへ、CodexGameAssetWorkbenchの確定済み`PaperGlider Compatibili
 - 読み取り専用Workbench: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench`
 - Paper Glider調査基準commit: `3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750`
 - Workbench contract: `paper-glider-compat-v1`
+- Workbench packet / rights source commit: `eb4493c8a5810d3b4bb1de11f23d8cb6a024a247`
 - packet README: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\compat\paper-glider-v1\README.md`
 - compatibility matrix: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md`
 - runtime GLB: `C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench\docs\compat\paper-glider-v1\paper-glider-archive-gate.glb`
@@ -43,7 +44,7 @@ focused branchへのasset commit/pushは許可済みです。`main`統合とGitH
 ## 開始時確認
 
 1. 両repositoryで最寄りの`AGENTS.md`と正本文書を読む。Paper Gliderでは`PROJECT_HANDOFF.md`、README、package scripts、Vite/Pages設定、runtime入口、`PaperGliderGame`、`CorridorWorld`、`RingPath`、tests、Playwright設定を読む。Workbenchでは上記packet文書と4つの配布ファイルだけをread-onlyで読む。
-2. 両repositoryのbranch、HEAD、upstream、origin parity、worktreeを実測する。Paper Glider HEADが調査基準と異なる場合はreset/checkoutせず、正規の後続commitか未知差分かを確認して現在authorityへ適応する。
+2. 両repositoryのbranch、HEAD、upstream、origin parity、worktreeを実測する。Workbenchでは`git cat-file -e eb4493c8a5810d3b4bb1de11f23d8cb6a024a247^{commit}`でpacket / rights source authorityが取得可能であることを確認する。後続handoff-only commitがあってもcheckoutせず、配布ファイルをpinned SHA-256で照合する。Paper Glider HEADが調査基準と異なる場合はreset/checkoutせず、正規の後続commitか未知差分かを確認して現在authorityへ適応する。
 3. 未知のlocal変更は上書きしない。Paper Gliderがcleanかつpush済みなら、`codex/workbench-archive-gate-room-v1`のようなfocused branchを作成する。
 4. npm操作は直列化する。既存preview processや別repositoryのprocessを停止・変更せず、空きportを使う。
 5. copy前後にGLB、manifest、schema、RIGHTSのSHA-256を上記値と照合する。Recipeはprovenance確認専用であり、Paper Gliderへコピー・parse・配信しない。

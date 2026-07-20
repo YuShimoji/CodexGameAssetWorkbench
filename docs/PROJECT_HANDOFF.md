@@ -1,6 +1,6 @@
 # CodexGameAssetWorkbench project handoff
 
-この文書は、別端末のAgentまたは開発者が外部添付や過去のCodex taskなしで現在地点から再開する正本です。2026-07-19時点の判定は **READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION** です。Owner Decision AによりArchive GateのPaper Glider project-scoped public-use rightsが正本化され、実物bundle、再生成、fixture、hash、次Promptと一致しています。
+この文書は、別端末のAgentまたは開発者が外部添付や過去のCodex taskなしで現在地点から再開する正本です。2026-07-21のcross-device handoff時点の判定は **READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION** です。Owner Decision AによりArchive GateのPaper Glider project-scoped public-use rightsが正本化され、実物bundle、再生成、fixture、hash、次Promptと一致しています。
 
 この判定はPaper Glider側で統合・main merge・GitHub Pages deploymentを開始できることを意味します。Paper Glider runtime統合済み、technical acceptance済み、physical-device受入済み、公開済みを意味しません。
 
@@ -15,11 +15,14 @@
 | packet contract実装 | `c981865` |
 | visual packet | `ed6922f` |
 | pre-rights handoff | `2fc5982` / `ab65985` |
-| rights closeout | この文書を含む現在のbranch tip。正確なIDは`git rev-parse HEAD`で読む |
+| packet / rights authority | `eb4493c8a5810d3b4bb1de11f23d8cb6a024a247`、`origin/codex/paper-glider-compat-v1`へpush済み |
+| cross-device handoff sync | この文書を含む現在のbranch tip。正確なIDは`git rev-parse HEAD`で読み、`origin/codex/paper-glider-compat-v1`とのparityを確認する |
 | main / PR / tag / release | 今回未変更・未作成 |
 | Recipe schema | `0.1.0`、変更なし |
 
 Paper Gliderは`C:\Users\thank\Storage\Game Projects\paper-glider`をread-only参照しました。開始・終了監査ともbranch `main`、HEAD/upstream `3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750`、parity `0/0`、cleanです。file write、install、build、checkout、branch、commit、push、deploymentを行わず、既存preview processも停止していません。
+
+2026-07-21のhandoff開始監査では、Workbenchはbranch `codex/paper-glider-compat-v1`、HEAD/upstream `eb4493c8a5810d3b4bb1de11f23d8cb6a024a247`、parity `0/0`、cleanでした。`git fetch --prune origin`後も同一です。このhandoff syncは文書の再開精度だけを更新し、canary bundle、schema、generator、runtime contract、Paper Glider repositoryを変更しません。
 
 ## Owner Decision A
 
@@ -93,6 +96,8 @@ Node `v24.13.0`、npm `11.6.2`。最終gateはSchema同期、production build、
 
 `docs/NEXT_AGENT_PROMPT.md`が単独実行可能な正本です。5,000 msのAbortController-backed preload timeout、timeout/hash/parse/node failure時のprocedural fallback、pinned manifest/GLB hash、build/test full schema + runtime small validation、seeded room selection、3 AABB、ring clearance、9-room recyclingを要求します。
 
+Paper Glider統合時のWorkbench packet / rights source authorityはcommit `eb4493c8a5810d3b4bb1de11f23d8cb6a024a247`です。後続のhandoff-only commitが存在しても、配布4ファイルとRecipeは下記pinned hashで照合し、Recipeはruntimeへコピーしません。
+
 Owner Decision Aによりfocused branchへのasset commit/push、technical green後の`main`統合とGitHub Pages公開はrights上許可済みです。ただしtechnical green前にmain/deployへ進みません。
 
 ## 残作業
@@ -117,7 +122,11 @@ Owner Decision Aによりfocused branchへのasset commit/push、technical green
 ```powershell
 git clone https://github.com/YuShimoji/CodexGameAssetWorkbench.git
 Set-Location CodexGameAssetWorkbench
-git switch codex/paper-glider-compat-v1
+git fetch --prune origin
+git switch --track origin/codex/paper-glider-compat-v1
+git merge-base --is-ancestor eb4493c8a5810d3b4bb1de11f23d8cb6a024a247 HEAD
+git rev-list --left-right --count HEAD...origin/codex/paper-glider-compat-v1
+git status --short --branch
 npm ci
 npx playwright install chromium
 npm run verify
