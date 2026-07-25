@@ -99,6 +99,18 @@ npm run runtime:check
 
 `runtime:check`はStarterとPaper Glider canaryを同じ共有entryから生成し、byte determinism、JSON Schema、actual GLTFLoader parse、node/reference、finite値、hash/bytes、tracked artifact一致を検証します。desktop/mobileの実操作証跡は[`artifacts/runtime-bundle-v1`](./artifacts/runtime-bundle-v1)にあります。
 
+## LOWPASS Runtime Asset Canary v1
+
+LOWPASS: SALVAGE ATLAS向けのconsumer canaryは、既存Runtime Bundleを小規模拡張し、Needle、Watcher、Porter、push-cart、field terminalをひとつの決定的GLB + versioned manifestへ束縛します。Stable node/material、collision proxy、interaction anchor、role/faction、bounds、budget、provenanceを保持します。
+
+```powershell
+npm run lowpass:generate
+npm run lowpass:check
+npm run lowpass:visual
+```
+
+GLB、manifest、machine readback、PS1-off/on visual proofは[`artifacts/lowpass-canary-v1`](./artifacts/lowpass-canary-v1)にあります。Blenderはこの環境のPATHに存在せず、UV/texture stageは未完了です。LOWPASS本体への統合、Phase G人間評価、Phase Hは実施していません。契約、検証、統合境界は[`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`](./docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md)を参照してください。
+
 ## Paper Glider compatibility packet
 
 Paper Glider `3ad5ac1`をread-onlyの実装基準として検証した`paper-glider-compat-v1` contract、再生成可能なArchive Gate canary、GLB、manifest、schema、視覚証跡を[`docs/compat/paper-glider-v1`](./docs/compat/paper-glider-v1)に保存しています。runtime境界はGLB + validated manifestであり、Recipe 0.1.0はWorkbench側のbuild-time正本です。

@@ -1,6 +1,6 @@
 import {
   BufferAttribute, BufferGeometry, Color, DoubleSide, Group, Mesh, MeshStandardMaterial,
-  type Object3D,
+  type Material, type Object3D,
 } from 'three';
 import {
   applyVariant, createPartMesh, generateSplineMesh, type MeshData,
@@ -39,20 +39,36 @@ export interface AssetObjectOptions {
   variant?: VariantSet;
   variantSeed?: number;
   selectedPartId?: string;
+  preserveMaterialIds?: boolean;
+  reuseMaterials?: boolean;
 }
 
 export function buildAssetObject(recipe: Recipe, asset: AssetDefinition, options: AssetObjectOptions = {}): Group {
   const group = new Group();
+  const materialCache = new Map<string, MeshStandardMaterial>();
   group.name = asset.name;
   group.userData = { kind: 'asset', assetId: asset.id };
   for (const part of asset.parts) {
     const meshData = createPartMesh(part);
     const sourceMaterial = findMaterial(recipe, part.materialId);
     const materialDefinition = applyVariant(sourceMaterial, options.variant, part, options.variantSeed ?? recipe.generationSeed);
-    const material = materialDefinitionToThree(materialDefinition, { flatShading: true });
-    if (part.id === options.selectedPartId) {
-      material.emissive = new Color('#284d66');
-      material.emissiveIntensity = 0.72;
+    const selected = part.id === options.selectedPartId;
+    const materialKey = JSON.stringify([
+      materialDefinition.id,
+      materialDefinition.color,
+      materialDefinition.roughness,
+      materialDefinition.metalness,
+      selected,
+    ]);
+    let material = options.reuseMaterials ? materialCache.get(materialKey) : undefined;
+    if (!material) {
+      material = materialDefinitionToThree(materialDefinition, { flatShading: true });
+      if (options.preserveMaterialIds) material.name = materialDefinition.id;
+      if (selected) {
+        material.emissive = new Color('#284d66');
+        material.emissiveIntensity = 0.72;
+      }
+      if (options.reuseMaterials) materialCache.set(materialKey, material);
     }
     const object = new Mesh(meshDataToBufferGeometry(meshData), material);
     object.name = part.name;
@@ -78,12 +94,17 @@ export function buildSplineObject(recipe: Recipe, splineId: string): Mesh {
 }
 
 export function disposeObject(object: Object3D): void {
+  const geometries = new Set<BufferGeometry>();
+  const materials = new Set<Material>();
   object.traverse((child) => {
     if (!(child instanceof Mesh)) return;
-    child.geometry.dispose();
-    const materials = Array.isArray(child.material) ? child.material : [child.material];
-    materials.forEach((material) => material.dispose());
+    geometries.add(child.geometry);
+    const meshMaterials = Array.isArray(child.material) ? child.material : [child.material];
+    meshMaterials.forEach((material) => materials.add(material));
   });
+  geometries.forEach((geometry) => geometry.dispose());
+  materials.forEach((material) => material.dispose());
 }
 
 export * from './runtime-bundle.js';
+export * from './lowpass-runtime.js';

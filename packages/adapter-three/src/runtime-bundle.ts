@@ -141,6 +141,8 @@ export interface RuntimeBundle {
 
 export interface RuntimeBundleOptions {
   rights?: RuntimeBundleRights;
+  preserveMaterialIds?: boolean;
+  reuseMaterials?: boolean;
 }
 
 export class RuntimeBundleValidationError extends Error {
@@ -271,6 +273,8 @@ export async function buildRuntimeBundle(recipe: Recipe, options: RuntimeBundleO
     const object = buildAssetObject(recipe, asset, {
       ...(variant ? { variant } : {}),
       variantSeed: recipe.generationSeed,
+      ...(options.preserveMaterialIds === undefined ? {} : { preserveMaterialIds: options.preserveMaterialIds }),
+      ...(options.reuseMaterials === undefined ? {} : { reuseMaterials: options.reuseMaterials }),
     });
     const nodeId = `scene-instance--${nodeToken(instance.id)}`;
     registerNode(nodeMap, object, nodeId, 'scene-instance', instance.id);
@@ -297,6 +301,8 @@ export async function buildRuntimeBundle(recipe: Recipe, options: RuntimeBundleO
     const object = buildAssetObject(recipe, asset, {
       ...(variant ? { variant } : {}),
       variantSeed: placement.variantSeed,
+      ...(options.preserveMaterialIds === undefined ? {} : { preserveMaterialIds: options.preserveMaterialIds }),
+      ...(options.reuseMaterials === undefined ? {} : { reuseMaterials: options.reuseMaterials }),
     });
     const nodeId = `placement--${nodeToken(placement.ruleId)}--${sequenceIndex}`;
     registerNode(nodeMap, object, nodeId, 'placement', placement.id);

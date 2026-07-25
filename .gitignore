@@ -7,6 +7,7 @@ test-results/
 output/playwright/.session/
 output/playwright/
 output/compat/
+output/lowpass-canary-proof/
 *.tsbuildinfo
 *.tmp
 *.temp

@@ -6,3 +6,5 @@
 
 - `v0.1/`: 初回checkpointのAsset isolate、corridor、Room/Socket/Placement統合画面、readback、選択Asset manifest
 - `v0.2/`: Spline作成・control point直接編集、rod/road/corridor、統合Scene、保存再読込の代表画像と、各画像のRecipe状態を対応付けたreadback、round-trip Recipe、GLB回帰manifest
+- `runtime-bundle-v1/`: Generic Whole Recipe Runtime Bundleの二入力GLB/manifest/readbackとdesktop/mobile proof
+- `lowpass-canary-v1/`: LOWPASS consumer canaryのGLB、versioned manifest、machine readback、PS1-off/on readability proof

@@ -1,4 +1,4 @@
-# Superseded execution prompt
+# Current re-entry boundary
 
 この文書が以前保持していたWB-M1 mainline promotion promptは、2026-07-25の`cgawe-runtime-bundle-v1`実装開始時点でactive promptではなくなりました。次の作業を自動的に開始する指示はここには置きません。
 
@@ -8,7 +8,9 @@
 - `docs/PROJECT_STATUS_AND_ROADMAP.md`
 - `docs/RUNTIME_BUNDLE_V1.md`
 
-現在のlocal terminal stateは`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`です。local branchは`codex/runtime-bundle-v1`、branch開始SHAは`c58ac302acee3e0dad0ce0d2ce89dc545cec241d`、preexisting handoff checkpointは`06e875b`、Runtime Bundle contract/core commitは`88a299d`です。push、PR、main merge、tag、release、deploymentは未実施です。
+現在のlocal terminal stateは`LOWPASS_ASSET_CANARY_V1_LOCAL_GREEN`です。local branchは`feat/lowpass-asset-canary-v1`、branch開始SHAは`ee2c9f2568a4318ed6cc2b9fe5216a32b1bcf588`です。push、PR、main merge、tag、release、deploymentは未実施です。
+
+LOWPASS canaryの次作業を自動開始する指示はここには置きません。再開時は`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`とtracked readbackを確認し、LOWPASS本体へのconsumer integration、UV/texture tool導入、remote共有をそれぞれ別承認にします。Phase HやSecurity Cell tuningへ進みません。
 
 既存Paper Glider Compatibility Packetのdocumentation pinを維持します。
 

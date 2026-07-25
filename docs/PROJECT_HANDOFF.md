@@ -1,32 +1,56 @@
 # CodexGameAssetWorkbench project handoff
 
-最終更新: 2026-07-25 JST
+最終更新: 2026-07-26 JST
 
 ## 現在地
 
-現在のlocal開発状態は **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** です。`cgawe-runtime-bundle-1.0.0` contract、Whole Recipeからのactual GLB + versioned manifest、Schema、二入力determinism/readback、Selected AssetとRuntime Bundleを分けたUI、desktop/mobile browser proof、Windows CI候補まで実装しました。
+現在のlocal開発状態は **`LOWPASS_ASSET_CANARY_V1_LOCAL_GREEN`** です。既存の **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** を保持したまま、LOWPASS: SALVAGE ATLAS向けconsumer canaryを独立branchで追加しました。
 
 編集正本はRecipe 0.1.0のままです。Runtime BundleはScene Instance、instance override、expanded placement、Spline mesh、Room volume、SocketをひとつのGLBへ展開し、Stable IDとsource referenceをmanifestへ残す派生物です。
 
 push、PR、`main`統合、tag、release、deploymentは行っていません。local stateが技術的にgreenであることと、remote共有・main昇格・公開承認は独立したgateです。
+
+## LOWPASS canary v1 current slice
+
+`lowpass-readability-canary-v1`は、Needle、Watcher、Porter、push-cart、field terminalの5役をproject-owned procedural Recipeから生成し、LOWPASS固有definitionでrole、faction、semantic anchor、collision proxy、budget、provenanceを付与します。
+
+- suitability: `B_SMALL_EXTENSION`
+- GLB: 70,892 bytes
+- Recipe hash: `fnv1a-ca6600c5`
+- GLB SHA-256: `sha256:54b10bf450971139a9cfe8302f671d29bc37fda6f2631dbf5545ef69e1b4d102`
+- assets: 5
+- stable nodes: 50
+- parsed meshes: 44
+- triangles: 1,068
+- vertices: 728
+- material objects: 10
+- anchors: 9
+- collision proxies: 5
+- visual proofs: PS1-off / PS1-on、各1200 x 675
+
+同じRecipe + seedからのGLB/manifest byte determinism、JSON Schema、actual GLTFLoader parse、Stable ID/material/socket/collision/anchor、finite values、bounds、budget、dispose、structured failure、local disclosure absence、tracked artifact一致を検証します。
+
+BlenderはPATHに存在しません。外部softwareは導入せず、UVなし、texture 0、Blender Python/headless未試験、production texturing未完了をmanifest/readbackへ明示しました。
+
+LOWPASS本体への統合、Phase G人間評価、Phase H、Security Cellの距離・delay・scan・音・文言の変更は実施していません。詳細は`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`です。
 
 ## Git authority
 
 | 項目 | 状態 |
 |---|---|
 | Repository | `https://github.com/YuShimoji/CodexGameAssetWorkbench` |
-| Local branch | `codex/runtime-bundle-v1` |
-| Branch start | `c58ac302acee3e0dad0ce0d2ce89dc545cec241d` |
-| Start upstream | `origin/codex/paper-glider-compat-v1`、開始時parity `0/0` |
-| `origin/main` start | `0dd0980`、開始branchは9 commits先行 |
-| Checkpoint commit | `06e875b` `chore: checkpoint studio re-entry handoff` |
-| Contract/core commit | `88a299d` `feat: add deterministic runtime bundle contract` |
-| Final local tip | この文書を含む`codex/runtime-bundle-v1` tip。`git rev-parse HEAD`で確定する |
+| Local branch | `feat/lowpass-asset-canary-v1` |
+| Branch start | `ee2c9f2568a4318ed6cc2b9fe5216a32b1bcf588` |
+| Start upstream | `origin/codex/runtime-bundle-v1`、開始時parity `0/0` |
+| `origin/main` start | `0dd0980`、開始branchは12 commits先行 |
+| Runtime Bundle baseline | `ee2c9f2` `codex/runtime-bundle-v1` tip |
+| Planned canary commit | `feat: add lowpass runtime asset canary pipeline` |
+| Final local tip | この文書を含む`feat/lowpass-asset-canary-v1` tip。`git rev-parse HEAD`で確定する |
 | Upstream | この新branchには未設定 |
 | Remote mutation | なし |
 | Git author | `YuShimoji <160492991+YuShimoji@users.noreply.github.com>` |
 
-開始時の9-file handoff/test deltaは内容、secret、staged範囲を監査して`06e875b`へ固定しました。既存作業を破棄、stash、resetせず、そこからRuntime Bundleを実装しています。
+開始時は`codex/runtime-bundle-v1`がcleanかつremote parity `0/0`でした。既存Runtime Bundle、Paper Glider packet、lockfileを変更せず、そこからLOWPASS canary用branchを作成しています。
 
 ## Runtime Bundle v1
 
@@ -89,6 +113,24 @@ Paper Glider repository、owner process、public deploymentはこのtaskで変�
 
 ## Verification
 
+2026-07-26のcurrent branch実測:
+
+- Node `v24.13.0`、npm `11.6.2`（package engineはNode `>=22`）
+- `npm ls --depth=0`: PASS
+- `npm run verify`: PASS
+- Schema check / production build / typecheck / lint: PASS
+- Vitest: 8 files、25 tests PASS
+- Generic Runtime Bundle: Starter + Paper Gliderの2 inputs、tracked identity一致
+- Paper Glider compatibility: pinned hash/rights、warnings 0、validation errors 0
+- LOWPASS canary check: 5 assets、actual GLTFLoader、tracked identity一致
+- Browser: Workbench export、Paper Glider 5 proofs、LOWPASS PS1-off/on PASS
+- Browser console errors: 0
+- LOWPASS external requests: 0
+- `git diff --check`: PASS
+- Known warning: Vite chunk 1,364.33 kB、500 kB warningのみ
+
+物理Gamepad、Blender Python/headless、LOWPASS本番scene integration、remote CIは実行していません。
+
 通常の再検証:
 
 ```powershell
@@ -120,6 +162,8 @@ exact candidateのisolated worktreeで`npm ci`と`npm ls --depth=0`はpassしま
 | Remote branch共有 | 別端末がexact local workへ到達可能 | ownerのpush許可、remote認証、push後parity | local only | Repository owner / maintainer | `codex/runtime-bundle-v1`をnon-force push |
 | PR / main昇格 | Runtime Bundleをcanonical mainへ統合 | remote CI green、diff review、rollback確認、owner承認 | 未実施 | Repository owner | PRまたは履歴方針をownerが選択 |
 | Runtime consumer conformance | 実ゲーム側loaderでcontractを実証 | independent loader fixture、failure cases、version support | 未着手 | Consumer / SDK owner | Starter bundleを最小consumerへ読ませる |
+| LOWPASS canary integration | 実ゲームloaderとsemantic ownerでassetを比較 | exact canary identity、fallback、asset toggle、Gate G-A再受入後 | 未着手 | LOWPASS runtime owner | 独立consumer sliceを承認後に開始 |
+| LOWPASS production texture | UV/texture付きproduction候補を作る | Blenderまたは同等tool、導入権限、UV/bake/size contract | tool unavailable | Asset pipeline owner | 外部software導入を別承認 |
 | Rights declaration flow | `DECLARED`入力を安全に扱う | license registry、provenance、owner input、negative tests | Generic defaultのみ | Rights / tooling owner | `NOASSERTION`を維持して別slice化 |
 | Dependency audit | known high advisoryを解消 | advisory影響評価、Ajv/fast-uri patch、ESLint 10互換確認、full regression | critical 0 / high 6 | Dependency / security owner | broad auto-fixを避けて専用slice化 |
 | Performance budget | 大規模Recipeでも編集・exportを維持 | fixture、time/memory budgets、cache、bundle splitting | known gap | UI / adapter owner | large Recipe benchmarkを作る |
@@ -150,8 +194,11 @@ npm run verify
 | `docs/PROJECT_HANDOFF.md` | 現在地、保護境界、再開順序 |
 | `docs/PROJECT_STATUS_AND_ROADMAP.md` | 監修向け現状報告と長期目標 |
 | `docs/RUNTIME_BUNDLE_V1.md` | Runtime Bundle contractと検証境界 |
+| `docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md` | LOWPASS consumer contract、evidence、統合境界 |
 | `schemas/runtime-bundle-1.0.0.schema.json` | Manifest machine contract |
+| `schemas/lowpass-runtime-asset-pack-1.0.0.schema.json` | LOWPASS manifest machine contract |
 | `artifacts/runtime-bundle-v1/runtime-bundle-readback.json` | actual two-input proof |
+| `artifacts/lowpass-canary-v1/lowpass-readability-canary-v1.readback.json` | LOWPASS actual proof |
 | `docs/RECIPE_SCHEMA.md` | Recipe 0.1.0 authority |
 | `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | 既存consumer固有contract |
 | `docs/compat/paper-glider-v1/RIGHTS.md` | Paper Glider project-scoped rights |

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "0.1.0",
+  "projectId": "lowpass-readability-canary-v1",
+  "generationSeed": 260726,
+  "materialDefinitions": [
+    { "id": "mat-hostile-dark", "name": "Hostile Dark", "color": "#17272c", "roughness": 0.76, "metalness": 0.28 },
+    { "id": "mat-hostile-signal", "name": "Hostile Signal", "color": "#e46c3a", "roughness": 0.42, "metalness": 0.12 },
+    { "id": "mat-allied-shell", "name": "Allied Shell", "color": "#c9ad68", "roughness": 0.72, "metalness": 0.18 },
+    { "id": "mat-allied-dark", "name": "Allied Dark", "color": "#28363a", "roughness": 0.8, "metalness": 0.22 },
+    { "id": "mat-cart-shell", "name": "Cart Shell", "color": "#8c6a43", "roughness": 0.84, "metalness": 0.15 },
+    { "id": "mat-terminal-shell", "name": "Terminal Shell", "color": "#315055", "roughness": 0.74, "metalness": 0.16 },
+    { "id": "mat-terminal-screen", "name": "Terminal Screen", "color": "#8cebdc", "roughness": 0.24, "metalness": 0.02 }
+  ],
+  "assetDefinitions": [
+    {
+      "id": "asset-needle-drone",
+      "name": "Needle Drone",
+      "parts": [
+        { "id": "needle-body", "name": "Needle Body", "primitive": { "type": "cylinder", "radiusTop": 0.16, "radiusBottom": 0.24, "height": 1.35, "radialSegments": 8 }, "materialId": "mat-hostile-dark", "transform": { "position": [0, 1.58, -0.12], "rotation": [1.5707963267948966, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "needle-nose", "name": "Needle Nose", "primitive": { "type": "cylinder", "radiusTop": 0.025, "radiusBottom": 0.2, "height": 0.72, "radialSegments": 8 }, "materialId": "mat-hostile-signal", "transform": { "position": [0, 1.58, -1.12], "rotation": [1.5707963267948966, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "needle-fin-left", "name": "Needle Fin Left", "primitive": { "type": "box", "size": [0.52, 0.055, 0.48] }, "materialId": "mat-hostile-dark", "transform": { "position": [-0.27, 1.58, 0.16], "rotation": [0, 0, -0.18], "scale": [1, 1, 1] } },
+        { "id": "needle-fin-right", "name": "Needle Fin Right", "primitive": { "type": "box", "size": [0.52, 0.055, 0.48] }, "materialId": "mat-hostile-dark", "transform": { "position": [0.27, 1.58, 0.16], "rotation": [0, 0, 0.18], "scale": [1, 1, 1] } },
+        { "id": "needle-eye", "name": "Needle Eye", "primitive": { "type": "sphere", "radius": 0.1, "widthSegments": 8, "heightSegments": 4 }, "materialId": "mat-hostile-signal", "transform": { "position": [0, 1.68, -0.62], "rotation": [0, 0, 0], "scale": [1, 0.55, 1] } },
+        { "id": "needle-anchor-scan", "name": "Needle Scan Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-hostile-signal", "transform": { "position": [0, 1.58, -1.52], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "needle-anchor-lock", "name": "Needle Lock Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-hostile-signal", "transform": { "position": [0, 1.48, -1.43], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "needle-collision", "name": "Needle Collision Proxy", "primitive": { "type": "box", "size": [0.72, 0.48, 1.92] }, "materialId": "mat-hostile-dark", "transform": { "position": [0, 1.58, -0.28], "rotation": [0, 0, 0], "scale": [1, 1, 1] } }
+      ]
+    },
+    {
+      "id": "asset-watcher-drone",
+      "name": "Watcher Drone",
+      "parts": [
+        { "id": "watcher-body", "name": "Watcher Body", "primitive": { "type": "sphere", "radius": 0.62, "widthSegments": 10, "heightSegments": 6 }, "materialId": "mat-hostile-dark", "transform": { "position": [0, 2.36, 0], "rotation": [0, 0, 0], "scale": [1.35, 0.52, 0.82] } },
+        { "id": "watcher-wing-left", "name": "Watcher Wing Left", "primitive": { "type": "box", "size": [1.08, 0.12, 0.64] }, "materialId": "mat-hostile-dark", "transform": { "position": [-0.92, 2.35, 0.06], "rotation": [0, 0.08, -0.08], "scale": [1, 1, 1] } },
+        { "id": "watcher-wing-right", "name": "Watcher Wing Right", "primitive": { "type": "box", "size": [1.08, 0.12, 0.64] }, "materialId": "mat-hostile-dark", "transform": { "position": [0.92, 2.35, 0.06], "rotation": [0, -0.08, 0.08], "scale": [1, 1, 1] } },
+        { "id": "watcher-eye-band", "name": "Watcher Eye Band", "primitive": { "type": "box", "size": [0.92, 0.18, 0.12] }, "materialId": "mat-hostile-signal", "transform": { "position": [0, 2.38, -0.53], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "watcher-mast", "name": "Watcher Mast", "primitive": { "type": "cylinder", "radiusTop": 0.055, "radiusBottom": 0.09, "height": 0.62, "radialSegments": 8 }, "materialId": "mat-hostile-signal", "transform": { "position": [0, 2.98, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "watcher-anchor-scan", "name": "Watcher Wide Scan Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-hostile-signal", "transform": { "position": [0, 2.5, -0.72], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "watcher-visual-center", "name": "Watcher Visual Center", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-hostile-signal", "transform": { "position": [0, 2.52, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "watcher-collision", "name": "Watcher Collision Proxy", "primitive": { "type": "box", "size": [2.45, 0.72, 1.05] }, "materialId": "mat-hostile-dark", "transform": { "position": [0, 2.36, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } }
+      ]
+    },
+    {
+      "id": "asset-porter-android",
+      "name": "Porter Android",
+      "parts": [
+        { "id": "porter-torso", "name": "Porter Torso", "primitive": { "type": "box", "size": [1.12, 1.26, 0.62] }, "materialId": "mat-allied-shell", "transform": { "position": [0, 1.38, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "porter-head", "name": "Porter Head", "primitive": { "type": "box", "size": [0.62, 0.48, 0.5] }, "materialId": "mat-allied-dark", "transform": { "position": [0, 2.3, -0.04], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "porter-visor", "name": "Porter Visor", "primitive": { "type": "box", "size": [0.44, 0.12, 0.055] }, "materialId": "mat-allied-shell", "transform": { "position": [0, 2.34, -0.31], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "porter-arm-left", "name": "Porter Arm Left", "primitive": { "type": "box", "size": [0.28, 1.08, 0.32] }, "materialId": "mat-allied-dark", "transform": { "position": [-0.72, 1.35, 0], "rotation": [0, 0, -0.08], "scale": [1, 1, 1] } },
+        { "id": "porter-arm-right", "name": "Porter Arm Right", "primitive": { "type": "box", "size": [0.28, 1.08, 0.32] }, "materialId": "mat-allied-dark", "transform": { "position": [0.72, 1.35, 0], "rotation": [0, 0, 0.08], "scale": [1, 1, 1] } },
+        { "id": "porter-leg-left", "name": "Porter Leg Left", "primitive": { "type": "box", "size": [0.34, 0.92, 0.38] }, "materialId": "mat-allied-dark", "transform": { "position": [-0.34, 0.46, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "porter-leg-right", "name": "Porter Leg Right", "primitive": { "type": "box", "size": [0.34, 0.92, 0.38] }, "materialId": "mat-allied-dark", "transform": { "position": [0.34, 0.46, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "porter-anchor-carry", "name": "Porter Carry Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-allied-shell", "transform": { "position": [0, 1.18, -0.62], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "porter-anchor-interaction", "name": "Porter Interaction Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-allied-shell", "transform": { "position": [0, 1.78, -0.54], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "porter-anchor-communication", "name": "Porter Communication Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-allied-shell", "transform": { "position": [0, 2.62, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "porter-collision", "name": "Porter Collision Proxy", "primitive": { "type": "box", "size": [1.45, 2.62, 0.78] }, "materialId": "mat-allied-dark", "transform": { "position": [0, 1.31, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } }
+      ]
+    },
+    {
+      "id": "asset-shopping-cart",
+      "name": "Shopping Cart",
+      "parts": [
+        { "id": "cart-basket", "name": "Cart Basket", "primitive": { "type": "box", "size": [1.18, 0.58, 1.36] }, "materialId": "mat-cart-shell", "transform": { "position": [0, 0.92, -0.12], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "cart-frame", "name": "Cart Frame", "primitive": { "type": "box", "size": [0.9, 0.12, 1.52] }, "materialId": "mat-allied-dark", "transform": { "position": [0, 0.52, -0.05], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "cart-handle-bar", "name": "Cart Handle Bar", "primitive": { "type": "box", "size": [1.22, 0.1, 0.1] }, "materialId": "mat-allied-dark", "transform": { "position": [0, 1.22, 0.88], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "cart-handle-left", "name": "Cart Handle Left", "primitive": { "type": "box", "size": [0.09, 0.72, 0.09] }, "materialId": "mat-allied-dark", "transform": { "position": [-0.48, 0.9, 0.76], "rotation": [-0.2, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "cart-handle-right", "name": "Cart Handle Right", "primitive": { "type": "box", "size": [0.09, 0.72, 0.09] }, "materialId": "mat-allied-dark", "transform": { "position": [0.48, 0.9, 0.76], "rotation": [-0.2, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "cart-wheel-front-left", "name": "Cart Wheel Front Left", "primitive": { "type": "cylinder", "radiusTop": 0.18, "radiusBottom": 0.18, "height": 0.1, "radialSegments": 8 }, "materialId": "mat-allied-dark", "transform": { "position": [-0.48, 0.25, -0.57], "rotation": [0, 0, 1.5707963267948966], "scale": [1, 1, 1] } },
+        { "id": "cart-wheel-front-right", "name": "Cart Wheel Front Right", "primitive": { "type": "cylinder", "radiusTop": 0.18, "radiusBottom": 0.18, "height": 0.1, "radialSegments": 8 }, "materialId": "mat-allied-dark", "transform": { "position": [0.48, 0.25, -0.57], "rotation": [0, 0, 1.5707963267948966], "scale": [1, 1, 1] } },
+        { "id": "cart-wheel-rear-left", "name": "Cart Wheel Rear Left", "primitive": { "type": "cylinder", "radiusTop": 0.18, "radiusBottom": 0.18, "height": 0.1, "radialSegments": 8 }, "materialId": "mat-allied-dark", "transform": { "position": [-0.48, 0.25, 0.53], "rotation": [0, 0, 1.5707963267948966], "scale": [1, 1, 1] } },
+        { "id": "cart-wheel-rear-right", "name": "Cart Wheel Rear Right", "primitive": { "type": "cylinder", "radiusTop": 0.18, "radiusBottom": 0.18, "height": 0.1, "radialSegments": 8 }, "materialId": "mat-allied-dark", "transform": { "position": [0.48, 0.25, 0.53], "rotation": [0, 0, 1.5707963267948966], "scale": [1, 1, 1] } },
+        { "id": "cart-anchor-handle", "name": "Cart Handle Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-cart-shell", "transform": { "position": [0, 1.22, 1.02], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "cart-anchor-load", "name": "Cart Load Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-cart-shell", "transform": { "position": [0, 1.06, -0.12], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "cart-collision", "name": "Cart Collision Proxy", "primitive": { "type": "box", "size": [1.26, 1.12, 1.54] }, "materialId": "mat-cart-shell", "transform": { "position": [0, 0.69, -0.03], "rotation": [0, 0, 0], "scale": [1, 1, 1] } }
+      ]
+    },
+    {
+      "id": "asset-field-terminal",
+      "name": "Field Terminal",
+      "parts": [
+        { "id": "terminal-body", "name": "Terminal Body", "primitive": { "type": "box", "size": [0.66, 0.48, 0.34] }, "materialId": "mat-terminal-shell", "transform": { "position": [0, 0.78, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "terminal-screen", "name": "Terminal Screen", "primitive": { "type": "box", "size": [0.5, 0.28, 0.035] }, "materialId": "mat-terminal-screen", "transform": { "position": [0, 0.82, -0.19], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "terminal-handle", "name": "Terminal Handle", "primitive": { "type": "box", "size": [0.32, 0.09, 0.12] }, "materialId": "mat-terminal-shell", "transform": { "position": [0, 1.08, 0.03], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "terminal-anchor-interaction", "name": "Terminal Interaction Anchor", "primitive": { "type": "sphere", "radius": 0.025, "widthSegments": 6, "heightSegments": 3 }, "materialId": "mat-terminal-screen", "transform": { "position": [0, 0.82, -0.28], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+        { "id": "terminal-collision", "name": "Terminal Collision Proxy", "primitive": { "type": "box", "size": [0.72, 0.58, 0.42] }, "materialId": "mat-terminal-shell", "transform": { "position": [0, 0.78, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } }
+      ]
+    }
+  ],
+  "variantSets": [],
+  "sceneInstances": [
+    { "id": "instance-needle-drone", "name": "Needle Drone Canary", "assetId": "asset-needle-drone", "transform": { "position": [-4.2, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+    { "id": "instance-watcher-drone", "name": "Watcher Drone Canary", "assetId": "asset-watcher-drone", "transform": { "position": [-2.1, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+    { "id": "instance-porter-android", "name": "Porter Android Canary", "assetId": "asset-porter-android", "transform": { "position": [0.2, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+    { "id": "instance-shopping-cart", "name": "Shopping Cart Canary", "assetId": "asset-shopping-cart", "transform": { "position": [2.45, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } },
+    { "id": "instance-field-terminal", "name": "Field Terminal Canary", "assetId": "asset-field-terminal", "transform": { "position": [4.25, 0, 0], "rotation": [0, 0, 0], "scale": [1, 1, 1] } }
+  ],
+  "splineDefinitions": [],
+  "roomDefinitions": [],
+  "socketDefinitions": [],
+  "placementRules": []
+}

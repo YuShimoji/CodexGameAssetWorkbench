@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "lowpass-runtime-asset-definition-1.0.0",
+  "assetPackId": "lowpass-readability-canary-v1",
+  "generatorVersion": "cgawe-lowpass-canary-1.0.0",
+  "unitScaleMeters": 1,
+  "sourceRecipe": "samples/lowpass-canary/lowpass-readability-canary-v1.recipe.json",
+  "assets": [
+    {
+      "assetId": "asset-needle-drone",
+      "assetKey": "lowpass:security/needle-drone",
+      "instanceId": "instance-needle-drone",
+      "role": "hostile-needle",
+      "faction": "hostile",
+      "forwardAxis": "-Z",
+      "visualPartIds": ["needle-body", "needle-nose", "needle-fin-left", "needle-fin-right", "needle-eye"],
+      "collisionProxyPartIds": ["needle-collision"],
+      "anchors": [
+        { "id": "socket-needle-scan-origin", "kind": "scan", "partId": "needle-anchor-scan" },
+        { "id": "socket-needle-lock-origin", "kind": "lock-on", "partId": "needle-anchor-lock" }
+      ],
+      "features": []
+    },
+    {
+      "assetId": "asset-watcher-drone",
+      "assetKey": "lowpass:security/watcher-drone",
+      "instanceId": "instance-watcher-drone",
+      "role": "hostile-watcher",
+      "faction": "hostile",
+      "forwardAxis": "-Z",
+      "visualPartIds": ["watcher-body", "watcher-wing-left", "watcher-wing-right", "watcher-eye-band", "watcher-mast"],
+      "collisionProxyPartIds": ["watcher-collision"],
+      "anchors": [
+        { "id": "socket-watcher-scan-origin", "kind": "scan", "partId": "watcher-anchor-scan" }
+      ],
+      "features": [
+        { "id": "feature-watcher-visual-center", "kind": "visual-center", "partId": "watcher-visual-center" }
+      ]
+    },
+    {
+      "assetId": "asset-porter-android",
+      "assetKey": "lowpass:machines/porter-android",
+      "instanceId": "instance-porter-android",
+      "role": "allied-porter",
+      "faction": "allied",
+      "forwardAxis": "-Z",
+      "visualPartIds": ["porter-torso", "porter-head", "porter-visor", "porter-arm-left", "porter-arm-right", "porter-leg-left", "porter-leg-right"],
+      "collisionProxyPartIds": ["porter-collision"],
+      "anchors": [
+        { "id": "socket-porter-carry", "kind": "carry", "partId": "porter-anchor-carry" },
+        { "id": "socket-porter-interaction", "kind": "interaction", "partId": "porter-anchor-interaction" },
+        { "id": "socket-porter-communication", "kind": "communication", "partId": "porter-anchor-communication" }
+      ],
+      "features": []
+    },
+    {
+      "assetId": "asset-shopping-cart",
+      "assetKey": "lowpass:props/shopping-cart",
+      "instanceId": "instance-shopping-cart",
+      "role": "push-cart",
+      "faction": "neutral",
+      "forwardAxis": "-Z",
+      "visualPartIds": ["cart-basket", "cart-frame", "cart-handle-bar", "cart-handle-left", "cart-handle-right", "cart-wheel-front-left", "cart-wheel-front-right", "cart-wheel-rear-left", "cart-wheel-rear-right"],
+      "collisionProxyPartIds": ["cart-collision"],
+      "anchors": [
+        { "id": "socket-cart-handle", "kind": "handle", "partId": "cart-anchor-handle" },
+        { "id": "socket-cart-load", "kind": "load", "partId": "cart-anchor-load" }
+      ],
+      "features": [
+        { "id": "feature-cart-wheel-front-left", "kind": "wheel", "partId": "cart-wheel-front-left" },
+        { "id": "feature-cart-wheel-front-right", "kind": "wheel", "partId": "cart-wheel-front-right" },
+        { "id": "feature-cart-wheel-rear-left", "kind": "wheel", "partId": "cart-wheel-rear-left" },
+        { "id": "feature-cart-wheel-rear-right", "kind": "wheel", "partId": "cart-wheel-rear-right" }
+      ]
+    },
+    {
+      "assetId": "asset-field-terminal",
+      "assetKey": "lowpass:equipment/field-terminal",
+      "instanceId": "instance-field-terminal",
+      "role": "field-terminal",
+      "faction": "allied",
+      "forwardAxis": "-Z",
+      "visualPartIds": ["terminal-body", "terminal-screen", "terminal-handle"],
+      "collisionProxyPartIds": ["terminal-collision"],
+      "anchors": [
+        { "id": "socket-terminal-interaction", "kind": "interaction", "partId": "terminal-anchor-interaction" }
+      ],
+      "features": [
+        { "id": "feature-terminal-screen", "kind": "screen", "partId": "terminal-screen" }
+      ]
+    }
+  ],
+  "budgets": {
+    "maxTrianglesPerAsset": 1500,
+    "maxMaterialsPerAsset": 2,
+    "maxTextureDimension": 256
+  },
+  "rights": {
+    "status": "NOASSERTION",
+    "notice": "Project-owned procedural Recipe source is recorded, but this canary does not make a distribution license assertion."
+  },
+  "provenance": {
+    "authoringTool": "CodexGameAssetWorkbench Recipe 0.1.0",
+    "sourceType": "project-owned-procedural-recipe",
+    "externalNetworkDependency": false,
+    "notice": "Generated from repository-owned primitive definitions without external assets or external generation services."
+  }
+}

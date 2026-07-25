@@ -17,14 +17,17 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "npm run build:packages && vitest run",
-    "test:browser": "npm run build && node scripts/browser-smoke.mjs && node scripts/paper-glider-compat-smoke.mjs",
+    "test:browser": "npm run build && node scripts/browser-smoke.mjs && node scripts/paper-glider-compat-smoke.mjs && node scripts/lowpass-canary-proof.mjs",
     "compat:generate:bundle": "npm run build:packages && node scripts/generate-paper-glider-compat.mjs",
     "compat:generate": "npm run compat:generate:bundle && node scripts/paper-glider-compat-smoke.mjs --write",
     "compat:check": "npm run build:packages && node scripts/verify-paper-glider-compat.mjs",
     "compat:visual": "node scripts/paper-glider-compat-smoke.mjs",
     "runtime:generate": "npm run build:packages && node scripts/runtime-bundle-proof.mjs --write",
     "runtime:check": "npm run build:packages && node scripts/runtime-bundle-proof.mjs",
-    "verify": "npm run schema:check && npm run build && npm run typecheck && npm run lint && npm run test && npm run runtime:check && npm run compat:check && npm run test:browser && git diff --check"
+    "lowpass:generate": "npm run build:packages && node scripts/lowpass-canary.mjs --write && node scripts/lowpass-canary-proof.mjs --write && node scripts/lowpass-canary.mjs --write --require-proof",
+    "lowpass:check": "npm run build:packages && node scripts/lowpass-canary.mjs",
+    "lowpass:visual": "node scripts/lowpass-canary-proof.mjs",
+    "verify": "npm run schema:check && npm run build && npm run typecheck && npm run lint && npm run test && npm run runtime:check && npm run compat:check && npm run lowpass:check && npm run test:browser && git diff --check"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",

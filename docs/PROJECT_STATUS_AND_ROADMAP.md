@@ -1,16 +1,49 @@
 # CodexGameAssetWorkbench 監修AI向け現状報告・長期ロードマップ
 
-最終更新: 2026-07-25 JST
+最終更新: 2026-07-26 JST
 
 ## 結論
 
-Codex Game Asset Studio Runtime Bundle v1は **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** です。
+Codex Game Asset Studioの最新local stateは **`LOWPASS_ASSET_CANARY_V1_LOCAL_GREEN`** です。基盤であるRuntime Bundle v1の **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** も維持しています。
 
 Recipe 0.1.0のWhole Recipeを、再現可能なGLBと`cgawe-runtime-bundle-1.0.0` manifestへ変換する共通entryを実装しました。Scene Instance、Part override、seed付きexpanded placement、Spline mesh、Room、Socketが同じbundleへ入り、manifestからGLB nodeへStable IDで全参照を解決できます。
 
 StarterとPaper Glider canaryの2入力について、GLB/manifestのbyte determinism、JSON Schema、actual GLTFLoader parse、参照、finite値、hash/bytes、tracked artifact一致を確認しました。Workbench UIはSelected AssetとWhole Recipeを区別し、不正Recipeのdownloadを0件で止め、正常時だけ2ファイルを出します。desktopと390 x 844 mobileでactual exportとstatusを確認しました。
 
-作業は新しいlocal branch `codex/runtime-bundle-v1`に固定しました。preexisting handoff deltaを`06e875b`、contract/core/evidenceを`88a299d`へcommitしています。push、PR、main merge、tag、release、deploymentは未実施です。`.github/workflows/verify.yml`は追加しましたが、remote workflowはまだ一度も実行されていません。
+LOWPASS consumer canaryはlocal branch `feat/lowpass-asset-canary-v1`に固定しました。開始SHAは`ee2c9f2568a4318ed6cc2b9fe5216a32b1bcf588`で、開始時`origin/codex/runtime-bundle-v1` parityは`0/0`です。push、PR、main merge、tag、release、deploymentは未実施です。`.github/workflows/verify.yml`は既存ですが、このbranchのremote workflowは存在しません。
+
+## LOWPASS consumer canary
+
+適合度評価は **B（小規模拡張）** でした。generic Whole Recipe GLB/manifest、Stable ID、deterministic export、actual GLTFLoader proofは再利用できました。LOWPASS向けにはrole/faction、collision proxy、interaction anchor、feature/budget/provenance contract、material ID保持・共有、固定lineupのPS1-off/on proofを追加しました。
+
+Actual identity:
+
+| Item | Value |
+|---|---|
+| Pack | `lowpass-readability-canary-v1` |
+| Recipe hash | `fnv1a-ca6600c5` |
+| GLB | 70,892 bytes |
+| GLB SHA-256 | `sha256:54b10bf450971139a9cfe8302f671d29bc37fda6f2631dbf5545ef69e1b4d102` |
+| Manifest SHA-256 | `sha256:a1dd222f98c109697849279f3f5644266d685bc7b4d543534c8e4191b225c353` |
+| Assets / nodes / meshes | 5 / 50 / 44 |
+| Triangles / vertices / materials | 1,068 / 728 / 10 |
+| Anchors / collision proxies | 9 / 5 |
+
+Roles:
+
+- hostile Needle: narrow、scan、lock-on
+- hostile Watcher: wide、scan、visual center、lock-on禁止
+- allied Porter: carry、interaction、communication
+- push-cart: handle、load、4 wheels
+- field terminal: screen、interaction
+
+両visual proofは1200 x 675、29 visible meshes、console/page error 0、external request 0です。foreground pixelsはPS1-off 21,938、PS1-on 21,420で、画像を目視確認しました。
+
+BlenderはPATHに存在しないため、UV、texture、Blender Python/headless export、production texturingは未完了です。外部software導入は行っていません。rightsは`NOASSERTION`で、Paper Glider固有LicenseRefを流用していません。
+
+このsliceはLOWPASS本体を変更していません。Phase G人間評価、Phase H、Security Cellの距離・delay・scan・音・文言は境界外です。
+
+2026-07-26のlocal verificationはNode `v24.13.0`、npm `11.6.2`で実行し、`npm ls --depth=0`、Schema、production build、typecheck、lint、8 files / 25 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、Workbench/Paper Glider/LOWPASS browser proof、`git diff --check`がPASSしました。Vite 1,364.33 kB chunkの既知warningは残しています。
 
 ## 成果の意味
 
@@ -188,6 +221,14 @@ remote、Paper Glider repository、owner process、release surfaceを変更し�
 | RB-AI1 | Agent-safe automation | 大量Recipe操作を安全に自動化 | dry-run diff、validate/apply、policy gate、receipt | far | CLI / Core owner | machine transaction protocol |
 | RB-CAT1 | Versioned asset catalog | 再利用素材を依存・権利付きで蓄積 | package IDs、dependency graph、rights filter、previews | far | Product / rights owner | first-party 3 assets |
 | RB-10 | Owner-gated 1.0 | 制作・配布基盤として安定宣言 | main、CI、migration、consumer、rights、performance、docs、人間受入 | far terminal | Repository owner | acceptance checklistを別途固定 |
+| LP-GA | LOWPASS Gate G-A再受入 | 復旧した操作性でPhase G感覚評価を再開 | LOWPASS exact commit、Gamepad実機、ミュートなし、人間PASS/G-TUNE/FAIL | 別repoでpending human | Human evaluator | canary統合より先にGate G-Aを再評価可能 |
+| LP-I1 | Canary loader fixture | LOWPASS実runtimeでcontractを読込む | exact artifact hash、version fail-close、asset fallback | 未着手 | LOWPASS runtime owner | 独立integration branch |
+| LP-I2 | Side-by-side readability | 既存assetとcanaryを同一条件で比較 | same camera/seed/scenario、toggle、resource metrics | 未着手 | Runtime / art owner | LP-I1後 |
+| LP-A1 | Human art acceptance | silhouette、faction、interaction affordanceを判定 | PS1-off/on、実game fog/light/distance、human rubric | 未着手 | Human art owner | 技術greenと分離 |
+| LP-T1 | UV/texture canary | production material routeを実証 | Blender等の利用承認、UV、bake、atlas、mipmap、budget | tool unavailable | Asset pipeline owner | external tool gate |
+| LP-L1 | LOD/collision profile | 距離別costとphysics境界を安定化 | LOD1/2、screen threshold、proxy policy、popping test | future | Runtime / asset owner | accepted asset 1種から |
+| LP-R1 | Distribution rights | LOWPASS内外での利用条件を確定 | owner declaration、license registry、provenance review | `NOASSERTION` | Rights owner | 配布前の独立gate |
+| LP-C1 | Canary contract promotion | consumer固有canaryをversioned supported profileへ | LP-I1/I2/A1、migration policy、CI、rollback | future | Architecture / owner | acceptance後 |
 
 ### 推奨順
 
@@ -198,7 +239,7 @@ remote、Paper Glider repository、owner process、release surfaceを変更し�
 5. **ecosystem**: RB-U1 → RB-Q1 → RB-AI1 → RB-CAT1
 6. **release maturity**: RB-10
 
-最短の次価値はRB-C1です。Workbench内部のGLTFLoader proofから一歩離れ、実consumerがStarter Runtime Bundleを読み、root/nodeMap/placements/rooms/socketsを利用できれば、Generic contractの名称だけでなく可搬性が立証されます。
+最短の次価値はLOWPASS側のGate G-A再受入です。操作性復旧の人間評価をcanary統合から切り離して完了できます。Workbench側の次価値はLP-I1で、exact canary artifactを実LOWPASS loaderへ読み、既存AI/state ownerを変えずにasset off/on比較を可能にします。
 
 ## 再開コマンド
 
@@ -226,8 +267,11 @@ git diff --check
 | `docs/PROJECT_HANDOFF.md` | 現在地、保護境界、再開 |
 | `docs/PROJECT_STATUS_AND_ROADMAP.md` | この監修報告と長期目標 |
 | `docs/RUNTIME_BUNDLE_V1.md` | Contract、Stable ID、validation、evidence |
+| `docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md` | LOWPASS contract、visual proof、integration boundary |
 | `schemas/runtime-bundle-1.0.0.schema.json` | Machine schema |
+| `schemas/lowpass-runtime-asset-pack-1.0.0.schema.json` | LOWPASS machine schema |
 | `artifacts/runtime-bundle-v1/runtime-bundle-readback.json` | Two-input actual result |
+| `artifacts/lowpass-canary-v1/lowpass-readability-canary-v1.readback.json` | LOWPASS actual result |
 | `.github/workflows/verify.yml` | Windows remote verification candidate |
 | `docs/RECIPE_SCHEMA.md` | Recipe 0.1.0 |
 | `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | Paper Glider固有packet |

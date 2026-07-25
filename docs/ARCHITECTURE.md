@@ -14,6 +14,7 @@ flowchart LR
   Mesh --> Three["adapter-three"]
   Three --> Viewport["React Three Fiber viewport"]
   Three --> Runtime["Runtime Bundle GLB + versioned manifest"]
+  Runtime --> Lowpass["LOWPASS consumer contract + semantic manifest"]
   Recipe --> CLI["CLI inspect / validate / diff / summarize"]
   Viewport --> Derived["Selected Asset GLB / screenshots / readback"]
 ```
@@ -72,6 +73,10 @@ Runtime manifestはGLB byte hash、Stable node map、source references、coordin
 
 Browser smokeはSelected AssetとRuntime Bundleの両経路を実行します。Node proofはStarterとPaper Glider canaryを各2回生成し、Schema、GLTFLoader parse、参照、hash、tracked artifact一致を検証します。
 
+LOWPASS canaryはgeneric Runtime Bundleを置換せず、`adapter-three`上のconsumer contractとして追加します。Recipe geometryをgeneric entryでGLB化した後、別definitionからrole、faction、collision proxy、interaction anchor、feature、budget、provenanceを検証・manifest化します。同じmaterial IDをLOWPASS生成内で共有し、GLB実体のmaterial数をconsumer budgetへ合わせます。この共有はopt-inで、既存generic Runtime BundleとPaper Glider artifactの既定生成経路を変更しません。
+
+LOWPASS visual proofはWebGLから400 x 225のsource frameを取得し、PS1-offをCPU bilinear、PS1-onをnearest-neighborで1200 x 675へ展開します。cold-startの最初の未合成frameを証拠にしないためwarm-up pageを先行し、foreground pixel、console/page error、external request、disposeを検査します。
+
 ## 現在の制約
 
 - JSON Schema 0.1.0は明示的version gateを持ちますが、過去versionからのmigrationはまだありません。
@@ -79,5 +84,6 @@ Browser smokeはSelected AssetとRuntime Bundleの両経路を実行します。
 - Viewportの点追加・挿入は1 clickで完了し、挿入対象segmentは選択点の直後（末尾選択時は最後のsegment）です。
 - Runtime Bundle import/reopenと、Generic contractを利用する独立consumerは未実装です。
 - Primitive geometryはレビュー用途の中立MeshDataで、UVやtangent、textureは持ちません。
+- LOWPASS canaryはLOD0、flat material、texture 0です。Blender Python/headless、UV、texture bakeは未試験です。
 - 初期JavaScript bundleはThree/R3Fを含むため約1.36 MB（gzip約380 KB）です。v0.2ではローカルworkbenchの機能一貫性を優先しています。
 - レスポンシブ表示ではviewportを守るためside panelを隠しますが、詳細編集はdesktopを主対象にしています。
