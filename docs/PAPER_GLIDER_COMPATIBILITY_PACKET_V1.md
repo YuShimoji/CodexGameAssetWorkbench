@@ -93,7 +93,7 @@ Canonical files and visual evidence are in `docs/compat/paper-glider-v1/`; its R
 
 | Command / check | Result |
 |---|---|
-| `npm ci` / `npm ls --depth=0` | serialized clean install; dependency tree valid; audit 0 |
+| `npm ci` / `npm ls --depth=0` | serialized clean install; dependency tree valid; 2026-07-26 audit baseline critical 0 / high 6 |
 | `npm run compat:generate` | GLB/manifest and five visual states regenerated |
 | `npm run compat:check` | schema, byte-identical GLB regeneration, GLTFLoader, nodes, transforms, scale, colliders, Recipe reload, hashes, URL, Windows spaces all green |
 | Rights validation | LicenseRef, repository-relative rights path, Owner Decision A/date, rights bytes, SHA-256, and manifest/schema regeneration all green |
@@ -101,6 +101,19 @@ Canonical files and visual evidence are in `docs/compat/paper-glider-v1/`; its R
 | Visual smoke | actual GLB loaded; overview/collider/flight/reload/mobile states; console errors 0 |
 
 Final full `npm run verify`, exact final test counts, commit IDs, parity, and staged/secret audit are recorded in `docs/PROJECT_HANDOFF.md` after closeout.
+
+## Canonical regeneration runtime
+
+GitHub Actions `Verify` run `30164433668` selected floating Node `22.23.1` and failed the exact manifest comparison. The 2026-07-26 local repair established the canonical-producing runtime rather than changing the accepted packet:
+
+| Runtime | Repeatability | GLB bytes / SHA-256 | Manifest SHA-256 | Content hash |
+|---|---|---|---|---|
+| Node `24.13.0`, V8 `13.6.233.17-node.37` | two runs byte-identical; canonical match | 30,172 / `e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019` | `b9c41a053e97d061ac4795c77d8f628e93f0a40adef6f718614e614c861e1bd5` | `04461554becd391625cc834460196186e32a6c08a393e34c210bd1d45503d397` |
+| Node `22.23.1`, V8 `12.4.254.21-node.56` | two runs byte-identical; canonical mismatch | 30,172 / `8db2302086e7d758e218d66ba29be09f891a752b020782c90eb3795bcf622242` | `49062be7c873228f89f9001f2b98025643fe807547524b842c7dd60b0d46f8ee` | `b8687a16b82988207c337e86a620b00352464ce926f5dfd4fee1a699f63f735e` |
+
+Both GLBs have the same header and length, 9,504-byte JSON and 20,640-byte BIN chunks, and identical scene/node/mesh/material/accessor/bufferView counts and order. Their BIN SHA-256 is identically `cef895cc6ed92bc80f0c4ba9f4c4309859e42ea7dd0afac65b74166ced07fab0`; all 24 accessors, including indices, positions, and normals, are identical. The first differing GLB byte is offset 7,272 in JSON. Nine material `baseColorFactor` components differ by at most `1.1102230246251565e-16`; there is no differing accessor, owning node, or mesh.
+
+The repair pins `.node-version` to `24.13.0` and makes `actions/setup-node` consume that exact declaration. This guarantees bit-exact canonical regeneration in the pinned runtime. It does not claim cross-Node-patch byte determinism. The Node `22.23.1` result is representation-only material numeric drift: geometry, topology, node identity, material assignment, references, and rights are equivalent. Generator, verifier, Core, Adapter, dependencies, lockfile, and accepted packet bytes remain unchanged.
 
 ## Visual inspection
 

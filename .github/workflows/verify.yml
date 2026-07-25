@@ -18,10 +18,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js 22
+      - name: Use canonical Node.js 24.13.0
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: ".node-version"
           cache: npm
 
       - name: Install locked dependencies

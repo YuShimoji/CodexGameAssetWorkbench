@@ -1,16 +1,16 @@
 # CodexGameAssetWorkbench 監修AI向け現状報告・長期ロードマップ
 
-最終更新: 2026-07-25 JST
+最終更新: 2026-07-26 JST
 
 ## 結論
 
-Codex Game Asset Studio Runtime Bundle v1は **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** です。
+Codex Game Asset Studio Runtime Bundle v1は **`STUDIO_RUNTIME_BUNDLE_V1_CI_REPAIR_LOCAL_GREEN`** です。
 
 Recipe 0.1.0のWhole Recipeを、再現可能なGLBと`cgawe-runtime-bundle-1.0.0` manifestへ変換する共通entryを実装しました。Scene Instance、Part override、seed付きexpanded placement、Spline mesh、Room、Socketが同じbundleへ入り、manifestからGLB nodeへStable IDで全参照を解決できます。
 
 StarterとPaper Glider canaryの2入力について、GLB/manifestのbyte determinism、JSON Schema、actual GLTFLoader parse、参照、finite値、hash/bytes、tracked artifact一致を確認しました。Workbench UIはSelected AssetとWhole Recipeを区別し、不正Recipeのdownloadを0件で止め、正常時だけ2ファイルを出します。desktopと390 x 844 mobileでactual exportとstatusを確認しました。
 
-作業は新しいlocal branch `codex/runtime-bundle-v1`に固定しました。preexisting handoff deltaを`06e875b`、contract/core/evidenceを`88a299d`へcommitしています。push、PR、main merge、tag、release、deploymentは未実施です。`.github/workflows/verify.yml`は追加しましたが、remote workflowはまだ一度も実行されていません。
+remote branch `origin/codex/runtime-bundle-v1@ee2c9f2`は既に共有済みです。GitHub Actions `Verify` run `30164433668`はNode `22.23.1`でPaper Glider exact regenerationに失敗しました。local successorはcanonical生成ランタイムNode `24.13.0`をCIへ固定し、Runtime Bundle実装、canonical packet、dependenciesを変更せずfull verificationを回復しています。今回のpush、workflow rerun、PR、main merge、tag、release、deploymentは0件です。
 
 ## 成果の意味
 
@@ -30,8 +30,8 @@ StarterとPaper Glider canaryの2入力について、GLB/manifestのbyte determ
 
 このsliceが確立していないもの:
 
-- remote CI成功
-- GitHub上の共有branchまたはPR
+- exact local successorのremote CI成功
+- local successorのGitHub共有またはPR
 - `main` authority
 - dependency audit clean（critical 0 / high 6）
 - external consumerによるGeneric Runtime Bundle load
@@ -88,7 +88,7 @@ Runtime Bundle成功statusはproject ID、nodes、trianglesを表示します。
 `.github/workflows/verify.yml`:
 
 - `windows-latest`
-- Node 22
+- `.node-version`でexact Node `24.13.0`
 - `npm ci`
 - `npm ls --depth=0`
 - Playwright Chromium
@@ -96,7 +96,9 @@ Runtime Bundle成功statusはproject ID、nodes、trianglesを表示します。
 - `contents: read`
 - secret、deployment、Pages mutationなし
 
-remote workflow結果は存在しないため、local verificationの代替として「CI green」とは報告しません。
+predecessor run `30164433668`はfailureです。Node `22.23.1`ではGLB JSON materialの9 componentが最大`1.1102230246251565e-16`変化し、exact manifest checkが止まりました。BIN、全24 accessor、node/mesh/material orderとreferenceは同一です。Node `24.13.0`はcanonical bytesを2回再生成し、local full verificationを通過しましたが、successor SHAのremote workflow結果はまだ存在しないため「CI green」とは報告しません。
+
+`package.json`の`engines.node >=22`は一般support範囲です。Paper Glider canonical packetのbit-exact regeneration環境は`.node-version`で固定したNode `24.13.0`です。cross-Node-patch byte determinismは保証しません。
 
 ## Actual evidence
 
@@ -149,14 +151,14 @@ Runtime BundleはRecipe schemaや既存意味論を変更しません。migratio
 
 ### External state
 
-remote、Paper Glider repository、owner process、release surfaceを変更していません。local commitsは外部公開を意味しません。
+今回remote、Paper Glider repository、owner process、release surfaceを変更していません。既存remote branchは`ee2c9f2`のままで、local successorは外部公開を意味しません。
 
 ## Gapとrisk
 
 | Gap | 影響 | 現在の緩和 | 解消条件 |
 |---|---|---|---|
-| Branchがlocal only | 別端末から直接取得できない | exact commitsと再開手順をrepo docsへ記録 | owner許可後のnon-force pushとparity |
-| Remote CI未実行 | Windows再現性がlocal evidenceだけ | workflowをtracked化 | push/PR後のworkflow green |
+| Repair successorがlocal only | 別端末はpredecessor `ee2c9f2`までしか取得できない | exact base、差分、再開手順をrepo docsへ記録 | fresh authority後のnon-force branch更新とparity |
+| Predecessor CI failure / successor未実行 | hosted Windowsのrepair実証が未完了 | Node `24.13.0` pinとlocal full verify | exact successor push後のworkflow green |
 | `npm audit` high 6 | toolchainとAjv依存に既知advisory | critical 0、broad auto-fixを未実行、機能gateと分離 | fast-uri patchとESLint 10 migrationを専用検証 |
 | Generic consumer未実証 | contractがThree-based proof内に留まる | GLTFLoader actual parse | independent loader conformance |
 | Rights `DECLARED` flowなし | 配布判断を自動化できない | default `NOASSERTION` | owner-supplied registry + negative tests |
@@ -171,8 +173,8 @@ remote、Paper Glider repository、owner process、release surfaceを変更し�
 
 | ID | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|---|
-| RB-H1 | Local handoffをremoteで再開可能に | 別端末がexact branchを取得 | owner push許可、non-force push、parity | local ready | Repository owner / maintainer | branch共有だけを独立実行 |
-| RB-CI1 | Windows verifyをremote継続実行 | regressionをPR時に検知 | branch共有、Actions許可、workflow green | workflow tracked | Maintainer | 初回runを観測 |
+| RB-H1 | CI repair successorをremoteで再開可能に | 別端末がexact repairを取得 | fresh branch-update authority、non-force push、parity | predecessor共有済み / successor local | Repository owner / maintainer | 監修受入後にsuccessor SHAだけを共有 |
+| RB-CI1 | Windows verifyをremote継続実行 | regressionをPR時に検知 | successor共有、Actions許可、exact SHA workflow green | predecessor failed / repair local green | Maintainer | successor runを観測 |
 | RB-M1 | Runtime Bundleをmainline candidate化 | canonical code pathを一本化 | full diff、CI、rollback、owner review | pending external gate | Repository owner | PR/merge方針を決定 |
 | RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | Three実装と独立したloader、positive/negative fixtures | 未着手 | Consumer SDK owner | Starter loaderをthin slice化 |
 | RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash mismatch、missing node/ref、NaN、rights cases | 未着手 | Schema / SDK owner | malformed manifest fixtures追加 |
@@ -203,13 +205,14 @@ remote、Paper Glider repository、owner process、release surfaceを変更し�
 ## 再開コマンド
 
 ```powershell
-Set-Location 'C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench'
+Set-Location 'C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench-runtime-bundle-v1-ci-repair'
 git status --short --branch --untracked-files=all
 git rev-parse HEAD
 git log --oneline -5
 git fetch --prune origin
 git branch -vv
 git rev-list --left-right --count 'origin/main...HEAD'
+git rev-list --left-right --count 'HEAD...@{upstream}'
 npm ci
 npm ls --depth=0
 npx playwright install chromium
@@ -217,7 +220,7 @@ npm run verify
 git diff --check
 ```
 
-新しいlocal branchにはupstreamがありません。remote branch作成前に`@{upstream}` parityを要求しないでください。pushが承認された場合だけ、push後にupstream設定と`HEAD...@{upstream} = 0/0`を確認します。
+upstreamは`origin/codex/runtime-bundle-v1@ee2c9f2`です。local successorはpushされていないため、remote先端が`ee2c9f2`のままかを再確認し、fresh branch-update authorityが与えられた場合だけnon-force push後の`HEAD...@{upstream} = 0/0`を確認します。
 
 ## Authority map
 
@@ -229,6 +232,7 @@ git diff --check
 | `schemas/runtime-bundle-1.0.0.schema.json` | Machine schema |
 | `artifacts/runtime-bundle-v1/runtime-bundle-readback.json` | Two-input actual result |
 | `.github/workflows/verify.yml` | Windows remote verification candidate |
+| `.node-version` | Paper Glider canonical regeneration用exact Node runtime |
 | `docs/RECIPE_SCHEMA.md` | Recipe 0.1.0 |
 | `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | Paper Glider固有packet |
 | `docs/compat/paper-glider-v1/RIGHTS.md` | Paper Glider project-scoped rights |
