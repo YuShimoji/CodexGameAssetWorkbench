@@ -6,5 +6,6 @@
 |---|---|
 | `001_INITIAL_WORKBENCH_PROMPT.md` | v0.1 Workbenchの初期構築 |
 | `002_SPLINE_V0_2_PROMPT.md` | v0.1 checkpoint化とSpline直接編集v0.2 |
+| `003_PAPER_GLIDER_ARCHIVE_GATE_INTEGRATION_PROMPT.md` | 完了済みPaper Glider Archive Gate統合・公開 |
 
 Prompt内の「pushしない」「PRを作らない」等は各slice実行時の安全境界です。後続の明示的なユーザー指示でpushされた履歴を巻き戻す指示ではありません。

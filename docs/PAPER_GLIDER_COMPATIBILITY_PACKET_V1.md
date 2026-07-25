@@ -2,7 +2,7 @@
 
 ## Conclusion
 
-**READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION** means the next Paper Glider implementation turn can use an actual, regenerable canary bundle, executable green fixture, and explicit Paper Glider project-scoped public-use rights. Owner Decision A resolved the former `NOASSERTION` gate on 2026-07-19. It does **not** mean the asset is already integrated, playable, technically accepted, merged to Paper Glider `main`, physically device-tested, or deployed.
+The packet-level conclusion recorded on 2026-07-19 was **READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION**: the next Paper Glider implementation turn could use an actual, regenerable canary bundle, executable green fixture, and explicit Paper Glider project-scoped public-use rights. That packet result did not itself prove integration, playability, technical acceptance, `main` merge, physical-device acceptance, or deployment. Paper Glider's later repository authority now records integration and publication as downstream results; the Workbench packet remains the independent source proof.
 
 The runtime boundary is **GLB + validated compatibility manifest**. The Workbench Recipe remains the editable build-time authority and provenance record. Paper Glider does not need to parse Recipe 0.1.0 at runtime.
 
@@ -112,8 +112,10 @@ Final full `npm run verify`, exact final test counts, commit IDs, parity, and st
 
 These are Workbench-hosted render checks. They do not prove Paper Glider gameplay collision, route fairness, runtime fallback, public deployment, physical touch, or physical-device performance.
 
-## Resolved rights gate and remaining technical gate
+## Resolved rights gate and downstream completion boundary
 
 The former `NOASSERTION`/owner-permission blocker is resolved by Owner Decision A and the complete text in `docs/compat/paper-glider-v1/RIGHTS.md`. This is project-scoped Paper Glider permission, not a general third-party asset license.
 
-Paper Glider may commit and push the asset on a focused branch. Main integration and GitHub Pages deployment become eligible only after loader timeout/fallback, pinned file hashes, runtime structure, deterministic selection, collision, ring clearance, recycling, production build, and desktop/mobile browser checks are green. Paper Glider runtime integration and publication have not been performed in this Workbench-only closeout.
+The packet established the gate for loader timeout/fallback, pinned file hashes, runtime structure, deterministic selection, collision, ring clearance, recycling, production build, and desktop/mobile browser checks. Paper Glider's repository authority now records that integration, PG-A2/A3, main publication, and PG-V1 are complete. A read-only 2026-07-25 Git check found Paper Glider `main` at `857afb2c4e0f4d2ba7a7965608be6c313780175c` with `origin/main` parity `0/0`. It was clean at entry; a separate docs-only local handoff delta appeared before the final boundary audit and was left untouched.
+
+This downstream state does not expand what the Workbench-hosted visual checks prove. Public URL/CI/Pages were not rerun during the 2026-07-25 Workbench refresh, and physical-device acceptance remains a separate Paper Glider gate. The pinned Workbench packet and project-scoped rights remain independently verifiable.

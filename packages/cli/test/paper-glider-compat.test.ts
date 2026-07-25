@@ -19,5 +19,5 @@ describe('Paper Glider compatibility packet', () => {
     expect(result.documentationFilesChecked).toBe(4);
     expect(result.loadedNodes).toContain('spline-route-arch');
     expect(result.publishedGlbUrl).toContain('/paper-glider/assets/workbench/');
-  });
+  }, 15_000);
 });

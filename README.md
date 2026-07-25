@@ -95,6 +95,8 @@ npm run compat:check
 
 `compat:generate`はcanonical bundleと5状態の画像証跡を再生成します。`compat:check`はmanifest schema、実GLB load、node/collider参照、finite transform、scale、Recipe Save→Reload、hash、Windows空白入りpath、GitHub Pages base URLを検証します。互換性表と統合境界は[`docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md`](./docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md)を参照してください。これはPaper Glider runtimeへの統合済み証明ではありません。
 
+2026-07-25のread-only downstream Git監査では、Paper Glider `main`は`857afb2`、`origin/main` parity `0/0`で、同repositoryのcommitted正本はArchive Gate integration、PG-A2/A3、PG-V1公開完了を記録しています。開始確認後に別作業のdocs-only local deltaが現れたため、このtaskでは変更せず保護しました。Workbench packetの証明境界、downstream acceptance、physical-device acceptanceは独立しています。現在の詳細と長期目標は[`docs/PROJECT_STATUS_AND_ROADMAP.md`](./docs/PROJECT_STATUS_AND_ROADMAP.md)を参照してください。
+
 ## v0.2で意図的に扱わないもの
 
 Paper Glider runtimeへのloader/world統合、Unity/Godot/Unreal Adapter、汎用Scene全体GLB bundle、Blender add-on、Bezier curve editor、任意頂点モデリング、UV/Texture Paint、Morph/Fracture/物理破壊、天候、高度なSpawner、クラウド保存、共同編集、外部AIサービスは実装していません。存在するように見せる無効なUIも置いていません。

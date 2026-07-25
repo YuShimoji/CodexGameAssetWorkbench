@@ -1,8 +1,10 @@
 # CodexGameAssetWorkbench project handoff
 
-この文書は、別端末のAgentまたは開発者が外部添付や過去のCodex taskなしで現在地点から再開する正本です。2026-07-21のcross-device handoff時点の判定は **READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION** です。Owner Decision AによりArchive GateのPaper Glider project-scoped public-use rightsが正本化され、実物bundle、再生成、fixture、hash、次Promptと一致しています。
+この文書は、別端末のAgentまたは開発者が外部添付や過去のCodex taskなしで現在地点から再開する正本です。2026-07-25の判定は **DEVELOPMENT_READY_WITH_LOCAL_HANDOFF_DELTA** です。remote同期、依存ツリー、Schema、build、typecheck、lint、6 files / 21 tests、Workbench browser 7 states、compatibility visual 5 states、hash、console/error、`git diff --check`はgreenです。
 
-この判定はPaper Glider側で統合・main merge・GitHub Pages deploymentを開始できることを意味します。Paper Glider runtime統合済み、technical acceptance済み、physical-device受入済み、公開済みを意味しません。
+Paper Gliderはread-only live Gitで`main` `857afb2c4e0f4d2ba7a7965608be6c313780175c`、`origin/main` parity `0/0`を確認しました。開始時はcleanでしたが、最終監査時に別作業のdocs-only local deltaが現れました。このtaskは変更・stage・退避していません。同repositoryのcommitted正本はArchive Gate integration、PG-A2/A3、PG-V1公開完了を記録しています。Workbench packet単体の証明境界、Paper Gliderの公開受入、physical-device受入は引き続き分離します。
+
+今回のtest安定化とhandoff文書はlocal deltaです。commit、push、PR、`main`統合、tag、release、deploymentは実行していません。詳細な実測、gap、長期目標、owner判断は`docs/PROJECT_STATUS_AND_ROADMAP.md`、現在有効な次作業は`docs/NEXT_AGENT_PROMPT.md`を正本とします。
 
 ## Gitとscope
 
@@ -10,6 +12,9 @@
 |---|---|
 | Workbench GitHub | `https://github.com/YuShimoji/CodexGameAssetWorkbench` |
 | 作業branch | `codex/paper-glider-compat-v1` |
+| 2026-07-25同期基準 | `c58ac302acee3e0dad0ce0d2ce89dc545cec241d`、upstream parity `0/0`、pull `Already up to date` |
+| mainとの差 | `origin/main` `0dd0980`に対して`0/9`、58 files、約5,018 insertions / 195 deletions |
+| local handoff delta | CLI子プロセスtest 2件の15秒上限、監修資料、次Prompt更新。未commit |
 | rights closeout開始HEAD | `ab659854d418fa8700d9806416c246d55ff0f13e`、upstream parity `0/0`、clean |
 | v0.2 Windows closeout | `ff25c6d`、`origin/codex/spline-direct-edit-v0-2`へpush済み |
 | packet contract実装 | `c981865` |
@@ -23,6 +28,8 @@
 Paper Gliderは`C:\Users\thank\Storage\Game Projects\paper-glider`をread-only参照しました。開始・終了監査ともbranch `main`、HEAD/upstream `3ad5ac1fbc6715f36f4b2d961754dfd8d7f35750`、parity `0/0`、cleanです。file write、install、build、checkout、branch、commit、push、deploymentを行わず、既存preview processも停止していません。
 
 2026-07-21のhandoff開始監査では、Workbenchはbranch `codex/paper-glider-compat-v1`、HEAD/upstream `eb4493c8a5810d3b4bb1de11f23d8cb6a024a247`、parity `0/0`、cleanでした。`git fetch --prune origin`後も同一です。このhandoff syncは文書の再開精度だけを更新し、canary bundle、schema、generator、runtime contract、Paper Glider repositoryを変更しません。
+
+2026-07-25の再監査では、同branchのremote tip `c58ac30`をfast-forward限定で確認しました。Node `v24.13.0`、npm `11.6.2`、`npm ls --depth=0`、最終`npm run verify`はgreenです。primary checkoutの`node_modules`を参照するTypeScript language server 6件を保護し、`npm ci`は実行していません。exact-candidate clean installはWB-M1のisolated clean-room gateへ残します。
 
 ## Owner Decision A
 
@@ -92,31 +99,34 @@ npm run verify
 
 Node `v24.13.0`、npm `11.6.2`。最終gateはSchema同期、production build、typecheck、lint、6 test files / 21 tests、既存Playwright 7状態、compatibility visual 5状態、console errors 0、validation errors 0、validation warnings 0、`git diff --check`を含めてgreenです。既知のVite chunk-size warningはbuild failureでもcompat validation warningでもありません。
 
-## Paper Glider次slice
+## 現在の次slice
 
-`docs/NEXT_AGENT_PROMPT.md`が単独実行可能な正本です。5,000 msのAbortController-backed preload timeout、timeout/hash/parse/node failure時のprocedural fallback、pinned manifest/GLB hash、build/test full schema + runtime small validation、seeded room selection、3 AABB、ring clearance、9-room recyclingを要求します。
+`docs/NEXT_AGENT_PROMPT.md`がWB-M1「v0.2 Mainline Promotion Readiness」の単独実行正本です。test安定化を含むlocal deltaをexact candidateへ固定し、Windows clean-room、tracked CI候補、branch-vs-main review、packet hash不変を揃え、ownerへmain昇格判断を渡します。
 
-Paper Glider統合時のWorkbench packet / rights source authorityはcommit `eb4493c8a5810d3b4bb1de11f23d8cb6a024a247`です。後続のhandoff-only commitが存在しても、配布4ファイルとRecipeは下記pinned hashで照合し、Recipeはruntimeへコピーしません。
+Paper Glider統合時のWorkbench packet / rights source authorityはcommit `eb4493c8a5810d3b4bb1de11f23d8cb6a024a247`です。このauthorityとpinned hashはdownstream公開後も不変です。完了済みArchive Gate integration Promptは`docs/ai/003_PAPER_GLIDER_ARCHIVE_GATE_INTEGRATION_PROMPT.md`へ退避しました。
 
-Owner Decision Aによりfocused branchへのasset commit/push、technical green後の`main`統合とGitHub Pages公開はrights上許可済みです。ただしtechnical green前にmain/deployへ進みません。
+Workbench `main`変更はrepository ownerの別判断です。今回のtechnical greenはcommit、push、PR、merge、tag、releaseを自動承認しません。
 
 ## 残作業
 
 | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|
-| Archive Gate Active Artifact | 最初のWorkbench-authored playable room | finite preload/fallback、hash/structure、clone/recycle、AABB collision、ring clearance、deterministic selection | Packet/rights READY、Paper未実装 | Paper Glider | `docs/NEXT_AGENT_PROMPT.md`を実行 |
-| Paper `main`とPages公開 | 公開ゲームでArchive Gateを配信 | focused branch全gate、main再検証、committed `docs/`、live URL/console | rights許可済み、technical未確認 | Paper Glider | integration green後だけmain/build/push/live verify |
-| Physical-device受入 | touch/performance/fairnessを確定 | 実機mobile、長時間・高speed playtest | 未確認 | Paper Glider / owner | browser証拠と分離して実施 |
-| Workbench v0.2/main判断 | 最新Workbenchをmain authorityへ昇格 | owner review | 未判断 | Repository owner | 今回merge/tagしない |
+| Local handoff delta確定 | Windows test flakeと正本矛盾を解消 | diff review、full verify、ownerのcommit/push許可 | local green、未commit | Workbench maintainer / owner | 2 test + docsをreview |
+| Windows CI | remoteでverify再現性を継続証明 | Node 22+、`npm ci`、Chromium、`npm run verify` | `.github/`なし | Workbench maintainer | WB-CI1候補 |
+| Workbench v0.2/main判断 | 最新Workbenchとpacketをmain authorityへ昇格 | clean-room、CI、9-commit review、owner承認 | owner gate | Repository owner | `docs/NEXT_AGENT_PROMPT.md`を実行 |
+| Generic Runtime Bundle v1 | Paper固有proofを再利用可能なbundleへ一般化 | versioned manifest、GLB、schema、rights/provenance、validator | concept | Core/CLI owner | main昇格後の推奨feature |
+| Physical-device受入 | Paper Gliderのtouch/performance/fairnessを確定 | 実機mobile、長時間playtest | downstream pending | Paper Glider / owner | PG-D1でbrowser証拠と分離 |
 
 ## Context mapと再開
 
 | Path | Authority |
 |---|---|
+| `docs/PROJECT_STATUS_AND_ROADMAP.md` | 2026-07-25監修報告、gap、長期目標、owner判断 |
+| `docs/NEXT_AGENT_PROMPT.md` | WB-M1 mainline promotion readinessの単独Prompt |
 | `docs/compat/paper-glider-v1/RIGHTS.md` | Owner Decision Aの完全なproject-scoped rights text |
 | `docs/compat/paper-glider-v1/README.md` | bundle files、hash、rights、regeneration、evidence boundary |
 | `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | compatibility matrix、adapter ownership、technical gate |
-| `docs/NEXT_AGENT_PROMPT.md` | Paper integration→main→Pagesの単独Prompt |
+| `docs/ai/003_PAPER_GLIDER_ARCHIVE_GATE_INTEGRATION_PROMPT.md` | 完了済みPaper integration要求の履歴 |
 | `docs/RECIPE_SCHEMA.md` | 汎用Recipe 0.1.0 authority |
 
 ```powershell
@@ -126,10 +136,11 @@ git fetch --prune origin
 git switch --track origin/codex/paper-glider-compat-v1
 git merge-base --is-ancestor eb4493c8a5810d3b4bb1de11f23d8cb6a024a247 HEAD
 git rev-list --left-right --count HEAD...origin/codex/paper-glider-compat-v1
+git rev-list --left-right --count origin/main...HEAD
 git status --short --branch
 npm ci
 npx playwright install chromium
 npm run verify
 ```
 
-Paper Glider作業へ移る場合、Workbenchはread-onlyへ切り替えます。Windowsではnpm操作を直列化し、他repositoryのprocessやproject外Tempへ退避された`node_modules`を削除・回収・変更しません。
+Windowsではnpm操作を直列化し、他repositoryのprocess、language server、project外Tempへ退避された`node_modules`を停止・削除・回収・変更しません。current working treeに未commit差分がある間は、HEADだけのclean-room passをその差分の証明として扱いません。

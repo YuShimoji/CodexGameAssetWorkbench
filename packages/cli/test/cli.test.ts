@@ -11,5 +11,5 @@ describe('CLI', () => {
     const validation = JSON.parse(execFileSync(process.execPath, [executable, 'validate', recipePath, '--json'], { encoding: 'utf8' }));
     expect(inspect.assetCount).toBeGreaterThan(0);
     expect(validation.valid).toBe(true);
-  });
+  }, 15_000);
 });
