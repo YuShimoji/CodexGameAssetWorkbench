@@ -1,0 +1,102 @@
+{
+  "contractVersion": "cgawe-runtime-bundle-1.0.0",
+  "state": "STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN",
+  "inputs": [
+    {
+      "caseId": "starter",
+      "recipeFile": "samples/starter-project/recipe.json",
+      "projectId": "starter-atelier",
+      "glb": {
+        "file": "starter-atelier.runtime.glb",
+        "bytes": 90708,
+        "sha256": "sha256:5b39c86b7bb7999e8401a27c1dc34cb3172cc58e5cbdabc36fe071aff8d437ea"
+      },
+      "manifest": {
+        "file": "starter-atelier.runtime.manifest.json",
+        "sha256": "sha256:9378e8cb189cba95ec21cec337cf8c85aa1d0f88b93637d79a506eee9a81160c"
+      },
+      "counts": {
+        "materials": 26,
+        "meshes": 26,
+        "nodes": 41,
+        "placements": 9,
+        "rooms": 1,
+        "sceneInstances": 2,
+        "sockets": 2,
+        "splines": 1,
+        "triangles": 2720,
+        "vertices": 1700
+      },
+      "bounds": {
+        "max": [
+          4.666544437408447,
+          1.7899999618530273,
+          3.442350340100687
+        ],
+        "min": [
+          -4.633081620681139,
+          0,
+          -1.5275613645115138
+        ]
+      },
+      "parsedNodes": 42,
+      "rights": "NOASSERTION"
+    },
+    {
+      "caseId": "paper-glider-canary",
+      "recipeFile": "docs/compat/paper-glider-v1/paper-glider-canary.recipe.json",
+      "projectId": "paper-glider-archive-gate-v1",
+      "glb": {
+        "file": "paper-glider-archive-gate-v1.runtime.glb",
+        "bytes": 30820,
+        "sha256": "sha256:27e13b5ed5b9b6d521d39936127e73f75c8c7de5fc3724e2240b39d6e2cd12fe"
+      },
+      "manifest": {
+        "file": "paper-glider-archive-gate-v1.runtime.manifest.json",
+        "sha256": "sha256:b8cbaee3d1b8ff155ffc19a0a4285c0389b97aca98c10b317abd87d18643cc99"
+      },
+      "counts": {
+        "materials": 8,
+        "meshes": 8,
+        "nodes": 13,
+        "placements": 0,
+        "rooms": 1,
+        "sceneInstances": 1,
+        "sockets": 2,
+        "splines": 1,
+        "triangles": 1064,
+        "vertices": 594
+      },
+      "bounds": {
+        "max": [
+          4.449999809265137,
+          5.226928234100342,
+          1.100000023841858
+        ],
+        "min": [
+          -4.449999809265137,
+          0,
+          -0.8999999761581421
+        ]
+      },
+      "parsedNodes": 14,
+      "rights": "NOASSERTION"
+    }
+  ],
+  "checks": {
+    "inputCount": 2,
+    "deterministicGlb": true,
+    "deterministicManifest": true,
+    "jsonSchema": true,
+    "gltfLoaderParse": true,
+    "stableNodeReferences": true,
+    "finiteNumbers": true,
+    "fileHashesAndBytes": true,
+    "genericRightsNoAssertion": true,
+    "localDisclosureAbsent": true
+  },
+  "browserEvidence": {
+    "desktop": "runtime-bundle-desktop.png",
+    "mobile": "runtime-bundle-mobile.png"
+  }
+}

@@ -85,3 +85,5 @@ export function disposeObject(object: Object3D): void {
     materials.forEach((material) => material.dispose());
   });
 }
+
+export * from './runtime-bundle.js';

@@ -1,0 +1,261 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgawe.local/schemas/runtime-bundle-1.0.0.schema.json",
+  "title": "Codex Game Asset Workbench Runtime Bundle Manifest 1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contractVersion",
+    "manifestSchemaVersion",
+    "projectId",
+    "source",
+    "coordinateSystem",
+    "files",
+    "rootNodeId",
+    "sceneInstances",
+    "placements",
+    "splines",
+    "rooms",
+    "sockets",
+    "nodeMap",
+    "counts",
+    "bounds",
+    "validation",
+    "rights"
+  ],
+  "properties": {
+    "contractVersion": { "const": "cgawe-runtime-bundle-1.0.0" },
+    "manifestSchemaVersion": { "const": "1.0.0" },
+    "projectId": { "$ref": "#/$defs/nonEmptyString" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recipeSchemaVersion", "recipeHash", "recipeSha256", "generationSeed"],
+      "properties": {
+        "recipeSchemaVersion": { "const": "0.1.0" },
+        "recipeHash": { "type": "string", "pattern": "^fnv1a-[0-9a-f]{8}$" },
+        "recipeSha256": { "$ref": "#/$defs/sha256" },
+        "generationSeed": { "type": "integer" }
+      }
+    },
+    "coordinateSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["handedness", "upAxis", "forwardAxis", "unit", "rotationUnit"],
+      "properties": {
+        "handedness": { "const": "right" },
+        "upAxis": { "const": "+Y" },
+        "forwardAxis": { "const": "-Z" },
+        "unit": { "const": "meter" },
+        "rotationUnit": { "const": "radian" }
+      }
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["glb", "manifest"],
+      "properties": {
+        "glb": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "mediaType", "bytes", "sha256"],
+          "properties": {
+            "name": { "type": "string", "pattern": "^[^/\\\\]+\\.runtime\\.glb$" },
+            "mediaType": { "const": "model/gltf-binary" },
+            "bytes": { "type": "integer", "minimum": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "manifest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "mediaType"],
+          "properties": {
+            "name": { "type": "string", "pattern": "^[^/\\\\]+\\.runtime\\.manifest\\.json$" },
+            "mediaType": { "const": "application/json" }
+          }
+        }
+      }
+    },
+    "rootNodeId": { "$ref": "#/$defs/nonEmptyString" },
+    "sceneInstances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "assetId", "nodeId", "transform", "partIds"],
+        "properties": {
+          "id": { "$ref": "#/$defs/nonEmptyString" },
+          "assetId": { "$ref": "#/$defs/nonEmptyString" },
+          "nodeId": { "$ref": "#/$defs/nonEmptyString" },
+          "transform": { "$ref": "#/$defs/transform" },
+          "variantSetId": { "$ref": "#/$defs/nonEmptyString" },
+          "partIds": { "$ref": "#/$defs/stringArray" }
+        }
+      }
+    },
+    "placements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "ruleId", "sequenceIndex", "assetId", "nodeId", "transform", "variantSeed", "partIds"],
+        "properties": {
+          "id": { "$ref": "#/$defs/nonEmptyString" },
+          "ruleId": { "$ref": "#/$defs/nonEmptyString" },
+          "sequenceIndex": { "type": "integer", "minimum": 0 },
+          "assetId": { "$ref": "#/$defs/nonEmptyString" },
+          "nodeId": { "$ref": "#/$defs/nonEmptyString" },
+          "transform": { "$ref": "#/$defs/transform" },
+          "variantSeed": { "type": "integer", "minimum": 0 },
+          "variantSetId": { "$ref": "#/$defs/nonEmptyString" },
+          "partIds": { "$ref": "#/$defs/stringArray" }
+        }
+      }
+    },
+    "splines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "nodeId", "materialId", "controlPointCount", "closed"],
+        "properties": {
+          "id": { "$ref": "#/$defs/nonEmptyString" },
+          "nodeId": { "$ref": "#/$defs/nonEmptyString" },
+          "materialId": { "$ref": "#/$defs/nonEmptyString" },
+          "controlPointCount": { "type": "integer", "minimum": 2 },
+          "closed": { "type": "boolean" }
+        }
+      }
+    },
+    "rooms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "nodeId", "position", "width", "height", "depth", "floorY", "materialId"],
+        "properties": {
+          "id": { "$ref": "#/$defs/nonEmptyString" },
+          "nodeId": { "$ref": "#/$defs/nonEmptyString" },
+          "position": { "$ref": "#/$defs/vec3" },
+          "width": { "type": "number", "exclusiveMinimum": 0 },
+          "height": { "type": "number", "exclusiveMinimum": 0 },
+          "depth": { "type": "number", "exclusiveMinimum": 0 },
+          "floorY": { "type": "number" },
+          "materialId": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "sockets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "nodeId", "roomId", "type", "position", "orientation", "compatibleTags"],
+        "properties": {
+          "id": { "$ref": "#/$defs/nonEmptyString" },
+          "nodeId": { "$ref": "#/$defs/nonEmptyString" },
+          "roomId": { "$ref": "#/$defs/nonEmptyString" },
+          "type": { "$ref": "#/$defs/nonEmptyString" },
+          "position": { "$ref": "#/$defs/vec3" },
+          "orientation": { "$ref": "#/$defs/vec3" },
+          "compatibleTags": { "$ref": "#/$defs/stringArray" }
+        }
+      }
+    },
+    "nodeMap": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stableId", "glbNodeName", "kind", "sourceId"],
+        "properties": {
+          "stableId": { "$ref": "#/$defs/nonEmptyString" },
+          "glbNodeName": { "$ref": "#/$defs/nonEmptyString" },
+          "kind": {
+            "enum": ["root", "scene-instance", "scene-part", "placement", "placement-part", "spline", "room", "socket"]
+          },
+          "sourceId": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodes", "meshes", "vertices", "triangles", "materials", "sceneInstances", "placements", "splines", "rooms", "sockets"],
+      "properties": {
+        "nodes": { "$ref": "#/$defs/count" },
+        "meshes": { "$ref": "#/$defs/count" },
+        "vertices": { "$ref": "#/$defs/count" },
+        "triangles": { "$ref": "#/$defs/count" },
+        "materials": { "$ref": "#/$defs/count" },
+        "sceneInstances": { "$ref": "#/$defs/count" },
+        "placements": { "$ref": "#/$defs/count" },
+        "splines": { "$ref": "#/$defs/count" },
+        "rooms": { "$ref": "#/$defs/count" },
+        "sockets": { "$ref": "#/$defs/count" }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "$ref": "#/$defs/vec3" },
+        "max": { "$ref": "#/$defs/vec3" }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["errorCount", "warningCount", "warningCodes"],
+      "properties": {
+        "errorCount": { "const": 0 },
+        "warningCount": { "$ref": "#/$defs/count" },
+        "warningCodes": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "notice"],
+      "properties": {
+        "status": { "enum": ["NOASSERTION", "DECLARED"] },
+        "licenseId": { "$ref": "#/$defs/nonEmptyString" },
+        "notice": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "count": { "type": "integer", "minimum": 0 },
+    "finiteNumber": { "type": "number" },
+    "vec3": {
+      "type": "array",
+      "prefixItems": [
+        { "$ref": "#/$defs/finiteNumber" },
+        { "$ref": "#/$defs/finiteNumber" },
+        { "$ref": "#/$defs/finiteNumber" }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position", "rotation", "scale"],
+      "properties": {
+        "position": { "$ref": "#/$defs/vec3" },
+        "rotation": { "$ref": "#/$defs/vec3" },
+        "scale": { "$ref": "#/$defs/vec3" }
+      }
+    },
+    "stringArray": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    }
+  }
+}

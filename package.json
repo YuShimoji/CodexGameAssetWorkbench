@@ -22,7 +22,9 @@
     "compat:generate": "npm run compat:generate:bundle && node scripts/paper-glider-compat-smoke.mjs --write",
     "compat:check": "npm run build:packages && node scripts/verify-paper-glider-compat.mjs",
     "compat:visual": "node scripts/paper-glider-compat-smoke.mjs",
-    "verify": "npm run schema:check && npm run build && npm run typecheck && npm run lint && npm run test && npm run compat:check && npm run test:browser && git diff --check"
+    "runtime:generate": "npm run build:packages && node scripts/runtime-bundle-proof.mjs --write",
+    "runtime:check": "npm run build:packages && node scripts/runtime-bundle-proof.mjs",
+    "verify": "npm run schema:check && npm run build && npm run typecheck && npm run lint && npm run test && npm run runtime:check && npm run compat:check && npm run test:browser && git diff --check"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",

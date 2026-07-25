@@ -1,0 +1,248 @@
+{
+  "bounds": {
+    "max": [
+      4.449999809265137,
+      5.226928234100342,
+      1.100000023841858
+    ],
+    "min": [
+      -4.449999809265137,
+      0,
+      -0.8999999761581421
+    ]
+  },
+  "contractVersion": "cgawe-runtime-bundle-1.0.0",
+  "coordinateSystem": {
+    "forwardAxis": "-Z",
+    "handedness": "right",
+    "rotationUnit": "radian",
+    "unit": "meter",
+    "upAxis": "+Y"
+  },
+  "counts": {
+    "materials": 8,
+    "meshes": 8,
+    "nodes": 13,
+    "placements": 0,
+    "rooms": 1,
+    "sceneInstances": 1,
+    "sockets": 2,
+    "splines": 1,
+    "triangles": 1064,
+    "vertices": 594
+  },
+  "files": {
+    "glb": {
+      "bytes": 30820,
+      "mediaType": "model/gltf-binary",
+      "name": "paper-glider-archive-gate-v1.runtime.glb",
+      "sha256": "sha256:27e13b5ed5b9b6d521d39936127e73f75c8c7de5fc3724e2240b39d6e2cd12fe"
+    },
+    "manifest": {
+      "mediaType": "application/json",
+      "name": "paper-glider-archive-gate-v1.runtime.manifest.json"
+    }
+  },
+  "manifestSchemaVersion": "1.0.0",
+  "nodeMap": [
+    {
+      "glbNodeName": "runtime-root--paper-glider-archive-gate-v1",
+      "kind": "root",
+      "sourceId": "paper-glider-archive-gate-v1",
+      "stableId": "runtime-root--paper-glider-archive-gate-v1"
+    },
+    {
+      "glbNodeName": "scene-instance--instance-archive-gate",
+      "kind": "scene-instance",
+      "sourceId": "instance-archive-gate",
+      "stableId": "scene-instance--instance-archive-gate"
+    },
+    {
+      "glbNodeName": "scene-part--instance-archive-gate--part-left-pier",
+      "kind": "scene-part",
+      "sourceId": "part-left-pier",
+      "stableId": "scene-part--instance-archive-gate--part-left-pier"
+    },
+    {
+      "glbNodeName": "scene-part--instance-archive-gate--part-right-pier",
+      "kind": "scene-part",
+      "sourceId": "part-right-pier",
+      "stableId": "scene-part--instance-archive-gate--part-right-pier"
+    },
+    {
+      "glbNodeName": "scene-part--instance-archive-gate--part-top-beam",
+      "kind": "scene-part",
+      "sourceId": "part-top-beam",
+      "stableId": "scene-part--instance-archive-gate--part-top-beam"
+    },
+    {
+      "glbNodeName": "scene-part--instance-archive-gate--part-left-plinth",
+      "kind": "scene-part",
+      "sourceId": "part-left-plinth",
+      "stableId": "scene-part--instance-archive-gate--part-left-plinth"
+    },
+    {
+      "glbNodeName": "scene-part--instance-archive-gate--part-right-plinth",
+      "kind": "scene-part",
+      "sourceId": "part-right-plinth",
+      "stableId": "scene-part--instance-archive-gate--part-right-plinth"
+    },
+    {
+      "glbNodeName": "scene-part--instance-archive-gate--part-left-beacon",
+      "kind": "scene-part",
+      "sourceId": "part-left-beacon",
+      "stableId": "scene-part--instance-archive-gate--part-left-beacon"
+    },
+    {
+      "glbNodeName": "scene-part--instance-archive-gate--part-right-beacon",
+      "kind": "scene-part",
+      "sourceId": "part-right-beacon",
+      "stableId": "scene-part--instance-archive-gate--part-right-beacon"
+    },
+    {
+      "glbNodeName": "spline--spline-route-arch",
+      "kind": "spline",
+      "sourceId": "spline-route-arch",
+      "stableId": "spline--spline-route-arch"
+    },
+    {
+      "glbNodeName": "room--room-paper-glider-segment",
+      "kind": "room",
+      "sourceId": "room-paper-glider-segment",
+      "stableId": "room--room-paper-glider-segment"
+    },
+    {
+      "glbNodeName": "socket--socket-room-entry",
+      "kind": "socket",
+      "sourceId": "socket-room-entry",
+      "stableId": "socket--socket-room-entry"
+    },
+    {
+      "glbNodeName": "socket--socket-room-exit",
+      "kind": "socket",
+      "sourceId": "socket-room-exit",
+      "stableId": "socket--socket-room-exit"
+    }
+  ],
+  "placements": [],
+  "projectId": "paper-glider-archive-gate-v1",
+  "rights": {
+    "notice": "No license assertion is made by the generic Runtime Bundle exporter.",
+    "status": "NOASSERTION"
+  },
+  "rooms": [
+    {
+      "depth": 18,
+      "floorY": -0.52,
+      "height": 6.8,
+      "id": "room-paper-glider-segment",
+      "materialId": "mat-paper-cream",
+      "nodeId": "room--room-paper-glider-segment",
+      "position": [
+        0,
+        2.88,
+        0
+      ],
+      "width": 11.2
+    }
+  ],
+  "rootNodeId": "runtime-root--paper-glider-archive-gate-v1",
+  "sceneInstances": [
+    {
+      "assetId": "asset-archive-gate",
+      "id": "instance-archive-gate",
+      "nodeId": "scene-instance--instance-archive-gate",
+      "partIds": [
+        "part-left-pier",
+        "part-right-pier",
+        "part-top-beam",
+        "part-left-plinth",
+        "part-right-plinth",
+        "part-left-beacon",
+        "part-right-beacon"
+      ],
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "variantSetId": "variant-archive-beacons"
+    }
+  ],
+  "sockets": [
+    {
+      "compatibleTags": [
+        "paper-glider",
+        "room-segment",
+        "entry"
+      ],
+      "id": "socket-room-entry",
+      "nodeId": "socket--socket-room-entry",
+      "orientation": [
+        0,
+        3.141592653589793,
+        0
+      ],
+      "position": [
+        0,
+        2.35,
+        9
+      ],
+      "roomId": "room-paper-glider-segment",
+      "type": "room-boundary"
+    },
+    {
+      "compatibleTags": [
+        "paper-glider",
+        "room-segment",
+        "exit"
+      ],
+      "id": "socket-room-exit",
+      "nodeId": "socket--socket-room-exit",
+      "orientation": [
+        0,
+        0,
+        0
+      ],
+      "position": [
+        0,
+        2.35,
+        -9
+      ],
+      "roomId": "room-paper-glider-segment",
+      "type": "room-boundary"
+    }
+  ],
+  "source": {
+    "generationSeed": 464367618,
+    "recipeHash": "fnv1a-3383aa61",
+    "recipeSchemaVersion": "0.1.0",
+    "recipeSha256": "sha256:3ab1d857039f85a115ccf0a948684d42b45d54046c312602db90576c17effd90"
+  },
+  "splines": [
+    {
+      "closed": false,
+      "controlPointCount": 5,
+      "id": "spline-route-arch",
+      "materialId": "mat-route-gold",
+      "nodeId": "spline--spline-route-arch"
+    }
+  ],
+  "validation": {
+    "errorCount": 0,
+    "warningCodes": [],
+    "warningCount": 0
+  }
+}

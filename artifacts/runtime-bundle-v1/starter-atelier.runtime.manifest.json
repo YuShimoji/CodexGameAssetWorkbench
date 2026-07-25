@@ -1,0 +1,709 @@
+{
+  "bounds": {
+    "max": [
+      4.666544437408447,
+      1.7899999618530273,
+      3.442350340100687
+    ],
+    "min": [
+      -4.633081620681139,
+      0,
+      -1.5275613645115138
+    ]
+  },
+  "contractVersion": "cgawe-runtime-bundle-1.0.0",
+  "coordinateSystem": {
+    "forwardAxis": "-Z",
+    "handedness": "right",
+    "rotationUnit": "radian",
+    "unit": "meter",
+    "upAxis": "+Y"
+  },
+  "counts": {
+    "materials": 26,
+    "meshes": 26,
+    "nodes": 41,
+    "placements": 9,
+    "rooms": 1,
+    "sceneInstances": 2,
+    "sockets": 2,
+    "splines": 1,
+    "triangles": 2720,
+    "vertices": 1700
+  },
+  "files": {
+    "glb": {
+      "bytes": 90708,
+      "mediaType": "model/gltf-binary",
+      "name": "starter-atelier.runtime.glb",
+      "sha256": "sha256:5b39c86b7bb7999e8401a27c1dc34cb3172cc58e5cbdabc36fe071aff8d437ea"
+    },
+    "manifest": {
+      "mediaType": "application/json",
+      "name": "starter-atelier.runtime.manifest.json"
+    }
+  },
+  "manifestSchemaVersion": "1.0.0",
+  "nodeMap": [
+    {
+      "glbNodeName": "runtime-root--starter-atelier",
+      "kind": "root",
+      "sourceId": "starter-atelier",
+      "stableId": "runtime-root--starter-atelier"
+    },
+    {
+      "glbNodeName": "scene-instance--instance-console",
+      "kind": "scene-instance",
+      "sourceId": "instance-console",
+      "stableId": "scene-instance--instance-console"
+    },
+    {
+      "glbNodeName": "scene-part--instance-console--part-top",
+      "kind": "scene-part",
+      "sourceId": "part-top",
+      "stableId": "scene-part--instance-console--part-top"
+    },
+    {
+      "glbNodeName": "scene-part--instance-console--part-leg-a",
+      "kind": "scene-part",
+      "sourceId": "part-leg-a",
+      "stableId": "scene-part--instance-console--part-leg-a"
+    },
+    {
+      "glbNodeName": "scene-part--instance-console--part-leg-b",
+      "kind": "scene-part",
+      "sourceId": "part-leg-b",
+      "stableId": "scene-part--instance-console--part-leg-b"
+    },
+    {
+      "glbNodeName": "scene-part--instance-console--part-leg-c",
+      "kind": "scene-part",
+      "sourceId": "part-leg-c",
+      "stableId": "scene-part--instance-console--part-leg-c"
+    },
+    {
+      "glbNodeName": "scene-part--instance-console--part-leg-d",
+      "kind": "scene-part",
+      "sourceId": "part-leg-d",
+      "stableId": "scene-part--instance-console--part-leg-d"
+    },
+    {
+      "glbNodeName": "scene-instance--instance-marker",
+      "kind": "scene-instance",
+      "sourceId": "instance-marker",
+      "stableId": "scene-instance--instance-marker"
+    },
+    {
+      "glbNodeName": "scene-part--instance-marker--part-marker-base",
+      "kind": "scene-part",
+      "sourceId": "part-marker-base",
+      "stableId": "scene-part--instance-marker--part-marker-base"
+    },
+    {
+      "glbNodeName": "scene-part--instance-marker--part-marker-orb",
+      "kind": "scene-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "scene-part--instance-marker--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--0",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:0",
+      "stableId": "placement--placement-spline-markers--0"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_0--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_0--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_0--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_0--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--1",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:1",
+      "stableId": "placement--placement-spline-markers--1"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_1--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_1--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_1--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_1--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--2",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:2",
+      "stableId": "placement--placement-spline-markers--2"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_2--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_2--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_2--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_2--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--3",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:3",
+      "stableId": "placement--placement-spline-markers--3"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_3--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_3--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_3--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_3--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--4",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:4",
+      "stableId": "placement--placement-spline-markers--4"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_4--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_4--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_4--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_4--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--5",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:5",
+      "stableId": "placement--placement-spline-markers--5"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_5--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_5--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_5--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_5--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--6",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:6",
+      "stableId": "placement--placement-spline-markers--6"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_6--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_6--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_6--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_6--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--7",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:7",
+      "stableId": "placement--placement-spline-markers--7"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_7--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_7--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_7--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_7--part-marker-orb"
+    },
+    {
+      "glbNodeName": "placement--placement-spline-markers--8",
+      "kind": "placement",
+      "sourceId": "placement-spline-markers:8",
+      "stableId": "placement--placement-spline-markers--8"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_8--part-marker-base",
+      "kind": "placement-part",
+      "sourceId": "part-marker-base",
+      "stableId": "placement-part--placement-spline-markers_u3a_8--part-marker-base"
+    },
+    {
+      "glbNodeName": "placement-part--placement-spline-markers_u3a_8--part-marker-orb",
+      "kind": "placement-part",
+      "sourceId": "part-marker-orb",
+      "stableId": "placement-part--placement-spline-markers_u3a_8--part-marker-orb"
+    },
+    {
+      "glbNodeName": "spline--spline-gallery",
+      "kind": "spline",
+      "sourceId": "spline-gallery",
+      "stableId": "spline--spline-gallery"
+    },
+    {
+      "glbNodeName": "room--room-atrium",
+      "kind": "room",
+      "sourceId": "room-atrium",
+      "stableId": "room--room-atrium"
+    },
+    {
+      "glbNodeName": "socket--socket-east-door",
+      "kind": "socket",
+      "sourceId": "socket-east-door",
+      "stableId": "socket--socket-east-door"
+    },
+    {
+      "glbNodeName": "socket--socket-west-door",
+      "kind": "socket",
+      "sourceId": "socket-west-door",
+      "stableId": "socket--socket-west-door"
+    }
+  ],
+  "placements": [
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:0",
+      "nodeId": "placement--placement-spline-markers--0",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 0,
+      "transform": {
+        "position": [
+          -4.103886715564877,
+          0.08,
+          2.9128736857138575
+        ],
+        "rotation": [
+          0,
+          2.3402568998372617,
+          0
+        ],
+        "scale": [
+          0.951487345173955,
+          0.9614155957475304,
+          0.9675923213735222
+        ]
+      },
+      "variantSeed": 310243641,
+      "variantSetId": "variant-marker-tones"
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:1",
+      "nodeId": "placement--placement-spline-markers--1",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 1,
+      "transform": {
+        "position": [
+          -3.426597727822999,
+          0.27558075291757683,
+          2.0932296214925494
+        ],
+        "rotation": [
+          0,
+          2.206513063715404,
+          0
+        ],
+        "scale": [
+          1.0107744716852904,
+          0.9740898270532489,
+          0.9446289930120111
+        ]
+      },
+      "variantSeed": 471497396,
+      "variantSetId": "variant-marker-tones"
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:2",
+      "nodeId": "placement--placement-spline-markers--2",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 2,
+      "transform": {
+        "position": [
+          -2.3057144960832088,
+          0.45081182160494354,
+          1.5054916124046738
+        ],
+        "rotation": [
+          0,
+          1.8004789825100211,
+          0
+        ],
+        "scale": [
+          1.0628731739148498,
+          1.0799473223090172,
+          1.0703743655607105
+        ]
+      },
+      "variantSeed": 402890217,
+      "variantSetId": "variant-marker-tones"
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:3",
+      "nodeId": "placement--placement-spline-markers--3",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 3,
+      "transform": {
+        "position": [
+          -1.2643514692078177,
+          0.311305663456553,
+          1.8479808522955277
+        ],
+        "rotation": [
+          0,
+          1.1943075484786287,
+          0
+        ],
+        "scale": [
+          0.9635782971978187,
+          0.9586837847903371,
+          0.9527973256260157
+        ]
+      },
+      "variantSeed": 602367213,
+      "variantSetId": "variant-marker-tones"
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:4",
+      "nodeId": "placement--placement-spline-markers--4",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 4,
+      "transform": {
+        "position": [
+          0.004681567624211311,
+          0.2,
+          2.1380590026266875
+        ],
+        "rotation": [
+          0,
+          1.4663067748858396,
+          0
+        ],
+        "scale": [
+          1.0383791714534163,
+          1.0403519943729043,
+          1.0066355089098216
+        ]
+      },
+      "variantSeed": 432654012,
+      "variantSetId": "variant-marker-tones"
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:5",
+      "nodeId": "placement--placement-spline-markers--5",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 5,
+      "transform": {
+        "position": [
+          1.2032031094778717,
+          0.4723140868175676,
+          1.4353923889268394
+        ],
+        "rotation": [
+          0,
+          2.4521420527397644,
+          0
+        ],
+        "scale": [
+          0.9925650821626186,
+          0.9716325059905648,
+          1.0629309875890613
+        ]
+      },
+      "variantSeed": 198626671,
+      "variantSetId": "variant-marker-tones"
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:6",
+      "nodeId": "placement--placement-spline-markers--6",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 6,
+      "transform": {
+        "position": [
+          2.5579367740570427,
+          0.7189241727511496,
+          0.854813480218624
+        ],
+        "rotation": [
+          0,
+          1.7438175371436009,
+          0
+        ],
+        "scale": [
+          0.9246786680445075,
+          1.0204830649495125,
+          1.04360082346946
+        ]
+      },
+      "variantSeed": 1632877388,
+      "variantSetId": "variant-marker-tones"
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:7",
+      "nodeId": "placement--placement-spline-markers--7",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 7,
+      "transform": {
+        "position": [
+          3.493729288376273,
+          0.45955367236440614,
+          1.640264097099324
+        ],
+        "rotation": [
+          0,
+          0.49509124588758413,
+          0
+        ],
+        "scale": [
+          1.0561035757139325,
+          1.0788716701418162,
+          0.9847046753391624
+        ]
+      },
+      "variantSeed": 1349690478,
+      "variantSetId": "variant-marker-tones"
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "placement-spline-markers:8",
+      "nodeId": "placement--placement-spline-markers--8",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "ruleId": "placement-spline-markers",
+      "sequenceIndex": 8,
+      "transform": {
+        "position": [
+          4.118666622131562,
+          0.15000114001784026,
+          2.558418077485417
+        ],
+        "rotation": [
+          0,
+          0.7246413778591668,
+          0
+        ],
+        "scale": [
+          0.921270366832614,
+          1.0159771598875522,
+          0.9478791482001543
+        ]
+      },
+      "variantSeed": 179478233,
+      "variantSetId": "variant-marker-tones"
+    }
+  ],
+  "projectId": "starter-atelier",
+  "rights": {
+    "notice": "No license assertion is made by the generic Runtime Bundle exporter.",
+    "status": "NOASSERTION"
+  },
+  "rooms": [
+    {
+      "depth": 7,
+      "floorY": 0,
+      "height": 4.2,
+      "id": "room-atrium",
+      "materialId": "mat-room",
+      "nodeId": "room--room-atrium",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "width": 10
+    }
+  ],
+  "rootNodeId": "runtime-root--starter-atelier",
+  "sceneInstances": [
+    {
+      "assetId": "asset-console-table",
+      "id": "instance-console",
+      "nodeId": "scene-instance--instance-console",
+      "partIds": [
+        "part-top",
+        "part-leg-a",
+        "part-leg-b",
+        "part-leg-c",
+        "part-leg-d"
+      ],
+      "transform": {
+        "position": [
+          -1.5,
+          0,
+          -0.7
+        ],
+        "rotation": [
+          0,
+          0.18,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "assetId": "asset-marker",
+      "id": "instance-marker",
+      "nodeId": "scene-instance--instance-marker",
+      "partIds": [
+        "part-marker-base",
+        "part-marker-orb"
+      ],
+      "transform": {
+        "position": [
+          1.7,
+          0,
+          0.3
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1.25,
+          1.25,
+          1.25
+        ]
+      },
+      "variantSetId": "variant-marker-tones"
+    }
+  ],
+  "sockets": [
+    {
+      "compatibleTags": [
+        "door",
+        "corridor"
+      ],
+      "id": "socket-east-door",
+      "nodeId": "socket--socket-east-door",
+      "orientation": [
+        0,
+        3.14159,
+        0
+      ],
+      "position": [
+        5,
+        1.1,
+        0
+      ],
+      "roomId": "room-atrium",
+      "type": "door"
+    },
+    {
+      "compatibleTags": [
+        "door",
+        "corridor"
+      ],
+      "id": "socket-west-door",
+      "nodeId": "socket--socket-west-door",
+      "orientation": [
+        0,
+        0,
+        0
+      ],
+      "position": [
+        -5,
+        1.1,
+        0
+      ],
+      "roomId": "room-atrium",
+      "type": "door"
+    }
+  ],
+  "source": {
+    "generationSeed": 1847,
+    "recipeHash": "fnv1a-3a095d6f",
+    "recipeSchemaVersion": "0.1.0",
+    "recipeSha256": "sha256:186ba2979b979b9b7cdc61f90e8fc527e409d2ef27f89dc771b1101bd098fa6a"
+  },
+  "splines": [
+    {
+      "closed": false,
+      "controlPointCount": 5,
+      "id": "spline-gallery",
+      "materialId": "mat-slate",
+      "nodeId": "spline--spline-gallery"
+    }
+  ],
+  "validation": {
+    "errorCount": 0,
+    "warningCodes": [],
+    "warningCount": 0
+  }
+}
