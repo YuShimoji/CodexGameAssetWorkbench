@@ -5,7 +5,7 @@ import { Color, Group, MeshStandardMaterial, type Object3D } from 'three';
 import { buildAssetObject, buildSplineObject, disposeObject } from '@cgawe/adapter-three';
 import {
   activeSplineChannels, appendSplineControlPoint, generateAllPlacements, insertSplineControlPoint,
-  moveSplineControlPoint, removeSplineControlPoint, sampleSpline, valueAt,
+  moveSplineControlPoint, removeSplineControlPoint, resolveInstanceAsset, sampleSpline, valueAt,
   type SplineKeyframeChannel,
 } from '@cgawe/core';
 import type { AssetDefinition, Recipe, SceneInstance, SplineDefinition, Transform, Vec3 } from '@cgawe/schema';
@@ -44,7 +44,13 @@ function AssetObject({ recipe, asset, selectedPartId, variantId, variantSeed, on
 function EditableInstance({ recipe, instance }: { recipe: Recipe; instance: SceneInstance }) {
   const { selection, setSelection, transformMode, transact } = useWorkbench();
   const selected = selection.kind === 'instance' && selection.id === instance.id;
-  const asset = recipe.assetDefinitions.find((item) => item.id === instance.assetId);
+  const asset = useMemo(() => {
+    try {
+      return resolveInstanceAsset(recipe, instance);
+    } catch {
+      return undefined;
+    }
+  }, [instance, recipe]);
   const groupRef = useRef<Group>(null);
   if (!asset) return null;
   const content = (

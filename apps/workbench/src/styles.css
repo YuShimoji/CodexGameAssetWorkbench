@@ -256,7 +256,9 @@ button { color: inherit; }
   .workbench { grid-template-columns: 0 1fr 0; grid-template-rows: 54px 1fr 165px; }
   .brand { min-width: 0; }
   .brand strong { font-size: 11px; }
-  .brand em, .mode-switch, .history-tools, .file-tools button:not(.primary) { display: none; }
+  .brand em, .mode-switch, .history-tools, .transform-tools, .file-tools button { display: none; }
+  .file-tools .runtime-export, .file-tools .save-recipe { display: inline-flex; align-items: center; }
+  .file-tools button.primary { padding-inline: 8px; }
   .topbar { gap: 7px; }
   .file-tools { margin-left: auto; }
   .left-slot, .right-slot { display: none; }

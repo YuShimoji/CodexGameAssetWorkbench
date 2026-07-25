@@ -26,7 +26,7 @@ npm run test:browser
 |---|---|---|
 | `packages/schema` | Recipe型、JSON Schema、明示的なversion gate | Three.js、React、生成アルゴリズム |
 | `packages/core` | Seeded RNG、Primitive/Spline MeshData、Variant、Placement、参照検証、hash・diff・統計 | DOM、React、Three.js object |
-| `packages/adapter-three` | MeshDataからBufferGeometry/Object3Dへの変換、Three material | Recipeの正本状態、UI transaction |
+| `packages/adapter-three` | MeshDataからBufferGeometry/Object3Dへの変換、Three material、versioned Runtime Bundle | Recipeの正本状態、UI transaction |
 | `packages/cli` | inspect / validate / diff / summarizeのJSON入出力 | ブラウザ状態、描画オブジェクト |
 | `apps/workbench` | Recipe transaction、3D viewport、Inspector、保存・再読込、Undo/Redo、GLB派生出力 | Core生成規則の再実装 |
 
@@ -52,6 +52,7 @@ npm run test:browser
 - Recipe変更をUndo/Redoし、JSONへ保存、再読込、Revert、starter Resetする
 - Schema・参照・生成MeshのValidation、Recipe diff、Seed、生成統計を下部dockで読む
 - 選択Assetを実GLBへ書き出し、Recipe hashと生成統計を含むsidecar manifestも同時に保存する
+- Whole Recipeを`cgawe-runtime-bundle-1.0.0`のGLB + manifestへ書き出し、Scene Instance、expanded placement、Spline、Room、SocketをStable IDで束縛する
 
 GLB、manifest、スクリーンショットは派生物です。編集上の正本は常にversion付きRecipe JSONです。
 
@@ -82,6 +83,22 @@ git diff --check
 
 実画面証跡、保存→再読込に使ったRecipe、GLB/manifest、機械可読readbackの生出力は`output/playwright/`へ生成され、Gitでは追跡しません。基準版として選別した証跡は[`artifacts`](./artifacts)に保存します。
 
+## Runtime Bundle v1
+
+Workbenchの`Runtime Bundle`操作は、選択Assetだけを出す`Selected GLB`とは独立しています。Recipe validationがgreenのときだけ次を保存します。
+
+- `<projectId>.runtime.glb`
+- `<projectId>.runtime.manifest.json`
+
+Generic exportのrights既定値は`NOASSERTION`です。canonical manifestにはtimestamp、absolute path、usernameを含めません。Schema、Stable ID、coordinate system、二入力証跡、failure boundaryは[`docs/RUNTIME_BUNDLE_V1.md`](./docs/RUNTIME_BUNDLE_V1.md)を参照してください。
+
+```powershell
+npm run runtime:generate
+npm run runtime:check
+```
+
+`runtime:check`はStarterとPaper Glider canaryを同じ共有entryから生成し、byte determinism、JSON Schema、actual GLTFLoader parse、node/reference、finite値、hash/bytes、tracked artifact一致を検証します。desktop/mobileの実操作証跡は[`artifacts/runtime-bundle-v1`](./artifacts/runtime-bundle-v1)にあります。
+
 ## Paper Glider compatibility packet
 
 Paper Glider `3ad5ac1`をread-onlyの実装基準として検証した`paper-glider-compat-v1` contract、再生成可能なArchive Gate canary、GLB、manifest、schema、視覚証跡を[`docs/compat/paper-glider-v1`](./docs/compat/paper-glider-v1)に保存しています。runtime境界はGLB + validated manifestであり、Recipe 0.1.0はWorkbench側のbuild-time正本です。
@@ -97,9 +114,9 @@ npm run compat:check
 
 2026-07-25のread-only downstream Git監査では、Paper Glider `main`は`857afb2`、`origin/main` parity `0/0`で、同repositoryのcommitted正本はArchive Gate integration、PG-A2/A3、PG-V1公開完了を記録しています。開始確認後に別作業のdocs-only local deltaが現れたため、このtaskでは変更せず保護しました。Workbench packetの証明境界、downstream acceptance、physical-device acceptanceは独立しています。現在の詳細と長期目標は[`docs/PROJECT_STATUS_AND_ROADMAP.md`](./docs/PROJECT_STATUS_AND_ROADMAP.md)を参照してください。
 
-## v0.2で意図的に扱わないもの
+## 現在意図的に扱わないもの
 
-Paper Glider runtimeへのloader/world統合、Unity/Godot/Unreal Adapter、汎用Scene全体GLB bundle、Blender add-on、Bezier curve editor、任意頂点モデリング、UV/Texture Paint、Morph/Fracture/物理破壊、天候、高度なSpawner、クラウド保存、共同編集、外部AIサービスは実装していません。存在するように見せる無効なUIも置いていません。
+Paper Glider runtimeへの追加変更、Unity/Godot/Unreal Adapter、Runtime Bundle import/reopen、Blender add-on、Bezier curve editor、任意頂点モデリング、UV/Texture Paint、Morph/Fracture/物理破壊、天候、高度なSpawner、クラウド保存、共同編集、外部AIサービスは実装していません。存在するように見せる無効なUIも置いていません。
 
 詳しい設計は[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)、Recipe契約は[`docs/RECIPE_SCHEMA.md`](./docs/RECIPE_SCHEMA.md)を参照してください。
 

@@ -13,8 +13,9 @@ flowchart LR
   Core --> Mesh["Engine-neutral MeshData"]
   Mesh --> Three["adapter-three"]
   Three --> Viewport["React Three Fiber viewport"]
+  Three --> Runtime["Runtime Bundle GLB + versioned manifest"]
   Recipe --> CLI["CLI inspect / validate / diff / summarize"]
-  Viewport --> Derived["GLB + manifest / screenshots / readback"]
+  Viewport --> Derived["Selected Asset GLB / screenshots / readback"]
 ```
 
 ## 決定論
@@ -63,16 +64,20 @@ Asset DefinitionはPartのPrimitive、transform、Material参照を所有しま�
 
 ## 派生出力
 
-GLB exporterは選択Assetだけをブラウザ内で実変換します。同時に生成するmanifestのvertex/triangle/bounds/material統計も、その選択Assetに限定しています。Visual ProofのreadbackはRecipe全体のCore統計を記録します。
+選択Asset exporterはDefinition 1件だけをブラウザ内で実変換します。同時に生成するsidecarのvertex/triangle/bounds/material統計も、その選択Assetに限定しています。
 
-Node版GLTFExporterへ依存せず、ブラウザ実行でArrayBufferが空でないことをsmoke testします。GLBをScene全体、Spline、Roomまで束ねるexportは未実装です。
+Runtime Bundle exporterは`adapter-three`の共有entryとしてWhole Recipeを変換します。Scene InstanceはCoreのoverride解決、PlacementはCoreのseed付き展開、Splineはengine-neutral MeshData生成を通り、Room/Socketはruntime metadataとGLB nodeとして束縛されます。Workbench UIとNode verificationは同じentryを使用します。
+
+Runtime manifestはGLB byte hash、Stable node map、source references、coordinate system、counts、bounds、validation、rightsを保持します。canonical JSONはmachine固有情報を含めず、Generic rightsは`NOASSERTION`です。詳しい契約は`docs/RUNTIME_BUNDLE_V1.md`です。
+
+Browser smokeはSelected AssetとRuntime Bundleの両経路を実行します。Node proofはStarterとPaper Glider canaryを各2回生成し、Schema、GLTFLoader parse、参照、hash、tracked artifact一致を検証します。
 
 ## 現在の制約
 
 - JSON Schema 0.1.0は明示的version gateを持ちますが、過去versionからのmigrationはまだありません。
 - Splineの作業平面はv0.2ではY=0のGround Planeです。任意平面、surface snap、Bezier tangent editorは未対応です。
 - Viewportの点追加・挿入は1 clickで完了し、挿入対象segmentは選択点の直後（末尾選択時は最後のsegment）です。
-- GLB export対象は選択Asset Definitionです。Scene bundleやplacement展開結果は未対応です。
+- Runtime Bundle import/reopenと、Generic contractを利用する独立consumerは未実装です。
 - Primitive geometryはレビュー用途の中立MeshDataで、UVやtangent、textureは持ちません。
 - 初期JavaScript bundleはThree/R3Fを含むため約1.36 MB（gzip約380 KB）です。v0.2ではローカルworkbenchの機能一貫性を優先しています。
 - レスポンシブ表示ではviewportを守るためside panelを隠しますが、詳細編集はdesktopを主対象にしています。

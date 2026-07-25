@@ -4,193 +4,231 @@
 
 ## 結論
 
-現在のWorkbenchは **`DEVELOPMENT_READY_WITH_LOCAL_HANDOFF_DELTA`** です。`git fetch --prune origin`と`git pull --ff-only origin codex/paper-glider-compat-v1`を実行し、同期基準HEAD `c58ac302acee3e0dad0ce0d2ce89dc545cec241d`とupstreamのparity `0/0`を確認しました。依存ツリー、Schema、production build、typecheck、lint、unit、compatibility verifier、実ブラウザ12状態、`git diff --check`はgreenです。
+Codex Game Asset Studio Runtime Bundle v1は **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** です。
 
-今回、Windowsの並列負荷で子プロセス型unit testが5秒を超える既知のflakeを再現しました。対象2 testだけへ15秒上限を設定した後、6 files / 21 testsと全`npm run verify`がgreenになりました。この変更はまだlocal handoff deltaであり、commit、push、PR、`main`統合、tag、release、deploymentは実行していません。
+Recipe 0.1.0のWhole Recipeを、再現可能なGLBと`cgawe-runtime-bundle-1.0.0` manifestへ変換する共通entryを実装しました。Scene Instance、Part override、seed付きexpanded placement、Spline mesh、Room、Socketが同じbundleへ入り、manifestからGLB nodeへStable IDで全参照を解決できます。
 
-下流のPaper Gliderはread-onlyでlive Gitを確認しました。開始確認では`main` `857afb2c4e0f4d2ba7a7965608be6c313780175c`、`origin/main` parity `0/0`、cleanでした。最終境界監査時に別作業のdocs-only local delta（`PROJECT_HANDOFF.md`変更、`SUPERVISOR_AI_STATUS_2026-07-25.md`追加）が現れました。commit HEADとparityは不変です。このtaskはそれらを変更・退避・stageせず、Paper Gliderのrepository authorityが記録するArchive Gate integration、PG-A2/A3、PG-V1公開完了だけをdownstream現在地として使用しました。Workbenchに残っていたArchive Gate統合Promptは完了履歴へ退避しました。
+StarterとPaper Glider canaryの2入力について、GLB/manifestのbyte determinism、JSON Schema、actual GLTFLoader parse、参照、finite値、hash/bytes、tracked artifact一致を確認しました。Workbench UIはSelected AssetとWhole Recipeを区別し、不正Recipeのdownloadを0件で止め、正常時だけ2ファイルを出します。desktopと390 x 844 mobileでactual exportとstatusを確認しました。
 
-現在の最重要gapは、Workbenchの最新開発成果が`main` authorityへ昇格していないことです。`origin/main`はv0.1 baseline `0dd0980`で、現行branchは9 commits、58 files、約5,018 insertions / 195 deletions先行しています。次の安全な目標は、CIとclean-room evidenceを持つv0.2 mainline promotion candidateを作り、owner判断へ渡すことです。
+作業は新しいlocal branch `codex/runtime-bundle-v1`に固定しました。preexisting handoff deltaを`06e875b`、contract/core/evidenceを`88a299d`へcommitしています。push、PR、main merge、tag、release、deploymentは未実施です。`.github/workflows/verify.yml`は追加しましたが、remote workflowはまだ一度も実行されていません。
 
-## 今回の実測
+## 成果の意味
 
-| 項目 | 実測 | 判定 |
-|---|---|---|
-| Repository | `https://github.com/YuShimoji/CodexGameAssetWorkbench.git` | origin fetch/push一致 |
-| Branch | `codex/paper-glider-compat-v1` | 現行開発authority |
-| Entry HEAD | `c58ac302acee3e0dad0ce0d2ce89dc545cec241d` | upstream一致 |
-| Pull | `Already up to date.` | remote最新を取込済み |
-| Branch parity | `HEAD...origin/codex/paper-glider-compat-v1 = 0/0` | 同期済み |
-| Main | `origin/main = 0dd0980` | v0.1 baseline |
-| Mainとの差 | `origin/main...HEAD = 0/9` | main昇格未実施 |
-| Worktree開始状態 | tracked/untracked変更なし | 既存差分を上書きせず開始 |
-| Git改行設定 | repo-local `core.autocrlf=false` | Schema/LF契約に適合 |
-| Node / npm | Node `v24.13.0` / npm `11.6.2` | engines `>=22`適合 |
-| Dependency tree | `npm ls --depth=0` pass | current checkoutは開発可能 |
-| Live process | Workbench `node_modules`を参照するTypeScript language server 6件 | 停止・変更せず保護 |
-| Clean install | primary checkoutでは未実施 | live language server保護。lockfile再現は次のexact-candidate clean-room gate |
-| Tracked CI | `.github/`なし | local greenをremote継続検証するCIが未整備 |
-| Local artifacts | `.serena/`、`node_modules/`、`apps/workbench/dist/`、`output/`等はignored | Git authorityとlocal evidenceを分離 |
-| Paper Glider final boundary | committed `main`/upstream `857afb2`、parity `0/0`、concurrent docs-only local deltaあり | user-ownedとして保護。このtaskは内容を独立検証・採用していない |
+これまでのWorkbenchは、選択AssetのGLB exportと、Paper Glider専用Compatibility Packetという2つのdelivery経路を持っていました。Runtime Bundle v1により、通常のStarter Recipeとconsumer canaryを同じ公開entryへ渡し、consumer固有scriptなしで複合sceneを出力できる最初の汎用経路が成立しました。
 
-### 検証結果
+このsliceが確立したもの:
 
-最終`npm run verify`は次をすべて通過しました。
+- Whole Recipeを実行時artifactへ変換するversioned contract
+- UIとNode proofが共有するexport実装
+- Scene Instance overrideとViewport表示の意味論一致
+- Placement Ruleのdeterministic expansionとsequence identity
+- GLB nodeとmanifest source entityの双方向追跡に使えるStable ID
+- canonical manifestからtimestamp、local path、usernameを排除
+- rights未指定時に`NOASSERTION`を明示するfail-safe
+- actual two-input artifacts、desktop/mobile screenshots、machine readback
+- root `verify`とWindows CI候補への統合
 
-- Schema同期check
-- production build
-- TypeScript project build / typecheck
-- ESLint
-- Vitest 6 files / 21 tests
-- Paper Glider compatibility verifier
-- Workbench Playwright 7 states
-- Paper Glider compatibility visual 5 states
-- `git diff --check`
+このsliceが確立していないもの:
 
-production buildは742 modulesです。出力はHTML 0.47 kB、CSS 20.53 kB、JavaScript 1,357.10 kB、gzip 380.41 kBでした。500 kBを超えるVite chunk warningは継続中で、build failureではありません。
+- remote CI成功
+- GitHub上の共有branchまたはPR
+- `main` authority
+- dependency audit clean（critical 0 / high 6）
+- external consumerによるGeneric Runtime Bundle load
+- `DECLARED` rights入力のproduct flow
+- Recipe schema 0.2 migration
+- product releaseまたはpublic deployment
 
-Vitestの安定化前は、初回全verifyでCLI testが5秒timeout、再走ではCLIとcompatibility testがともに5秒timeoutしました。単独実測は1.48秒、負荷下の実測は最大8.35秒でした。対象testだけを15秒へ変更後、負荷下でもCLI 8.35秒、compatibility 6.25秒でpassし、最終verifyでは4.43秒、5.99秒でpassしました。
+## 実装面
 
-### Compatibility Packet実測
+### Contract / adapter
 
-| Contract | Value |
-|---|---|
-| Contract version | `paper-glider-compat-v1` |
-| Recipe hash | `fnv1a-3383aa61` |
-| Content hash | `sha256:04461554becd391625cc834460196186e32a6c08a393e34c210bd1d45503d397` |
-| GLB SHA-256 | `sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019` |
-| Manifest SHA-256 | `sha256:b9c41a053e97d061ac4795c77d8f628e93f0a40adef6f718614e614c861e1bd5` |
-| Schema SHA-256 | `sha256:abbd570b742de3ae87904069dfd0b27f26a0e223999e1cfa760dec81a26a4e39` |
-| Rights identifier | `LicenseRef-PaperGlider-Project-Asset` |
-| Rights SHA-256 | `sha256:481eb1980eb1728eefb84c6a5fb5bdf307185e99e7089e511e927ebf49958c9f` |
-| Geometry | 594 vertices / 1,064 triangles / 8 visual nodes / 3 colliders |
-| Validation | warnings 0 / errors 0 / validation warnings 0 |
+`packages/adapter-three/src/runtime-bundle.ts`が共有entryです。Recipe validationを先に実行し、errorがあれば`RuntimeBundleValidationError`で終了します。GLB生成後にGLB byte hash、world bounds、実geometry countsをmanifestへ束縛します。
 
-Workbench browser smokeはSpline作成、control point編集、rod、road、keyframed corridor、integrated scene、reloadの7 statesを生成し、Recipe、GLB、manifestの3 exportを成功させました。Compatibility visualはoverview、colliders、flight camera、reload、mobile portraitの5 statesを成功させ、console errorsは0でした。
+Scene InstanceはCore `resolveInstanceAsset`でPart overrideを適用し、Variantを同じseed規則で評価します。PlacementはCore `generateAllPlacements`の順序と`ruleId:index`を保持します。Splineは実mesh、Room/Socketはruntime metadataとGLB nodeを持ちます。
 
-## Project thesisと現在の開発軸
+### Manifest
 
-North starは、Codexが編集するversioned Recipe JSONと、人間が操作するブラウザUIを同じparse、validation、deterministic generation、save/reload経路へ接続する、engine-neutralな3D asset workbenchです。最終像は、ひとつのデモAssetを作るツールに留まらず、複数ゲームやengine adapterへ、versioned bundle、provenance、rights、machine verification、visual evidenceを一貫して渡せる制作基盤です。
+Schema正本: `schemas/runtime-bundle-1.0.0.schema.json`
 
-現在の開発軸は「機能実証」から「canonical product line」への移行です。
+主要field:
 
-- v0.1 mainはPrimitive、Material、Instance、Room、Socket、Seed配置のbaseline。
-- v0.2 branchはSpline直接編集、adaptive sweep、保存再読込、GLB/manifest派生、visual proofまで技術的に完成。
-- Paper Glider packetは、rights、hash、schema、collision、visual evidenceを持つ最初の実consumer contract。
-- Paper Glider側の実統合と公開完了により、Workbench-authored assetが実ゲームへ到達する縦断実証は成立。
-- Workbench自身のmain authority、CI、versioned release、汎用bundle export、schema migrationは未確立。
+- `contractVersion` / `manifestSchemaVersion`
+- `projectId`
+- `source`
+- `coordinateSystem`
+- `files`
+- `rootNodeId`
+- `sceneInstances`
+- `placements`
+- `splines`
+- `rooms`
+- `sockets`
+- `nodeMap`
+- `counts`
+- `bounds`
+- `validation`
+- `rights`
 
-## 完成度の読み方
+manifest自身のhashをmanifest内へ循環参照させません。tracked evidenceのmanifest SHA-256はreadbackが保持します。
 
-単一の進捗率は、technical、owner、rights、release、downstream acceptanceを混同するため使用しません。lane別の現在地は次の通りです。
+### UI / browser
 
-| Lane | 完成度 | 根拠 | 残gate |
-|---|---:|---|---|
-| v0.1 baseline | 100% | `origin/main`確立 | 保守のみ |
-| v0.2 feature implementation | 100% technical | 全local verify、7 browser states | main authority |
-| Paper Glider packet / rights | 100% Workbench scope | hashes、schema、rights、5 visual states | 一般license化は範囲外 |
-| Downstream playable proof | 100% repository-reported | Paper Glider mainが統合・公開完了を記録 | 今回public URL/CIは再実行していない |
-| Windows test stability | 100% local candidate | timeout再現、局所修正、full verify green | commit/remote evidence |
-| v0.2 mainline promotion | 20% | branchとhandoffは揃う | CI、clean-room、owner review、main反映 |
-| Reproducible delivery | 30% planning estimate | package lockとverifyは存在 | tracked CI、release version、artifact policy |
-| General asset platform 1.0 | 25% planning estimate | Recipe/Core/UI/consumer proof成立 | migration、generic bundle、adapter SDK、performance、release |
+Top barには次の独立操作があります。
 
-## 現在のgapと注意
+- `Export Selected Asset GLB`: 選択Definitionだけの既存出力
+- `Export Runtime Bundle`: Whole Recipeのversioned出力
 
-1. **Main authority lag**: downstreamで使われたasset authorityがfeature branch上にあり、`main`はv0.1のままです。新規Agentがmainだけを読むとv0.2とpacketを見失います。
-2. **Remote CI不在**: `.github/`が存在せず、local `verify`の継続性をremoteで証明できません。
-3. **Exact-candidate clean install**: primary checkoutはTypeScript language server 6件が稼働しており、`npm ci`による`node_modules`交換を避けました。現行依存ツリーとfull verifyはgreenです。main候補ではisolated clean-roomを追加します。
-4. **Branch-local handoff delta**: test timeout安定化と今回の文書は未commitです。別端末へ渡すにはowner承認後の意図的commit/pushが必要です。
-5. **Bundle size**: Workbench JavaScriptは約1.36 MBです。local authoringには許容されますが、起動時間とmemory budgetをまだ契約化していません。
-6. **Schema evolution**: Recipe schemaは0.1.0のversion gateを持ちます。旧版migration、forward/backward compatibility、deprecation policyは未実装です。
-7. **Export breadth**: 現行GLB exportは選択Asset Definitionが中心です。Scene、Room、Spline、Placement展開を一つの汎用runtime bundleへする契約は未実装です。
-8. **Adapter breadth**: Three adapterは存在します。Unity/Godot/Unreal、Blender、DCC interchangeは設計・権利・保守costが未評価です。
-9. **Evidence boundary**: Workbench visual proof、Paper Glider technical acceptance、physical-device acceptance、owner release approvalは別gateです。
-10. **Concurrent downstream docs**: Paper Gliderの最終監査では別作業の未commit監修文書が存在します。Paper Glider側でreview、commit、push、破棄の所有判断が完了するまでWorkbenchから操作しません。
+Runtime Bundle成功statusはproject ID、nodes、trianglesを表示します。不正Recipeでは先頭validation messageと総error数を表示し、download eventが発生しないことをbrowser smokeで検証します。
 
-## 推奨ロードマップ
+390px mobileではTransform toolをtop barから隠し、Runtime BundleとSave Recipeを維持します。document overflow、button bounds、actual 2-download、console error 0を検証しました。
 
-各項目はpurpose、effect、requirements、state、owner、next moveを明示します。順序は依存関係に基づく推奨であり、owner判断でscopeを固定します。
+### CI
+
+`.github/workflows/verify.yml`:
+
+- `windows-latest`
+- Node 22
+- `npm ci`
+- `npm ls --depth=0`
+- Playwright Chromium
+- `npm run verify`
+- `contents: read`
+- secret、deployment、Pages mutationなし
+
+remote workflow結果は存在しないため、local verificationの代替として「CI green」とは報告しません。
+
+## Actual evidence
+
+| Input | GLB bytes | GLB SHA-256 | Manifest SHA-256 | Nodes | Meshes | Vertices | Triangles |
+|---|---:|---|---|---:|---:|---:|---:|
+| Starter | 90,708 | `sha256:5b39c86b7bb7999e8401a27c1dc34cb3172cc58e5cbdabc36fe071aff8d437ea` | `sha256:9378e8cb189cba95ec21cec337cf8c85aa1d0f88b93637d79a506eee9a81160c` | 41 | 26 | 1,700 | 2,720 |
+| Paper Glider canary | 30,820 | `sha256:27e13b5ed5b9b6d521d39936127e73f75c8c7de5fc3724e2240b39d6e2cd12fe` | `sha256:b8cbaee3d1b8ff155ffc19a0a4285c0389b97aca98c10b317abd87d18643cc99` | 13 | 8 | 594 | 1,064 |
+
+検証結果:
+
+- input count 2
+- deterministic GLB true
+- deterministic manifest true
+- JSON Schema true
+- GLTFLoader parse true
+- Stable node refs true
+- finite numbers true
+- hashes/bytes true
+- generic rights `NOASSERTION`
+- local disclosure absent
+- browser validation blocked download true
+- desktop Runtime Bundle download 2
+- mobile Runtime Bundle download 2
+- desktop/mobile console errors 0
+
+visual evidence:
+
+- `artifacts/runtime-bundle-v1/runtime-bundle-desktop.png`
+- `artifacts/runtime-bundle-v1/runtime-bundle-mobile.png`
+
+## 保護境界
+
+### Paper Glider
+
+Paper Glider固有bundleはbyte不変です。Generic Runtime Bundleは同じcanary Recipeを入力に使いますが、固有GLB、manifest、Schema、RIGHTS、screenshotsを上書きせず、新identityへ出力します。
+
+- Recipe hash `fnv1a-3383aa61`
+- Content hash `sha256:04461554becd391625cc834460196186e32a6c08a393e34c210bd1d45503d397`
+- GLB `sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019`
+- Manifest `sha256:b9c41a053e97d061ac4795c77d8f628e93f0a40adef6f718614e614c861e1bd5`
+- Schema `sha256:abbd570b742de3ae87904069dfd0b27f26a0e223999e1cfa760dec81a26a4e39`
+- Rights `sha256:481eb1980eb1728eefb84c6a5fb5bdf307185e99e7089e511e927ebf49958c9f`
+- Rights ID `LicenseRef-PaperGlider-Project-Asset`
+
+Generic Runtime Bundleの`NOASSERTION`は「権利が自由である」という主張ではありません。固有LicenseRefの無断流用を避け、consumer側が独立してrightsを判断できる状態です。
+
+### Recipe 0.1.0
+
+Runtime BundleはRecipe schemaや既存意味論を変更しません。migrationも追加していません。未知versionは引き続きfail closedです。
+
+### External state
+
+remote、Paper Glider repository、owner process、release surfaceを変更していません。local commitsは外部公開を意味しません。
+
+## Gapとrisk
+
+| Gap | 影響 | 現在の緩和 | 解消条件 |
+|---|---|---|---|
+| Branchがlocal only | 別端末から直接取得できない | exact commitsと再開手順をrepo docsへ記録 | owner許可後のnon-force pushとparity |
+| Remote CI未実行 | Windows再現性がlocal evidenceだけ | workflowをtracked化 | push/PR後のworkflow green |
+| `npm audit` high 6 | toolchainとAjv依存に既知advisory | critical 0、broad auto-fixを未実行、機能gateと分離 | fast-uri patchとESLint 10 migrationを専用検証 |
+| Generic consumer未実証 | contractがThree-based proof内に留まる | GLTFLoader actual parse | independent loader conformance |
+| Rights `DECLARED` flowなし | 配布判断を自動化できない | default `NOASSERTION` | owner-supplied registry + negative tests |
+| Empty Room/Socket GLB nodes | metadata consumerの実装が必要 | manifestとnodeMapで明示 | reference consumer fixture |
+| Large JS chunk | startup/download cost | warningを既知gapとして保持 | code split + budget |
+| Large Recipe benchmarkなし | export time/memory上限不明 | Starter/canary deterministic proof | scale fixture + thresholds |
+| Schema migrationなし | 将来field追加時の資産保護未確立 | 0.1.0固定、unknown fail closed | explicit migration CLI + golden |
+
+## 可能な限り先の目標設定
+
+以下は現在の成果から依存順に進める提案です。各goalは独立acceptanceを持ち、remote、merge、release権限を自動的に広げません。
 
 | ID | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|---|
-| WB-H0 | 2026-07-25 handoff delta確定 | test flakeと正本の矛盾を解消 | diff review、full verify、ownerのcommit/push許可 | local green | Workbench maintainer / owner | 2 test + docs差分をreview |
-| WB-CI1 | Windows verification CI | remoteで再現性を継続証明 | Node 22+、`npm ci`、Chromium、`npm run verify`、artifact policy | 未着手 | Workbench maintainer | 最小workflow候補を作る |
-| WB-M1 | v0.2 mainline promotion | mainだけで最新製品とpacketへ到達 | clean-room、CI green、9-commit review、hash不変、owner承認 | owner gate | Repository owner | `docs/NEXT_AGENT_PROMPT.md`を実行 |
-| WB-R02 | v0.2 release baseline | 再利用可能なversionとrollback point | semver、changelog、tag/release方針、exact artifact hashes | 未着手 | Owner + maintainer | main昇格後にrelease decision |
-| WB-B1 | Generic Runtime Bundle v1 | consumer固有手作業を減らす | versioned manifest、GLB、schema、rights/provenance refs、validator | concept | Core/CLI owner | Paper packetを汎用contractへ抽象化 |
-| WB-E1 | Scene/Room/Spline export v1 | 実ゲームへ複合空間を渡す | selection semantics、placement bake、stable node IDs、collider/route contract | 未着手 | Core + adapter + CLI | 1 room bundleのthin slice |
-| WB-SM1 | Recipe schema 0.2 migration | 長期互換と編集資産保護 | migration CLI、golden fixtures、unknown-version fail-closed、rollback | 未着手 | Schema owner | 0.1→0.2 no-loss migration spec |
-| WB-I1 | Bundle import/reopen | consumer artifactをWorkbenchで追跡可能に | provenance resolution、Recipe authority保持、derived GLBを正本化しない | 未着手 | Workbench UI + Core | manifest→source Recipe locator |
-| WB-A1 | Advanced spline authoring | 高低差・曲面・曲線の制作力を拡張 | arbitrary plane、3D points、Bezier/tangent contract、deterministic sampling | future | UI + Core | vertical spline thin sliceを先行 |
-| WB-G1 | Geometry production quality | runtime利用範囲を拡張 | UV、tangent、normal、texture/material policy、LOD、collision separation | future | Core + adapter | textured static prop 1種で契約化 |
-| WB-P1 | Workbench performance budget | large recipeでも操作性を維持 | code splitting、load budget、mesh cache、large-scene benchmarks | known gap | Workbench UI | bundle splitとstartup計測 |
-| WB-SDK1 | Adapter SDK | 複数consumerへ一貫して配布 | stable MeshData/bundle API、conformance fixtures、lifecycle/dispose contract | future | Architecture owner | Three reference adapterを規格化 |
-| WB-U1 | Unity/Godot reference consumer | engine-neutral性を実証 | SDK確立、rights、version support matrix、sample project | future | Dedicated adapter owner | ownerが最初のengineを選ぶ |
-| WB-Q1 | Supply-chain evidence | asset provenanceと権利監査を強化 | digest manifest、license registry、attestation version、secret scan | future | Tooling + owner | current rights packetをfixture化 |
-| WB-AI1 | Agent automation surface | 大量Recipe編集を安全に自動化 | machine commands、transaction preview、policy gates、evidence receipts | future | CLI + Core | dry-run diff/validate/apply protocol |
-| WB-CAT1 | Versioned asset catalog | reusable contentを蓄積 | package identity、dependency graph、rights filter、preview/evidence index | future | Product + rights owner | 3 first-party assetsでpilot |
-| WB-10 | Owner-gated 1.0 | 制作基盤として安定宣言 | main/CI/release、migration、generic bundle、one reference consumer、docs、human acceptance | far goal | Repository owner | 1.0 acceptance checklistを確定 |
+| RB-H1 | Local handoffをremoteで再開可能に | 別端末がexact branchを取得 | owner push許可、non-force push、parity | local ready | Repository owner / maintainer | branch共有だけを独立実行 |
+| RB-CI1 | Windows verifyをremote継続実行 | regressionをPR時に検知 | branch共有、Actions許可、workflow green | workflow tracked | Maintainer | 初回runを観測 |
+| RB-M1 | Runtime Bundleをmainline candidate化 | canonical code pathを一本化 | full diff、CI、rollback、owner review | pending external gate | Repository owner | PR/merge方針を決定 |
+| RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | Three実装と独立したloader、positive/negative fixtures | 未着手 | Consumer SDK owner | Starter loaderをthin slice化 |
+| RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash mismatch、missing node/ref、NaN、rights cases | 未着手 | Schema / SDK owner | malformed manifest fixtures追加 |
+| RB-SEC1 | Dependency advisory closeout | known high 6を解消 | advisory影響評価、Ajv/fast-uri patch、ESLint 10互換、full verify | pending | Dependency / security owner | broad `npm audit fix`を使わず更新計画 |
+| RB-R1 | Declared rights profile | 配布可否とprovenanceを明確化 | license registry、source refs、owner declaration、audit | 未着手 | Rights owner | `NOASSERTION`から別profile化 |
+| RB-I1 | Bundle import/readback | 配布artifactからsource Recipeへ戻れる | source locator、hash照合、derived artifact非正本化 | future | UI / Core owner | manifest inspectorから開始 |
+| RB-S1 | Recipe schema 0.2 migration | 長期編集資産を保護 | lossless 0.1→0.2 migration、golden、rollback | future | Schema owner | migration RFC |
+| RB-G1 | Runtime geometry profile | 実ゲーム品質を拡張 | normals/tangents、UV、texture、LOD、collision separation | future | Core / adapter owner | textured prop 1種でcontract |
+| RB-P1 | Performance budget | 大規模sceneの操作・exportを保証 | benchmark Recipes、time/memory/size thresholds、cache | future | UI / adapter owner | 10x placement fixture |
+| RB-SDK1 | Adapter SDK / conformance kit | 複数engineの実装差を抑制 | stable bundle API、fixture suite、lifecycle policy | future | Architecture owner | Three adapterをreference化 |
+| RB-U1 | UnityまたはGodot consumer | engine-neutral deliveryを実証 | SDK、rights、version matrix、sample | future owner choice | Dedicated adapter owner | engineを1つだけ選定 |
+| RB-Q1 | Supply-chain attestation | hash、rights、generator lineageを監査可能に | attestation version、signing policy、secret boundary | far | Tooling / rights owner | unsigned receipt profile |
+| RB-AI1 | Agent-safe automation | 大量Recipe操作を安全に自動化 | dry-run diff、validate/apply、policy gate、receipt | far | CLI / Core owner | machine transaction protocol |
+| RB-CAT1 | Versioned asset catalog | 再利用素材を依存・権利付きで蓄積 | package IDs、dependency graph、rights filter、previews | far | Product / rights owner | first-party 3 assets |
+| RB-10 | Owner-gated 1.0 | 制作・配布基盤として安定宣言 | main、CI、migration、consumer、rights、performance、docs、人間受入 | far terminal | Repository owner | acceptance checklistを別途固定 |
 
-### 推奨する開発順
+### 推奨順
 
-1. **Canonicalization**: WB-H0 → WB-CI1 → WB-M1 → WB-R02
-2. **Reusable delivery**: WB-B1 → WB-E1 → WB-SM1 → WB-I1
-3. **Production quality**: WB-P1 → WB-A1/G1 → WB-SDK1
-4. **Ecosystem**: WB-U1 → WB-Q1 → WB-AI1 → WB-CAT1
-5. **Release**: WB-10
+1. **共有と再現**: RB-H1 → RB-CI1 → RB-M1
+2. **contract実証とsecurity**: RB-C1 → RB-C2 → RB-SEC1 → RB-R1
+3. **資産寿命**: RB-I1 → RB-S1
+4. **production quality**: RB-G1 → RB-P1 → RB-SDK1
+5. **ecosystem**: RB-U1 → RB-Q1 → RB-AI1 → RB-CAT1
+6. **release maturity**: RB-10
 
-main authorityとCIを先に確立すると、以後のv0.3開発がbranch archaeologyへ依存しません。製品価値を最も早く増やす次のfeatureはWB-B1/WB-E1の「汎用versioned room bundle」です。Paper Gliderで実証したGLB + manifest + schema + rights + collider contractを、consumer固有名称から切り離して再利用可能にします。
-
-## 監修AI・ownerの判断キュー
-
-| Decision | 推奨 | 理由 | 未決時の扱い |
-|---|---|---|---|
-| 15秒test timeout差分を採用するか | 採用 | 実測最大8.35秒、対象2 test限定、runtime契約不変 | local deltaのまま保持 |
-| v0.2をmainへ昇格するか | CI/clean-room後に承認判断 | downstream実績があり、main lagが最大の再開risk | feature branchをauthorityとして明記 |
-| PRか非rewriting mergeか | ownerが履歴方針を選択 | remote state変更を伴う | このtaskでは未実施 |
-| main後の第一feature | Generic Runtime Bundle v1 | consumer再利用性とWorkbench本体価値を同時に増やす | roadmap conceptに留める |
-| 最初の外部engine | 1.0 scope決定時に選択 | adapter保守costが高い | Three referenceを規格化して待つ |
-
-## 実施しなかったこと
-
-- commit、stage、push、PR、main merge、tag、release、deployment
-- Paper Gliderのfile変更、install、build、test、process停止
-- Paper Gliderのconcurrent `PROJECT_HANDOFF.md` / `SUPERVISOR_AI_STATUS_2026-07-25.md`差分のstage、commit、push、破棄
-- live TypeScript language serverの停止
-- primary checkoutでの`npm ci`
-- ignored `.serena/` memoryの更新
-- public Paper Glider URLとGitHub Actions/Pagesの再検証
-- rights範囲の拡張、一般license化
+最短の次価値はRB-C1です。Workbench内部のGLTFLoader proofから一歩離れ、実consumerがStarter Runtime Bundleを読み、root/nodeMap/placements/rooms/socketsを利用できれば、Generic contractの名称だけでなく可搬性が立証されます。
 
 ## 再開コマンド
 
 ```powershell
 Set-Location 'C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench'
-git fetch --prune origin
 git status --short --branch --untracked-files=all
 git rev-parse HEAD
-git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}'
-git rev-list --left-right --count 'HEAD...@{upstream}'
+git log --oneline -5
+git fetch --prune origin
+git branch -vv
 git rev-list --left-right --count 'origin/main...HEAD'
-git diff --check
-node --version
-npm --version
+npm ci
 npm ls --depth=0
+npx playwright install chromium
 npm run verify
+git diff --check
 ```
 
-exact candidateのclean-install証拠が必要な場合は、current working treeの差分を先にreviewしてcandidate SHAへ固定し、owner-owned processを避けたdetached worktreeまたはclean cloneで`npm ci`、`npm ls --depth=0`、`npx playwright install chromium`、`npm run verify`を直列実行してください。
+新しいlocal branchにはupstreamがありません。remote branch作成前に`@{upstream}` parityを要求しないでください。pushが承認された場合だけ、push後にupstream設定と`HEAD...@{upstream} = 0/0`を確認します。
 
 ## Authority map
 
 | Path | Authority |
 |---|---|
-| `docs/PROJECT_HANDOFF.md` | 現在地と再開順序 |
-| `docs/PROJECT_STATUS_AND_ROADMAP.md` | 監修報告、gap、長期目標、owner判断 |
-| `docs/NEXT_AGENT_PROMPT.md` | WB-M1単独実行Prompt |
-| `docs/ARCHITECTURE.md` | 現行設計境界 |
-| `docs/RECIPE_SCHEMA.md` | Recipe 0.1.0 contract |
-| `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | consumer compatibility contract |
-| `docs/compat/paper-glider-v1/RIGHTS.md` | project-scoped rights authority |
-| `docs/ai/003_PAPER_GLIDER_ARCHIVE_GATE_INTEGRATION_PROMPT.md` | 完了済みdownstream integration要求の履歴 |
+| `docs/PROJECT_HANDOFF.md` | 現在地、保護境界、再開 |
+| `docs/PROJECT_STATUS_AND_ROADMAP.md` | この監修報告と長期目標 |
+| `docs/RUNTIME_BUNDLE_V1.md` | Contract、Stable ID、validation、evidence |
+| `schemas/runtime-bundle-1.0.0.schema.json` | Machine schema |
+| `artifacts/runtime-bundle-v1/runtime-bundle-readback.json` | Two-input actual result |
+| `.github/workflows/verify.yml` | Windows remote verification candidate |
+| `docs/RECIPE_SCHEMA.md` | Recipe 0.1.0 |
+| `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | Paper Glider固有packet |
+| `docs/compat/paper-glider-v1/RIGHTS.md` | Paper Glider project-scoped rights |

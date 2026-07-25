@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,12 +7,16 @@ import { chromium } from 'playwright';
 import { parseRecipe } from '@cgawe/schema';
 import { generateSplineMesh, getMeshStats, recipeHash, summarizeRecipe, validateRecipe } from '@cgawe/core';
 
+/* global document, window */
+
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = resolve(root, 'output/playwright');
 const previewPort = await findAvailablePort();
 const baseUrl = `http://127.0.0.1:${previewPort}`;
 const viteBin = resolve(root, 'node_modules/vite/bin/vite.js');
 const appRoot = resolve(root, 'apps/workbench');
+const runtimeArtifactDir = resolve(root, 'artifacts/runtime-bundle-v1');
+const writeRuntimeArtifacts = process.argv.includes('--write-runtime-artifacts');
 const screenshots = [
   'v02-01-create-mode.png',
   'v02-02-control-point-edit.png',
@@ -27,7 +31,10 @@ await mkdir(outputDir, { recursive: true });
 for (const name of [
   ...screenshots,
   'v0.2-roundtrip.recipe.json', 'asset-console-table.glb', 'asset-console-table.manifest.json',
-  'readback-v0.2.json', 'starter-atelier.recipe.json',
+  'readback-v0.2.json', 'starter-atelier.recipe.json', 'runtime-invalid.recipe.json',
+  'starter-atelier.runtime.glb', 'starter-atelier.runtime.manifest.json',
+  'runtime-bundle-desktop.png', 'runtime-bundle-mobile.png',
+  'mobile-starter-atelier.runtime.glb', 'mobile-starter-atelier.runtime.manifest.json',
 ]) await rm(resolve(outputDir, name), { force: true });
 
 const server = spawn(process.execPath, [viteBin, 'preview', '--host', '127.0.0.1', '--port', String(previewPort), '--strictPort'], {
@@ -227,14 +234,94 @@ try {
   await page.waitForTimeout(350);
   await capture('v02-07-reloaded-state.png', 'Spline 2', { saveReloadHashMatch: true });
 
-  // v0.1 GLB + manifest regression remains a real browser export.
+  // Runtime Bundle validation fails closed before any browser download.
+  const invalidRecipe = JSON.parse(await readFile(roundtripPath, 'utf8'));
+  invalidRecipe.socketDefinitions[0].roomId = 'room-missing-runtime-proof';
+  const invalidRecipePath = resolve(outputDir, 'runtime-invalid.recipe.json');
+  await writeFile(invalidRecipePath, `${JSON.stringify(invalidRecipe, null, 2)}\n`, 'utf8');
+  await page.locator('input[type="file"]').setInputFiles(invalidRecipePath);
+  await page.locator('.stage-status').filter({ hasText: 'Validation errors' }).waitFor();
+  const downloadsBeforeBlockedExport = downloadPaths.length;
+  await page.getByRole('button', { name: 'Export Runtime Bundle' }).click();
+  await page.getByRole('status').filter({ hasText: 'Runtime Bundle blocked:' }).waitFor();
+  await page.waitForTimeout(350);
+  if (downloadPaths.length !== downloadsBeforeBlockedExport) throw new Error('Invalid Runtime Bundle export started a download.');
+  await page.locator('input[type="file"]').setInputFiles(roundtripPath);
+  await page.locator('.stage-status').filter({ hasText: 'Recipe valid' }).waitFor();
+
+  // Selected Asset and Whole Recipe Runtime Bundle remain distinct real browser exports.
   await page.getByTestId('asset-asset-console-table').click();
-  await page.getByRole('button', { name: 'Export GLB' }).click();
-  await page.getByRole('status').filter({ hasText: 'Exported' }).waitFor({ timeout: 15_000 });
+  await page.getByRole('button', { name: 'Export Selected Asset GLB' }).click();
+  await page.getByRole('status').filter({ hasText: 'Selected Asset exported:' }).waitFor({ timeout: 15_000 });
+  await page.getByRole('button', { name: 'Export Runtime Bundle' }).click();
+  await page.getByRole('status').filter({ hasText: 'Runtime Bundle starter-atelier:' }).waitFor({ timeout: 15_000 });
   await page.waitForTimeout(650);
   await Promise.all(downloadTasks);
-  if (!downloadPaths.some((path) => path.endsWith('.glb')) || !downloadPaths.some((path) => path.endsWith('.manifest.json'))) {
-    throw new Error(`GLB export did not produce both files: ${downloadPaths.join(', ')}`);
+  const requiredBrowserExports = [
+    'asset-console-table.glb',
+    'asset-console-table.manifest.json',
+    'starter-atelier.runtime.glb',
+    'starter-atelier.runtime.manifest.json',
+  ];
+  for (const file of requiredBrowserExports) {
+    if (!downloadPaths.some((path) => path.endsWith(file))) throw new Error(`Browser export did not produce ${file}: ${downloadPaths.join(', ')}`);
+  }
+  const browserRuntimeManifest = JSON.parse(await readFile(resolve(outputDir, 'starter-atelier.runtime.manifest.json'), 'utf8'));
+  if (browserRuntimeManifest.contractVersion !== 'cgawe-runtime-bundle-1.0.0' || browserRuntimeManifest.projectId !== 'starter-atelier') {
+    throw new Error('Browser Runtime Bundle manifest did not satisfy the versioned project contract.');
+  }
+  if (browserRuntimeManifest.files.glb.bytes !== (await readFile(resolve(outputDir, 'starter-atelier.runtime.glb'))).byteLength) {
+    throw new Error('Browser Runtime Bundle GLB bytes did not match its manifest.');
+  }
+  const desktopRuntimeScreenshot = resolve(outputDir, 'runtime-bundle-desktop.png');
+  await page.screenshot({ path: desktopRuntimeScreenshot });
+
+  // The compact top bar keeps Runtime Bundle visible and usable at a 390px mobile viewport.
+  const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+  const mobilePage = await mobileContext.newPage();
+  const mobileConsoleErrors = [];
+  const mobileDownloadPaths = [];
+  const mobileDownloadTasks = [];
+  mobilePage.on('console', (message) => { if (message.type() === 'error') mobileConsoleErrors.push(message.text()); });
+  mobilePage.on('pageerror', (error) => mobileConsoleErrors.push(error.message));
+  mobilePage.on('download', (download) => {
+    const path = resolve(outputDir, `mobile-${download.suggestedFilename()}`);
+    mobileDownloadPaths.push(path);
+    mobileDownloadTasks.push(download.saveAs(path));
+  });
+  await mobilePage.goto(baseUrl, { waitUntil: 'networkidle' });
+  await mobilePage.getByRole('button', { name: 'Export Runtime Bundle' }).waitFor({ state: 'visible' });
+  const mobileLayout = await mobilePage.evaluate(() => {
+    const button = document.querySelector('.runtime-export');
+    const topbar = document.querySelector('.topbar');
+    const box = button?.getBoundingClientRect();
+    return {
+      documentWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth,
+      topbarWidth: topbar?.scrollWidth ?? 0,
+      buttonLeft: box?.left ?? -1,
+      buttonRight: box?.right ?? -1,
+    };
+  });
+  if (mobileLayout.documentWidth > mobileLayout.viewportWidth || mobileLayout.buttonLeft < 0 || mobileLayout.buttonRight > mobileLayout.viewportWidth) {
+    throw new Error(`Mobile Runtime Bundle control overflows: ${JSON.stringify(mobileLayout)}`);
+  }
+  await mobilePage.getByRole('button', { name: 'Export Runtime Bundle' }).click();
+  await mobilePage.getByRole('status').filter({ hasText: 'Runtime Bundle starter-atelier:' }).waitFor({ timeout: 15_000 });
+  await mobilePage.waitForTimeout(650);
+  await Promise.all(mobileDownloadTasks);
+  if (mobileDownloadPaths.length !== 2) throw new Error(`Mobile Runtime Bundle export produced ${mobileDownloadPaths.length} downloads instead of 2.`);
+  const mobileRuntimeScreenshot = resolve(outputDir, 'runtime-bundle-mobile.png');
+  await mobilePage.screenshot({ path: mobileRuntimeScreenshot });
+  if (mobileConsoleErrors.length) throw new Error(`Mobile browser console errors:\n${mobileConsoleErrors.join('\n')}`);
+  await mobileContext.close();
+
+  if (writeRuntimeArtifacts) {
+    await mkdir(runtimeArtifactDir, { recursive: true });
+    await Promise.all([
+      copyFile(desktopRuntimeScreenshot, resolve(runtimeArtifactDir, 'runtime-bundle-desktop.png')),
+      copyFile(mobileRuntimeScreenshot, resolve(runtimeArtifactDir, 'runtime-bundle-mobile.png')),
+    ]);
   }
 
   const roundtripRecipe = parseRecipe(JSON.parse(await readFile(roundtripPath, 'utf8')));
@@ -276,6 +363,17 @@ try {
       v01Summary: summary,
       glbExport: true,
       manifestExport: true,
+    },
+    runtimeBundle: {
+      contractVersion: browserRuntimeManifest.contractVersion,
+      validationBlockedDownload: true,
+      projectId: browserRuntimeManifest.projectId,
+      nodeCount: browserRuntimeManifest.counts.nodes,
+      triangleCount: browserRuntimeManifest.counts.triangles,
+      desktopScreenshot: 'runtime-bundle-desktop.png',
+      mobileScreenshot: 'runtime-bundle-mobile.png',
+      mobileLayout,
+      mobileDownloads: mobileDownloadPaths.map((path) => path.replace(`${outputDir}\\`, '').replace(`${outputDir}/`, '')),
     },
     screenshots,
     evidenceStates,
