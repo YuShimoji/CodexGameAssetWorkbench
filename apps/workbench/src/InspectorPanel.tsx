@@ -8,7 +8,6 @@ import {
 import type { AssetPart, PrimitiveDefinition, Recipe, SplineDefinition, Transform, Vec3 } from '@cgawe/schema';
 import {
   assetDeleteBlockers,
-  createInstanceDraft,
   createPartDraft,
   duplicateInstanceDraft,
   duplicatePartDraft,
@@ -56,7 +55,7 @@ function MaterialInspector({ materialId }: { materialId: string }) {
 }
 
 function AssetInspector({ assetId, selectedPartId }: { assetId: string; selectedPartId?: string }) {
-  const { recipe, transact, setSelection, setViewMode } = useWorkbench();
+  const { recipe, transact, setSelection, startPlacement, placement } = useWorkbench();
   const [newPartType, setNewPartType] = useState<PrimitiveType>('box');
   const asset = recipe.assetDefinitions.find((item) => item.id === assetId);
   if (!asset) return <p className="empty">Select an asset definition.</p>;
@@ -101,15 +100,9 @@ function AssetInspector({ assetId, selectedPartId }: { assetId: string; selected
       if (moved) parts.splice(destination, 0, moved);
     });
   }
-  function addToScene() {
-    const instance = createInstanceDraft(recipe, currentAsset);
-    transact((draft) => { draft.sceneInstances.push(instance); });
-    setSelection({ kind: 'instance', id: instance.id });
-    setViewMode('scene');
-  }
   return <>
     <div className="identity-block"><span>ASSET DEFINITION</span><label className="identity-name"><b>Name</b><input data-testid="asset-name" value={asset.name} onChange={(event) => transact((draft) => { const target = draft.assetDefinitions.find((item) => item.id === asset.id); if (target && event.target.value.trim()) target.name = event.target.value; })} /></label><code>{asset.id}</code></div>
-    <div className="primary-action-row"><button className="authoring-primary" data-testid="add-to-scene" onClick={addToScene}>Add to Scene</button><button data-testid="delete-asset" disabled={blockers.length > 0} onClick={() => { const fallback = recipe.assetDefinitions.find((item) => item.id !== asset.id); transact((draft) => { draft.assetDefinitions = draft.assetDefinitions.filter((item) => item.id !== asset.id); }); if (fallback) setSelection({ kind: 'asset', id: fallback.id, partId: fallback.parts[0]?.id }); else setSelection({ kind: 'material', id: recipe.materialDefinitions[0]?.id ?? '' }); }}>Delete Asset</button></div>
+    <div className="primary-action-row"><button className="authoring-primary" data-testid="add-to-scene" disabled={placement.active} onClick={() => startPlacement(currentAsset.id)}>{placement.active ? 'Positioning…' : 'Place in Scene'}</button><button data-testid="delete-asset" disabled={blockers.length > 0} onClick={() => { const fallback = recipe.assetDefinitions.find((item) => item.id !== asset.id); transact((draft) => { draft.assetDefinitions = draft.assetDefinitions.filter((item) => item.id !== asset.id); }); if (fallback) setSelection({ kind: 'asset', id: fallback.id, partId: fallback.parts[0]?.id }); else setSelection({ kind: 'material', id: recipe.materialDefinitions[0]?.id ?? '' }); }}>Delete Asset</button></div>
     {blockers.length > 0 && <p className="dependency-note blocked">Delete blocked by {blockers.join(', ')}.</p>}
     <div className="inspector-section"><div className="section-heading-row"><h3>Parts</h3><span>{asset.parts.length}</span></div><select aria-label="Selected part" value={part.id} onChange={(event) => setSelection({ kind: 'asset', id: asset.id, partId: event.target.value })}>{asset.parts.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select><label className="field part-name-field"><span>Part name</span><input data-testid="part-name" value={part.name} onChange={(event) => updatePart((draft) => { if (event.target.value.trim()) draft.name = event.target.value; })} /></label><code className="stable-id">{part.id}</code><div className="part-create-row"><select data-testid="part-primitive-type" aria-label="Part primitive type" value={newPartType} onChange={(event) => setNewPartType(event.target.value as PrimitiveType)}><option value="box">Box</option><option value="cylinder">Cylinder</option><option value="plane">Plane</option><option value="sphere">Sphere</option></select><button className="authoring-primary" data-testid="add-part" onClick={addPart}>Add Part</button></div><div className="button-row part-actions"><button data-testid="duplicate-part" onClick={duplicatePart}>Duplicate</button><button data-testid="move-part-up" disabled={partIndex === 0} onClick={() => movePart(-1)}>Move earlier</button><button data-testid="move-part-down" disabled={partIndex === asset.parts.length - 1} onClick={() => movePart(1)}>Move later</button><button className="danger-soft" data-testid="delete-part" disabled={asset.parts.length <= 1} onClick={deletePart}>Delete Part</button></div></div>
     <div className="inspector-section"><h3>Primitive · {part.primitive.type}</h3><PrimitiveEditor part={part} update={(mutator) => updatePart((draft) => mutator(draft.primitive))} /></div>

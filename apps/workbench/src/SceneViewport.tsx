@@ -1,14 +1,14 @@
 import { Canvas, type ThreeEvent } from '@react-three/fiber';
 import { GizmoHelper, GizmoViewport, Grid, Line, OrbitControls, TransformControls } from '@react-three/drei';
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Color, Group, MeshStandardMaterial, type Object3D } from 'three';
+import { Box3, Color, Group, Mesh, MeshStandardMaterial, Vector3, type Object3D } from 'three';
 import { buildAssetObject, buildSplineObject, disposeObject } from '@cgawe/adapter-three';
 import {
   activeSplineChannels, appendSplineControlPoint, generateAllPlacements, insertSplineControlPoint,
   moveSplineControlPoint, removeSplineControlPoint, resolveInstanceAsset, sampleSpline, valueAt,
   type SplineKeyframeChannel,
 } from '@cgawe/core';
-import type { AssetDefinition, Recipe, SceneInstance, SplineDefinition, Transform, Vec3 } from '@cgawe/schema';
+import type { AssetDefinition, AssetPart, Recipe, SceneInstance, SplineDefinition, Transform, Vec3 } from '@cgawe/schema';
 import { useWorkbench } from './store';
 
 interface ViewLayers {
@@ -20,29 +20,127 @@ interface ViewLayers {
 
 type PointPlacementMode = 'append' | 'insert' | null;
 
-function selectPartFromEvent(event: ThreeEvent<MouseEvent>, assetId: string, fallbackPartId?: string) {
-  event.stopPropagation();
-  let object: Object3D | null = event.object;
-  while (object && !object.userData.partId) object = object.parent;
-  return { kind: 'asset' as const, id: assetId, partId: (object?.userData.partId as string | undefined) ?? fallbackPartId };
+function transformFromGroup(group: Group): Transform {
+  return {
+    position: group.position.toArray() as Transform['position'],
+    rotation: [group.rotation.x, group.rotation.y, group.rotation.z],
+    scale: group.scale.toArray() as Transform['scale'],
+  };
 }
 
-function AssetObject({ recipe, asset, selectedPartId, variantId, variantSeed, onSelect }: {
+function SelectionBounds({ object, color = '#ffe08a' }: { object: Object3D; color?: string }) {
+  const bounds = useMemo(() => new Box3().setFromObject(object), [object]);
+  const center = useMemo(() => bounds.getCenter(new Vector3()), [bounds]);
+  const size = useMemo(() => bounds.getSize(new Vector3()), [bounds]);
+  if (bounds.isEmpty()) return null;
+  return (
+    <mesh
+      position={[center.x, center.y, center.z]}
+      scale={[Math.max(0.08, size.x * 1.06), Math.max(0.08, size.y * 1.06), Math.max(0.08, size.z * 1.06)]}
+      renderOrder={40}
+      raycast={() => {}}
+    >
+      <boxGeometry args={[1, 1, 1]} />
+      <meshBasicMaterial color={color} wireframe transparent opacity={0.92} depthTest={false} />
+    </mesh>
+  );
+}
+
+function AssetObject({ recipe, asset, selectedPartId, variantId, variantSeed, onSelect, showSelectionBounds = false }: {
   recipe: Recipe;
   asset: AssetDefinition;
   selectedPartId?: string;
   variantId?: string;
   variantSeed?: number;
   onSelect?(event: ThreeEvent<MouseEvent>): void;
+  showSelectionBounds?: boolean;
 }) {
   const variant = recipe.variantSets.find((item) => item.id === variantId);
   const object = useMemo(() => buildAssetObject(recipe, asset, { variant, variantSeed, selectedPartId }), [asset, recipe, selectedPartId, variant, variantSeed]);
   useEffect(() => () => disposeObject(object), [object]);
-  return <primitive object={object} onClick={onSelect} />;
+  return <><primitive object={object} onPointerDown={onSelect} />{showSelectionBounds && <SelectionBounds object={object} />}</>;
 }
 
-function EditableInstance({ recipe, instance }: { recipe: Recipe; instance: SceneInstance }) {
-  const { selection, setSelection, transformMode, transact } = useWorkbench();
+function EditableAssetPart({ recipe, asset, part, onDragStateChange }: {
+  recipe: Recipe;
+  asset: AssetDefinition;
+  part: AssetPart;
+  onDragStateChange(dragging: boolean): void;
+}) {
+  const {
+    selection, setSelection, transformMode, gridSnap, beginGesture, previewTransaction, commitGesture,
+  } = useWorkbench();
+  const selected = selection.kind === 'asset' && selection.id === asset.id && selection.partId === part.id;
+  const groupRef = useRef<Group>(null!);
+  const primitiveKey = JSON.stringify(part.primitive);
+  const materialKey = JSON.stringify(recipe.materialDefinitions);
+  const object = useMemo(() => {
+    const localPart = structuredClone(part);
+    localPart.transform = { position: [0, 0, 0], rotation: [0, 0, 0], scale: [1, 1, 1] };
+    const localAsset = { ...asset, parts: [localPart] };
+    return buildAssetObject(recipe, localAsset, { selectedPartId: selected ? part.id : undefined });
+    // Transform-only previews intentionally reuse the local geometry and material object.
+  }, [asset.id, asset.name, materialKey, part.id, part.materialId, part.name, primitiveKey, recipe.generationSeed, selected]);
+  useEffect(() => () => disposeObject(object), [object]);
+  const content = (
+    <group
+      ref={groupRef}
+      position={part.transform.position}
+      rotation={part.transform.rotation}
+      scale={part.transform.scale}
+      onPointerDown={(event) => {
+        event.stopPropagation();
+        setSelection({ kind: 'asset', id: asset.id, partId: part.id });
+      }}
+    >
+      <primitive object={object} />
+      {selected && <SelectionBounds object={object} />}
+    </group>
+  );
+  if (!selected) return content;
+  return <>
+    {content}
+    <TransformControls
+      object={groupRef}
+      mode={transformMode}
+      space={transformMode === 'translate' ? 'world' : 'local'}
+      size={0.88}
+      translationSnap={gridSnap ? 0.25 : undefined}
+      rotationSnap={gridSnap ? Math.PI / 12 : undefined}
+      scaleSnap={gridSnap ? 0.1 : undefined}
+      onMouseDown={() => { beginGesture(); onDragStateChange(true); }}
+      onObjectChange={() => {
+        const objectGroup = groupRef.current;
+        if (!objectGroup) return;
+        const transform = transformFromGroup(objectGroup);
+        previewTransaction((draft) => {
+          const target = draft.assetDefinitions.find((item) => item.id === asset.id)?.parts.find((item) => item.id === part.id);
+          if (target) target.transform = transform;
+        });
+      }}
+      onMouseUp={() => { commitGesture(); onDragStateChange(false); }}
+    />
+  </>;
+}
+
+function EditableAsset({ recipe, asset, onDragStateChange }: {
+  recipe: Recipe;
+  asset: AssetDefinition;
+  onDragStateChange(dragging: boolean): void;
+}) {
+  return asset.parts.map((part) => (
+    <EditableAssetPart key={part.id} recipe={recipe} asset={asset} part={part} onDragStateChange={onDragStateChange} />
+  ));
+}
+
+function EditableInstance({ recipe, instance, onDragStateChange }: {
+  recipe: Recipe;
+  instance: SceneInstance;
+  onDragStateChange(dragging: boolean): void;
+}) {
+  const {
+    selection, setSelection, transformMode, gridSnap, beginGesture, previewTransaction, commitGesture,
+  } = useWorkbench();
   const selected = selection.kind === 'instance' && selection.id === instance.id;
   const asset = useMemo(() => {
     try {
@@ -51,7 +149,7 @@ function EditableInstance({ recipe, instance }: { recipe: Recipe; instance: Scen
       return undefined;
     }
   }, [instance, recipe]);
-  const groupRef = useRef<Group>(null);
+  const groupRef = useRef<Group>(null!);
   if (!asset) return null;
   const content = (
     <group
@@ -59,35 +157,47 @@ function EditableInstance({ recipe, instance }: { recipe: Recipe; instance: Scen
       position={instance.transform.position}
       rotation={instance.transform.rotation}
       scale={instance.transform.scale}
-      onClick={(event) => {
+      onPointerDown={(event) => {
         event.stopPropagation();
         let target: Object3D | null = event.object;
         while (target && !target.userData.partId) target = target.parent;
         setSelection({ kind: 'instance', id: instance.id, partId: target?.userData.partId as string | undefined });
       }}
     >
-      <AssetObject recipe={recipe} asset={asset} selectedPartId={selected ? selection.partId : undefined} variantId={instance.variantSetId} variantSeed={recipe.generationSeed} />
+      <AssetObject
+        recipe={recipe}
+        asset={asset}
+        selectedPartId={selected ? selection.partId : undefined}
+        variantId={instance.variantSetId}
+        variantSeed={recipe.generationSeed}
+        showSelectionBounds={selected}
+      />
     </group>
   );
   if (!selected) return content;
-  return (
+  return <>
+    {content}
     <TransformControls
+      object={groupRef}
       mode={transformMode}
-      onMouseUp={() => {
-        const object = groupRef.current;
-        if (!object) return;
-        const transform: Transform = {
-          position: object.position.toArray() as Transform['position'],
-          rotation: [object.rotation.x, object.rotation.y, object.rotation.z],
-          scale: object.scale.toArray() as Transform['scale'],
-        };
-        transact((draft) => {
+      space={transformMode === 'translate' ? 'world' : 'local'}
+      size={0.88}
+      translationSnap={gridSnap ? 0.25 : undefined}
+      rotationSnap={gridSnap ? Math.PI / 12 : undefined}
+      scaleSnap={gridSnap ? 0.1 : undefined}
+      onMouseDown={() => { beginGesture(); onDragStateChange(true); }}
+      onObjectChange={() => {
+        const objectGroup = groupRef.current;
+        if (!objectGroup) return;
+        const transform = transformFromGroup(objectGroup);
+        previewTransaction((draft) => {
           const target = draft.sceneInstances.find((item) => item.id === instance.id);
           if (target) target.transform = transform;
         });
       }}
-    >{content}</TransformControls>
-  );
+      onMouseUp={() => { commitGesture(); onDragStateChange(false); }}
+    />
+  </>;
 }
 
 function PlacementObjects({ recipe }: { recipe: Recipe }) {
@@ -101,6 +211,63 @@ function PlacementObjects({ recipe }: { recipe: Recipe }) {
       </group>
     );
   });
+}
+
+function AssetPlacementPreview({ recipe }: { recipe: Recipe }) {
+  const { placement, gridSnap, updatePlacement } = useWorkbench();
+  const asset = recipe.assetDefinitions.find((item) => item.id === placement.assetId);
+  const preview = useMemo(() => {
+    if (!asset) return undefined;
+    const object = buildAssetObject(recipe, asset);
+    object.traverse((child) => {
+      if (!(child instanceof Mesh)) return;
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      materials.forEach((material) => {
+        if (!(material instanceof MeshStandardMaterial)) return;
+        material.transparent = true;
+        material.opacity = 0.56;
+        material.depthWrite = false;
+        material.emissive = new Color('#14727c');
+        material.emissiveIntensity = 0.72;
+      });
+    });
+    const bounds = new Box3().setFromObject(object);
+    return { object, restingY: bounds.isEmpty() ? 0 : -bounds.min.y };
+  }, [asset, recipe]);
+  useEffect(() => () => {
+    if (preview) disposeObject(preview.object);
+  }, [preview]);
+  if (!placement.active || !asset || !preview) return null;
+  const visiblePosition: Vec3 = placement.position ?? [0, preview.restingY, 0];
+  const updateFromPoint = (event: ThreeEvent<PointerEvent | MouseEvent>) => {
+    event.stopPropagation();
+    const snap = (value: number) => gridSnap ? Math.round(value * 4) / 4 : Number(value.toFixed(3));
+    updatePlacement([snap(event.point.x), preview.restingY, snap(event.point.z)]);
+  };
+  return <>
+    <mesh
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, 0.012, 0]}
+      onPointerMove={updateFromPoint}
+      onPointerDown={updateFromPoint}
+    >
+      <planeGeometry args={[80, 80]} />
+      <meshBasicMaterial color="#4db9c5" transparent opacity={0.045} depthWrite={false} />
+    </mesh>
+    <group position={visiblePosition}>
+      <primitive object={preview.object} />
+      <SelectionBounds object={preview.object} color="#7de8ef" />
+    </group>
+    <mesh
+      position={[visiblePosition[0], 0.025, visiblePosition[2]]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      renderOrder={42}
+      raycast={() => {}}
+    >
+      <ringGeometry args={[0.52, 0.6, 40]} />
+      <meshBasicMaterial color="#7de8ef" transparent opacity={0.95} depthTest={false} />
+    </mesh>
+  </>;
 }
 
 function SplineMesh({ recipe, spline, selected, onSelect }: { recipe: Recipe; spline: SplineDefinition; selected: boolean; onSelect(): void }) {
@@ -208,7 +375,7 @@ function RoomObjects({ recipe }: { recipe: Recipe }) {
   const { selection, setSelection } = useWorkbench();
   return <>
     {recipe.roomDefinitions.map((room) => (
-      <mesh key={room.id} position={[room.position[0], room.floorY + room.height / 2, room.position[2]]} onClick={(event) => { event.stopPropagation(); setSelection({ kind: 'room', id: room.id }); }}>
+      <mesh key={room.id} position={[room.position[0], room.floorY + room.height / 2, room.position[2]]} raycast={() => {}}>
         <boxGeometry args={[room.width, room.height, room.depth]} />
         <meshStandardMaterial color={selection.kind === 'room' && selection.id === room.id ? '#74d4e4' : '#5877a8'} wireframe transparent opacity={0.35} />
       </mesh>
@@ -272,12 +439,14 @@ function SplinePointPlacement({ mode, onComplete }: { mode: Exclude<PointPlaceme
   );
 }
 
-function SceneContents({ layers, pointPlacement, finishPointPlacement }: {
+function SceneContents({ layers, pointPlacement, finishPointPlacement, transformDragging, setTransformDragging }: {
   layers: ViewLayers;
   pointPlacement: PointPlacementMode;
   finishPointPlacement(): void;
+  transformDragging: boolean;
+  setTransformDragging(dragging: boolean): void;
 }) {
-  const { recipe, selection, viewMode, renderEpoch, setSelection, splineCreation } = useWorkbench();
+  const { recipe, selection, viewMode, renderEpoch, splineCreation, placement } = useWorkbench();
   const selectedAsset = selection.kind === 'asset' ? recipe.assetDefinitions.find((asset) => asset.id === selection.id) : undefined;
   const isolatedSpline = selection.kind === 'spline' ? recipe.splineDefinitions.find((spline) => spline.id === selection.id) : undefined;
   return (
@@ -286,18 +455,19 @@ function SceneContents({ layers, pointPlacement, finishPointPlacement }: {
       <directionalLight position={[6, 11, 7]} intensity={2.3} castShadow shadow-mapSize={[1024, 1024]} shadow-normalBias={0.035} />
       <directionalLight position={[-7, 4, -3]} intensity={0.8} color="#8fc9d4" />
       {viewMode === 'asset' ? <>
-        {selectedAsset && <AssetObject recipe={recipe} asset={selectedAsset} selectedPartId={selection.kind === 'asset' ? selection.partId : undefined} onSelect={(event) => setSelection(selectPartFromEvent(event, selectedAsset.id, selectedAsset.parts[0]?.id))} />}
+        {selectedAsset && <EditableAsset recipe={recipe} asset={selectedAsset} onDragStateChange={setTransformDragging} />}
         {isolatedSpline && <SplineEditor recipe={recipe} spline={isolatedSpline} layers={layers} />}
       </> : <>
-        {layers.context && recipe.sceneInstances.map((instance) => <EditableInstance key={instance.id} recipe={recipe} instance={instance} />)}
+        {layers.context && recipe.sceneInstances.map((instance) => <EditableInstance key={instance.id} recipe={recipe} instance={instance} onDragStateChange={setTransformDragging} />)}
         {layers.context && <PlacementObjects recipe={recipe} />}
         <SplineObjects recipe={recipe} layers={layers} />
         {layers.context && <RoomObjects recipe={recipe} />}
+        {placement.active && <AssetPlacementPreview recipe={recipe} />}
       </>}
       <SplineCreationDraft />
       {pointPlacement && <SplinePointPlacement mode={pointPlacement} onComplete={finishPointPlacement} />}
-      <Grid position={[0, -0.005, 0]} args={[30, 30]} cellSize={0.5} cellThickness={0.55} cellColor="#28424a" sectionSize={2.5} sectionThickness={1} sectionColor="#40636a" fadeDistance={28} fadeStrength={1.2} infiniteGrid />
-      <OrbitControls makeDefault enabled={!splineCreation.active && !pointPlacement} target={[0, 1, 0]} minDistance={2} maxDistance={28} />
+      <Grid position={[0, -0.005, 0]} args={[30, 30]} cellSize={0.5} cellThickness={0.55} cellColor="#28424a" sectionSize={2.5} sectionThickness={1} sectionColor="#40636a" fadeDistance={28} fadeStrength={1.2} infiniteGrid raycast={() => {}} />
+      <OrbitControls makeDefault enabled={!splineCreation.active && !pointPlacement && !placement.active && !transformDragging} target={[0, 1, 0]} minDistance={2} maxDistance={28} />
       <GizmoHelper alignment="bottom-right" margin={[68, 68]}><GizmoViewport axisColors={['#d96868', '#7eba78', '#5b91d4']} labelColor="#dce7e8" /></GizmoHelper>
     </group>
   );
@@ -306,10 +476,12 @@ function SceneContents({ layers, pointPlacement, finishPointPlacement }: {
 export function SceneViewport() {
   const {
     recipe, selection, splineCreation, startSplineCreation, confirmSplineCreation, cancelSplineCreation,
-    gridSnap, setGridSnap, transact, setSelection,
+    gridSnap, setGridSnap, transact, setSelection, viewMode, transformMode, placement,
+    confirmPlacement, cancelPlacement,
   } = useWorkbench();
   const [layers, setLayers] = useState<ViewLayers>({ mesh: true, handles: true, guides: true, context: true });
   const [pointPlacement, setPointPlacement] = useState<PointPlacementMode>(null);
+  const [transformDragging, setTransformDragging] = useState(false);
   const selectedSpline = selection.kind === 'spline' ? recipe.splineDefinitions.find((item) => item.id === selection.id) : undefined;
   const canDeletePoint = Boolean(selectedSpline && selection.kind === 'spline' && selection.pointIndex !== undefined && selectedSpline.controlPoints.length > 2);
   const deleteSelectedPoint = useCallback(() => {
@@ -326,6 +498,7 @@ export function SceneViewport() {
       if (event.key === 'Escape') {
         if (splineCreation.active) cancelSplineCreation();
         if (pointPlacement) setPointPlacement(null);
+        if (placement.active) cancelPlacement();
       }
       const target = event.target as HTMLElement | null;
       if ((event.key === 'Delete' || event.key === 'Backspace') && !target?.closest('input, select, textarea') && canDeletePoint) {
@@ -335,27 +508,45 @@ export function SceneViewport() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [cancelSplineCreation, canDeletePoint, deleteSelectedPoint, pointPlacement, splineCreation.active]);
+  }, [cancelPlacement, cancelSplineCreation, canDeletePoint, deleteSelectedPoint, placement.active, pointPlacement, splineCreation.active]);
   const toggleLayer = (layer: keyof ViewLayers) => setLayers((current) => ({ ...current, [layer]: !current[layer] }));
-  const cancelPlacement = () => { cancelSplineCreation(); setPointPlacement(null); };
+  const cancelTransientModes = () => { cancelSplineCreation(); cancelPlacement(); setPointPlacement(null); };
+  const selectedAsset = selection.kind === 'asset' ? recipe.assetDefinitions.find((asset) => asset.id === selection.id) : undefined;
+  const selectedPartId = selection.kind === 'asset' ? selection.partId : undefined;
+  const selectedPart = selectedAsset?.parts.find((part) => part.id === selectedPartId);
+  const selectedInstance = selection.kind === 'instance' ? recipe.sceneInstances.find((instance) => instance.id === selection.id) : undefined;
+  const selectionTitle = selectedInstance?.name ?? selectedAsset?.name
+    ?? (selection.kind === 'spline' ? recipe.splineDefinitions.find((spline) => spline.id === selection.id)?.name : undefined)
+    ?? 'No direct selection';
+  const selectionDetail = selectedInstance
+    ? `Instance · ${selectedInstance.id}`
+    : selectedAsset
+      ? `Asset · ${selectedPart?.name ?? selectedAsset.parts[0]?.name ?? 'No Part'}`
+      : `${selection.kind}`;
   return (
-    <div className="viewport" data-testid="viewport" onContextMenu={(event) => { if (splineCreation.active || pointPlacement) { event.preventDefault(); cancelPlacement(); } }}>
+    <div className={`viewport${placement.active ? ' placement-active' : ''}`} data-testid="viewport" onContextMenu={(event) => { if (splineCreation.active || pointPlacement || placement.active) { event.preventDefault(); cancelTransientModes(); } }}>
       <Canvas shadows dpr={[1, 1.7]} camera={{ position: [9, 6.6, 10], fov: 42, near: 0.05, far: 100 }} gl={{ antialias: true }} onCreated={({ gl }) => gl.setClearColor('#10191e')}>
-        <Suspense fallback={null}><SceneContents layers={layers} pointPlacement={pointPlacement} finishPointPlacement={() => setPointPlacement(null)} /></Suspense>
+        <Suspense fallback={null}><SceneContents layers={layers} pointPlacement={pointPlacement} finishPointPlacement={() => setPointPlacement(null)} transformDragging={transformDragging} setTransformDragging={setTransformDragging} /></Suspense>
       </Canvas>
       <div className="viewport-watermark"><span>LIVE RECIPE</span><small>engine-neutral preview</small></div>
-      <div className="viewport-tools" aria-label="Spline viewport tools">
-        <button data-testid="new-spline" className={splineCreation.active ? 'active' : ''} onClick={() => { setPointPlacement(null); startSplineCreation(); }}>＋ Spline</button>
+      <div className="viewport-context" data-testid="viewport-selection">
+        <b>{viewMode === 'asset' ? 'ISOLATE' : 'SCENE'} · {transformMode === 'translate' ? 'MOVE' : transformMode === 'rotate' ? 'ROTATE' : 'SCALE'}</b>
+        <strong>{selectionTitle}</strong>
+        <small>{selectionDetail} · <span data-testid="camera-control-state">{transformDragging || placement.active ? 'Camera locked' : 'Orbit ready'}</span></small>
+      </div>
+      <div className="viewport-tools" aria-label="Viewport tools">
+        <button data-testid="new-spline" className={splineCreation.active ? 'active' : ''} onClick={() => { cancelPlacement(); setPointPlacement(null); startSplineCreation(); }}>＋ Spline</button>
         {selectedSpline && <>
           <button data-testid="append-point-viewport" className={pointPlacement === 'append' ? 'active' : ''} onClick={() => { cancelSplineCreation(); setPointPlacement(pointPlacement === 'append' ? null : 'append'); }}>＋ Point</button>
           <button data-testid="insert-point-viewport" className={pointPlacement === 'insert' ? 'active' : ''} onClick={() => { cancelSplineCreation(); setPointPlacement(pointPlacement === 'insert' ? null : 'insert'); }}>↳ Insert</button>
           <button data-testid="delete-point-viewport" disabled={!canDeletePoint} onClick={deleteSelectedPoint}>− Point</button>
         </>}
         <button data-testid="grid-snap" className={gridSnap ? 'active' : ''} onClick={() => setGridSnap(!gridSnap)}>⌗ Snap</button>
-        {(['mesh', 'handles', 'guides', 'context'] as const).map((layer) => <button key={layer} className={layers[layer] ? 'active' : ''} onClick={() => toggleLayer(layer)}>{layer}</button>)}
+        {(['mesh', 'handles', 'guides', 'context'] as const).map((layer) => <button key={layer} className={layers[layer] ? 'active' : ''} onClick={() => toggleLayer(layer)}>{layer === 'handles' ? 'Spline handles' : layer}</button>)}
       </div>
       {splineCreation.active && <div className="creation-strip" role="status"><span><b>CREATE SPLINE</b><small data-testid="draft-point-count">{splineCreation.points.length} control points · click ground plane</small></span><button onClick={cancelSplineCreation}>Cancel</button><button data-testid="confirm-spline" className="primary" disabled={splineCreation.points.length < 2} onClick={confirmSplineCreation}>Confirm</button></div>}
       {pointPlacement && <div className="creation-strip point-placement" role="status"><span><b>{pointPlacement === 'append' ? 'APPEND CONTROL POINT' : 'INSERT CONTROL POINT'}</b><small>Click the ground plane · Esc/right-click cancels</small></span><button onClick={() => setPointPlacement(null)}>Cancel</button></div>}
+      {placement.active && <div className="creation-strip asset-placement" role="status" data-testid="placement-strip"><span><b>PLACE {recipe.assetDefinitions.find((asset) => asset.id === placement.assetId)?.name ?? 'ASSET'}</b><small data-testid="placement-position">{placement.position ? `Preview ${placement.position.map((value) => value.toFixed(2)).join(' · ')}` : 'Move over the ground to choose a visible position'}</small></span><button data-testid="placement-cancel" onClick={cancelPlacement}>Cancel</button><button data-testid="placement-confirm" className="primary" disabled={!placement.position} onClick={confirmPlacement}>Confirm placement</button></div>}
     </div>
   );
 }

@@ -191,8 +191,11 @@ try {
   await selectedPart.selectOption({ label: 'Beacon Sphere' });
   await page.getByTestId('part-material').selectOption('mat-review-copper');
 
-  // Place, name and transform the Asset through the existing Inspector transaction path.
+  // Preview a visible Scene position, then confirm exactly one selected Instance.
   await page.getByTestId('add-to-scene').click();
+  await page.getByTestId('placement-strip').waitFor();
+  await page.mouse.move(canvasBox.x + canvasBox.width * 0.5, canvasBox.y + canvasBox.height * 0.72);
+  await page.getByTestId('placement-confirm').click();
   await page.getByTestId('instance-name').fill('Review Prop Stage');
   const beforeTransformHash = await currentHash();
   await page.getByTestId('instance-position-x').fill('2.2');
