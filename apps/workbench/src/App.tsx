@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Group } from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { buildAssetObject, buildRuntimeBundle, disposeObject } from '@cgawe/adapter-three';
@@ -20,9 +20,14 @@ export function App() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
-  const [bottomOpen, setBottomOpen] = useState(true);
+  const [bottomOpen, setBottomOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [runtimeExporting, setRuntimeExporting] = useState(false);
+  const validationErrors = validateRecipe(recipe).filter((issue) => issue.severity === 'error');
+
+  useEffect(() => {
+    if (validationErrors.length > 0) setBottomOpen(true);
+  }, [validationErrors.length]);
 
   function showNotice(message: string) {
     setNotice(message);
@@ -82,10 +87,10 @@ export function App() {
       <div className="mode-switch"><button className={viewMode === 'scene' ? 'active' : ''} onClick={() => setViewMode('scene')}>Scene</button><button className={viewMode === 'asset' ? 'active' : ''} onClick={() => setViewMode('asset')}>Isolate</button></div>
       <div className="transform-tools" aria-label="Transform mode">{(['translate', 'rotate', 'scale'] as const).map((mode) => <button key={mode} title={mode} className={transformMode === mode ? 'active' : ''} onClick={() => setTransformMode(mode)}>{mode === 'translate' ? '↗' : mode === 'rotate' ? '↻' : '↔'}</button>)}</div>
       <div className="history-tools"><button onClick={undo} disabled={!canUndo} title="Undo">↶</button><button onClick={redo} disabled={!canRedo} title="Redo">↷</button><span className={dirty ? 'dirty' : ''}>{dirty ? 'Unsaved changes' : 'Recipe saved'}</span></div>
-      <div className="file-tools"><input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={async (event) => { const file = event.target.files?.[0]; if (!file) return; try { load(JSON.parse(await file.text())); showNotice(`Loaded ${file.name}`); } catch (error) { showNotice(error instanceof Error ? error.message : String(error)); } event.target.value = ''; }} /><button onClick={() => inputRef.current?.click()}>Open</button><button onClick={revert} disabled={!dirty}>Revert</button><button onClick={reset}>Reset</button><button aria-label="Export Selected Asset GLB" onClick={() => void exportSelectedAssetGlb().catch((error) => showNotice(error instanceof Error ? error.message : String(error)))}>Selected GLB</button><button className="primary runtime-export" aria-label="Export Runtime Bundle" disabled={runtimeExporting} onClick={() => void exportRuntimeBundle().catch((error) => showNotice(error instanceof Error ? error.message : String(error)))}>{runtimeExporting ? 'Exporting…' : 'Runtime Bundle'}</button><button className="primary save-recipe" onClick={save}>Save Recipe</button></div>
+      <div className="file-tools"><input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={async (event) => { const file = event.target.files?.[0]; if (!file) return; try { load(JSON.parse(await file.text())); showNotice(`Loaded ${file.name}`); } catch (error) { showNotice(error instanceof Error ? error.message : String(error)); } event.target.value = ''; }} /><button onClick={() => inputRef.current?.click()}>Open</button><button onClick={revert} disabled={!dirty}>Revert</button><button onClick={reset}>Reset</button><button className="primary save-recipe" onClick={save}>Save Recipe</button><button className="export-secondary" aria-label="Export Selected Asset GLB" onClick={() => void exportSelectedAssetGlb().catch((error) => showNotice(error instanceof Error ? error.message : String(error)))}>Selected GLB</button><button className="runtime-export export-secondary" aria-label="Export Runtime Bundle" disabled={runtimeExporting} onClick={() => void exportRuntimeBundle().catch((error) => showNotice(error instanceof Error ? error.message : String(error)))}>{runtimeExporting ? 'Exporting…' : 'Runtime Bundle'}</button></div>
     </header>
     <div className="left-slot">{leftOpen && <LibraryPanel />}<button className="collapse-handle left" aria-label="Toggle library" onClick={() => setLeftOpen((value) => !value)}>{leftOpen ? '‹' : '›'}</button></div>
-    <section className="stage"><SceneViewport />{notice && <div className="toast" role="status">{notice}</div>}<div className="stage-status"><span><i className={validateRecipe(recipe).some((issue) => issue.severity === 'error') ? 'error-dot' : ''} />{validateRecipe(recipe).filter((issue) => issue.severity === 'error').length === 0 ? 'Recipe valid' : 'Validation errors'}</span><code>{recipeHash(recipe)}</code></div></section>
+    <section className="stage"><SceneViewport />{notice && <div className="toast" role="status">{notice}</div>}<div className="stage-status"><span><i className={validationErrors.length > 0 ? 'error-dot' : ''} />{validationErrors.length === 0 ? 'Recipe valid' : 'Validation errors'}</span><code>{recipeHash(recipe)}</code></div></section>
     <div className="right-slot">{rightOpen && <InspectorPanel />}<button className="collapse-handle right" aria-label="Toggle inspector" onClick={() => setRightOpen((value) => !value)}>{rightOpen ? '›' : '‹'}</button></div>
     <div className="bottom-slot">{bottomOpen && <BottomDock />}<button className="collapse-handle bottom" aria-label="Toggle recipe dock" onClick={() => setBottomOpen((value) => !value)}>{bottomOpen ? '⌄' : '⌃'}</button></div>
   </main>;

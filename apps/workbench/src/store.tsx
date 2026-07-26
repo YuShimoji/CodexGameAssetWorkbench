@@ -5,6 +5,7 @@ import starterJson from '../../../samples/starter-project/recipe.json';
 
 export type Selection =
   | { kind: 'asset'; id: string; partId?: string }
+  | { kind: 'material'; id: string }
   | { kind: 'instance'; id: string; partId?: string }
   | { kind: 'spline'; id: string; pointIndex?: number; keyframe?: { channel: SplineKeyframeChannel; index: number } }
   | { kind: 'room'; id: string }
