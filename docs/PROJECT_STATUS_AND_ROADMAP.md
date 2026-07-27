@@ -1,6 +1,6 @@
 # CodexGameAssetWorkbench 監修AI向け現状報告・長期ロードマップ
 
-最終更新: 2026-07-26 JST
+最終更新: 2026-07-27 JST
 
 ## 結論
 
@@ -10,7 +10,9 @@ Recipe 0.1.0のWhole Recipeを、再現可能なGLBと`cgawe-runtime-bundle-1.0.
 
 StarterとPaper Glider canaryの2入力について、GLB/manifestのbyte determinism、JSON Schema、actual GLTFLoader parse、参照、finite値、hash/bytes、tracked artifact一致を確認しました。Workbench UIはSelected AssetとWhole Recipeを区別し、不正Recipeのdownloadを0件で止め、正常時だけ2ファイルを出します。desktopと390 x 844 mobileでactual exportとstatusを確認しました。
 
-LOWPASS consumer canaryはlocal branch `feat/lowpass-asset-canary-v1`に固定しました。開始SHAは`ee2c9f2568a4318ed6cc2b9fe5216a32b1bcf588`で、開始時`origin/codex/runtime-bundle-v1` parityは`0/0`です。push、PR、main merge、tag、release、deploymentは未実施です。`.github/workflows/verify.yml`は既存ですが、このbranchのremote workflowは存在しません。
+LOWPASS consumer canaryはbranch `feat/lowpass-asset-canary-v1`に固定しました。実装・evidence commitは`c893374ab0edd7329bd1482dbd6b99960acbbb68`、開始SHAは`ee2c9f2568a4318ed6cc2b9fe5216a32b1bcf588`です。2026-07-27の`git fetch --prune origin`後、`origin/feat/lowpass-asset-canary-v1`も`c893374...`で、実装tipの`HEAD...@{upstream}`は`0/0`でした。現在の監修報告はその実装tip上のdocs-only successorであり、最終tipはこの文書を含むcommitを`git rev-parse HEAD`で確認します。PR、main merge、tag、release、deploymentは未実施です。
+
+`.github/workflows/verify.yml`はremoteに存在しますが、push triggerは`main`と`codex/**`で、`feat/lowpass-asset-canary-v1`は対象外です。2026-07-27の`gh run list --branch feat/lowpass-asset-canary-v1`は空で、PRも存在しないため、このbranchのremote CI結果はありません。
 
 ## LOWPASS consumer canary
 
@@ -43,7 +45,9 @@ BlenderはPATHに存在しないため、UV、texture、Blender Python/headless 
 
 このsliceはLOWPASS本体を変更していません。Phase G人間評価、Phase H、Security Cellの距離・delay・scan・音・文言は境界外です。
 
-2026-07-26のlocal verificationはNode `v24.13.0`、npm `11.6.2`で実行し、`npm ls --depth=0`、Schema、production build、typecheck、lint、8 files / 25 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、Workbench/Paper Glider/LOWPASS browser proof、`git diff --check`がPASSしました。Vite 1,364.33 kB chunkの既知warningは残しています。
+2026-07-26のfull local verificationはNode `v24.13.0`、npm `11.6.2`で実行し、`npm ls --depth=0`、Schema、production build、typecheck、lint、8 files / 25 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、Workbench/Paper Glider/LOWPASS browser proof、`git diff --check`がPASSしました。Vite 1,364.33 kB chunkの既知warningは残しています。
+
+2026-07-27の同期後minimal gateでは同じNode/npm identityで`npm ls --depth=0`、`npm run lowpass:check`、`git diff --check`がPASSしました。LOWPASS checkは70,892 bytes、5 assets、1,068 triangles、tracked PS1-off/on visual proof一致を再確認しました。incoming commitがなかったため、`npm ci`、full `npm run verify`、browser proofの再生成はこの同期では行っていません。
 
 ## 成果の意味
 
@@ -129,7 +133,7 @@ Runtime Bundle成功statusはproject ID、nodes、trianglesを表示します。
 - `contents: read`
 - secret、deployment、Pages mutationなし
 
-remote workflow結果は存在しないため、local verificationの代替として「CI green」とは報告しません。
+remote workflow結果は存在しないため、local verificationの代替として「CI green」とは報告しません。初回remote CIには、ownerがPRを作成して`pull_request` triggerを使うか、workflow trigger方針を別変更として承認する必要があります。
 
 ## Actual evidence
 
@@ -180,17 +184,20 @@ Generic Runtime Bundleの`NOASSERTION`は「権利が自由である」という
 
 Runtime BundleはRecipe schemaや既存意味論を変更しません。migrationも追加していません。未知versionは引き続きfail closedです。
 
-### External state
+### Portable stateとterminal-local state
 
-remote、Paper Glider repository、owner process、release surfaceを変更していません。local commitsは外部公開を意味しません。
+remoteで取得できるportable stateは、tracked source/docs/schema/sampleと`artifacts/**`です。2026-07-27の同期前にtracked/staged/unstaged/untracked差分はなく、tracked LOWPASS artifactsもcleanでした。
+
+`.serena/`、root/workspaceの`node_modules/`、各`dist/`、`*.tsbuildinfo`、`output/compat/`、`output/playwright/`、`output/lowpass-canary-proof/`はignoredまたはterminal-localです。これらをcommit、clean、stash、別worktreeへのコピー対象にしません。検査時にrepository関連のlistening Node endpointはありませんでした。
+
+同じGit common dir配下には`codex/browser-first-authoring-loop-v1`、`codex/direct-manipulation-visible-placement-v1`、`codex/runtime-bundle-v1`の別worktreeがあります。現在branchへ取り込まず、checkout、reset、clean、process停止を行わない保護対象です。Paper Glider repository、owner process、release surfaceもこの同期では変更していません。
 
 ## Gapとrisk
 
 | Gap | 影響 | 現在の緩和 | 解消条件 |
 |---|---|---|---|
-| Branchがlocal only | 別端末から直接取得できない | exact commitsと再開手順をrepo docsへ記録 | owner許可後のnon-force pushとparity |
-| Remote CI未実行 | Windows再現性がlocal evidenceだけ | workflowをtracked化 | push/PR後のworkflow green |
-| `npm audit` high 6 | toolchainとAjv依存に既知advisory | critical 0、broad auto-fixを未実行、機能gateと分離 | fast-uri patchとESLint 10 migrationを専用検証 |
+| Remote CI未実行 | Windows再現性がlocal evidenceだけ | workflowをtracked化、branch/upstream parityを確保 | owner承認後のPRまたは別trigger方針とworkflow green |
+| `npm audit` high 6（2026-07-26観測、この同期では未再実行） | toolchainとAjv依存に既知advisory | critical 0、broad auto-fixを未実行、機能gateと分離 | fresh audit後、fast-uri patchとESLint 10 migrationを専用検証 |
 | Generic consumer未実証 | contractがThree-based proof内に留まる | GLTFLoader actual parse | independent loader conformance |
 | Rights `DECLARED` flowなし | 配布判断を自動化できない | default `NOASSERTION` | owner-supplied registry + negative tests |
 | Empty Room/Socket GLB nodes | metadata consumerの実装が必要 | manifestとnodeMapで明示 | reference consumer fixture |
@@ -204,8 +211,8 @@ remote、Paper Glider repository、owner process、release surfaceを変更し�
 
 | ID | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|---|
-| RB-H1 | Local handoffをremoteで再開可能に | 別端末がexact branchを取得 | owner push許可、non-force push、parity | local ready | Repository owner / maintainer | branch共有だけを独立実行 |
-| RB-CI1 | Windows verifyをremote継続実行 | regressionをPR時に検知 | branch共有、Actions許可、workflow green | workflow tracked | Maintainer | 初回runを観測 |
+| RB-H1 | Remote exact handoffを維持 | 別端末がexact branchを取得 | normal push、fetch/readback、parity | 実装tip`c893374`まで達成、docs successorは都度readback | Repository owner / maintainer | 各normal push後に`0/0`を確認 |
+| RB-CI1 | Windows verifyをremote継続実行 | regressionをPR時に検知 | ownerのPR/triggers判断、Actions許可、workflow green | workflow tracked、current branch run 0 | Maintainer | PRを作るかtrigger変更を別承認 |
 | RB-M1 | Runtime Bundleをmainline candidate化 | canonical code pathを一本化 | full diff、CI、rollback、owner review | pending external gate | Repository owner | PR/merge方針を決定 |
 | RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | Three実装と独立したloader、positive/negative fixtures | 未着手 | Consumer SDK owner | Starter loaderをthin slice化 |
 | RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash mismatch、missing node/ref、NaN、rights cases | 未着手 | Schema / SDK owner | malformed manifest fixtures追加 |
@@ -232,14 +239,14 @@ remote、Paper Glider repository、owner process、release surfaceを変更し�
 
 ### 推奨順
 
-1. **共有と再現**: RB-H1 → RB-CI1 → RB-M1
+1. **共有と再現**: RB-H1（達成・維持）→ RB-CI1 → RB-M1
 2. **contract実証とsecurity**: RB-C1 → RB-C2 → RB-SEC1 → RB-R1
 3. **資産寿命**: RB-I1 → RB-S1
 4. **production quality**: RB-G1 → RB-P1 → RB-SDK1
 5. **ecosystem**: RB-U1 → RB-Q1 → RB-AI1 → RB-CAT1
 6. **release maturity**: RB-10
 
-最短の次価値はLOWPASS側のGate G-A再受入です。操作性復旧の人間評価をcanary統合から切り離して完了できます。Workbench側の次価値はLP-I1で、exact canary artifactを実LOWPASS loaderへ読み、既存AI/state ownerを変えずにasset off/on比較を可能にします。
+このrepositoryでの最短の次価値はRB-CI1です。remote exact handoffは成立したため、ownerがPRまたはworkflow trigger方針を選び、Node 22 / Windowsの初回remote runを観測します。その後にRB-M1の統合判断へ進みます。LOWPASS consumer integration（LP-I1）は別repository・別ownerの承認後だけ開始し、このtaskからは進めません。
 
 ## 再開コマンド
 
@@ -250,7 +257,8 @@ git rev-parse HEAD
 git log --oneline -5
 git fetch --prune origin
 git branch -vv
-git rev-list --left-right --count 'origin/main...HEAD'
+git rev-list --left-right --count 'HEAD...@{upstream}'
+git rev-list --left-right --count 'HEAD...origin/main'
 npm ci
 npm ls --depth=0
 npx playwright install chromium
@@ -258,7 +266,7 @@ npm run verify
 git diff --check
 ```
 
-新しいlocal branchにはupstreamがありません。remote branch作成前に`@{upstream}` parityを要求しないでください。pushが承認された場合だけ、push後にupstream設定と`HEAD...@{upstream} = 0/0`を確認します。
+現在branchのupstreamは`origin/feat/lowpass-asset-canary-v1`です。通常pushの前後に`HEAD...@{upstream}`を確認し、push後はfetch/readbackで`0/0`を要求します。`origin/main`は`0dd09801148ead04d211063b00d5e54f3f1cb10f`で、実装tip`c893374`から見て`HEAD...origin/main = 13/0`です。これをmain統合済みとは解釈しません。
 
 ## Authority map
 

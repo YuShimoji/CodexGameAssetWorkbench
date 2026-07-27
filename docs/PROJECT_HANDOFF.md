@@ -1,6 +1,6 @@
 # CodexGameAssetWorkbench project handoff
 
-最終更新: 2026-07-26 JST
+最終更新: 2026-07-27 JST
 
 ## 現在地
 
@@ -8,7 +8,7 @@
 
 編集正本はRecipe 0.1.0のままです。Runtime BundleはScene Instance、instance override、expanded placement、Spline mesh、Room volume、SocketをひとつのGLBへ展開し、Stable IDとsource referenceをmanifestへ残す派生物です。
 
-push、PR、`main`統合、tag、release、deploymentは行っていません。local stateが技術的にgreenであることと、remote共有・main昇格・公開承認は独立したgateです。
+branchはremoteへ共有済みですが、PR、`main`統合、tag、release、deploymentは行っていません。local stateが技術的にgreenであること、remoteにcommitが存在すること、CI・owner受入・rights・main昇格・公開承認はそれぞれ独立したgateです。
 
 ## LOWPASS canary v1 current slice
 
@@ -42,15 +42,29 @@ LOWPASS本体への統合、Phase G人間評価、Phase H、Security Cellの距�
 | Local branch | `feat/lowpass-asset-canary-v1` |
 | Branch start | `ee2c9f2568a4318ed6cc2b9fe5216a32b1bcf588` |
 | Start upstream | `origin/codex/runtime-bundle-v1`、開始時parity `0/0` |
-| `origin/main` start | `0dd0980`、開始branchは12 commits先行 |
+| Implementation / evidence tip | `c893374ab0edd7329bd1482dbd6b99960acbbb68` |
+| `origin/main` | `0dd09801148ead04d211063b00d5e54f3f1cb10f`、実装tipは13 commits先行 / behind 0 |
 | Runtime Bundle baseline | `ee2c9f2` `codex/runtime-bundle-v1` tip |
-| Planned canary commit | `feat: add lowpass runtime asset canary pipeline` |
-| Final local tip | この文書を含む`feat/lowpass-asset-canary-v1` tip。`git rev-parse HEAD`で確定する |
-| Upstream | この新branchには未設定 |
-| Remote mutation | なし |
+| Canary commit | `c893374` `feat: add lowpass runtime asset canary pipeline` |
+| Current handoff tip | この文書を含むdocs-only successor。`git rev-parse HEAD`で確定する |
+| Upstream | `origin/feat/lowpass-asset-canary-v1` |
+| Re-entry parity | 2026-07-27 fetch後、実装tipの`HEAD...@{upstream} = 0/0` |
+| Remote CI / PR | branch run 0、PR 0 |
 | Git author | `YuShimoji <160492991+YuShimoji@users.noreply.github.com>` |
 
 開始時は`codex/runtime-bundle-v1`がcleanかつremote parity `0/0`でした。既存Runtime Bundle、Paper Glider packet、lockfileを変更せず、そこからLOWPASS canary用branchを作成しています。
+
+## 2026-07-27 sync / development readiness
+
+- 編集前のprimary worktreeはtracked、staged、unstaged、untrackedがすべて空で、進行中Git operationもありませんでした。
+- `git fetch --prune origin`後も実装tipとupstreamは`c893374...`で`0/0`でした。incoming commitがないためpullは不要で、merge、rebase、reset、restore、stash、cleanは実行していません。
+- `origin/main`は`0dd0980...`で、実装tipはahead 13 / behind 0です。別branchの新しいcommitを現在branchへ統合していません。
+- tracked `artifacts/lowpass-canary-v1/**`はcleanです。remote cloneで再取得可能な証拠ですが、人間のart acceptanceやrights承認の代替ではありません。
+- `.serena/`、root/workspace `node_modules/`、各`dist/`、`*.tsbuildinfo`、`output/compat/`、`output/playwright/`、`output/lowpass-canary-proof/`はignored / terminal-localです。commit、stash、clean、転送対象にしません。
+- `codex/browser-first-authoring-loop-v1`、`codex/direct-manipulation-visible-placement-v1`、`codex/runtime-bundle-v1`の別worktreeは保護し、このtaskでは内容・branch・processを変更していません。
+- repository関連のlistening Node endpointは検査時0でした。TypeScript language serviceなどeditor-owned processは停止していません。
+
+結論として、現在branchは依存treeが解決し、LOWPASSの最小再現gateを実行できる開発可能状態です。ただしfull browser/full verifyの最新証拠は2026-07-26、remote CIは未実行です。現在のbottleneckはremote CIを起動するowner判断で、次の具体的な1手はPRを作成するかworkflow triggerを変えるかをownerが選ぶことです。
 
 ## Runtime Bundle v1
 
@@ -113,7 +127,7 @@ Paper Glider repository、owner process、public deploymentはこのtaskで変�
 
 ## Verification
 
-2026-07-26のcurrent branch実測:
+2026-07-26のcurrent branch full実測:
 
 - Node `v24.13.0`、npm `11.6.2`（package engineはNode `>=22`）
 - `npm ls --depth=0`: PASS
@@ -130,6 +144,14 @@ Paper Glider repository、owner process、public deploymentはこのtaskで変�
 - Known warning: Vite chunk 1,364.33 kB、500 kB warningのみ
 
 物理Gamepad、Blender Python/headless、LOWPASS本番scene integration、remote CIは実行していません。
+
+2026-07-27の同期後minimal gate:
+
+- Node `v24.13.0`、npm `11.6.2`
+- `npm ls --depth=0`: PASS
+- `npm run lowpass:check`: PASS（70,892 bytes、5 assets、1,068 triangles、tracked visual proofs一致）
+- `git diff --check`: PASS
+- `npm ci`、full `npm run verify`、browser proof再生成: incoming commitがないため未実施
 
 通常の再検証:
 
@@ -149,18 +171,19 @@ npm run verify
 git diff --check
 ```
 
-`npm run verify`はRuntime Bundle gateをroot chainへ含みます。`.github/workflows/verify.yml`はWindows、Node 22、locked install、dependency tree、Chromium、full verifyを直列実行する最小CIです。workflowはlocal追加だけで、remote実行実績はまだありません。
+`npm run verify`はRuntime Bundle gateをroot chainへ含みます。`.github/workflows/verify.yml`はWindows、Node 22、locked install、dependency tree、Chromium、full verifyを直列実行する最小CIです。workflowはremoteにtracked済みですが、push対象branchは`main`と`codex/**`です。current `feat/**` branchにはpush runがなく、PRもないためremote実行実績はありません。
 
 Viteの500 kB chunk-size warningは継続しています。build error、Runtime Bundle validation warning、browser console errorではありません。
 
-exact candidateのisolated worktreeで`npm ci`と`npm ls --depth=0`はpassしました。`npm audit`はcritical 0 / high 6でexit 1です。5件はESLint/minimatch/brace-expansionを中心とする開発toolchain、1件はAjv依存の`fast-uri`です。提示された一括解決はESLint 10へのsemver-major更新を含みます。このsliceでは自動`npm audit fix`、lockfile更新、依存major migrationを実施せず、security residualとして分離します。
+2026-07-26、exact candidateのisolated worktreeで`npm ci`と`npm ls --depth=0`はpassしました。`npm audit`はcritical 0 / high 6でexit 1でした。この同期ではfresh auditを再実行していません。5件はESLint/minimatch/brace-expansionを中心とする開発toolchain、1件はAjv依存の`fast-uri`です。提示された一括解決はESLint 10へのsemver-major更新を含みます。このsliceでは自動`npm audit fix`、lockfile更新、依存major migrationを実施せず、security residualとして分離します。
 
 ## 残作業
 
 | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|
-| Remote branch共有 | 別端末がexact local workへ到達可能 | ownerのpush許可、remote認証、push後parity | local only | Repository owner / maintainer | `codex/runtime-bundle-v1`をnon-force push |
-| PR / main昇格 | Runtime Bundleをcanonical mainへ統合 | remote CI green、diff review、rollback確認、owner承認 | 未実施 | Repository owner | PRまたは履歴方針をownerが選択 |
+| Remote parity維持 | 別端末がexact branchを取得し続ける | normal push、fetch/readback、`0/0` | 実装tipまで達成 | Repository owner / maintainer | docs successor push後もparity確認 |
+| Remote CI | Windows / Node 22で再現性を確認 | PRまたは別trigger承認、Actions run | workflow tracked、run 0 | Repository owner / maintainer | PRかtrigger変更をownerが選択 |
+| PR / main昇格 | Runtime Bundleをcanonical mainへ統合 | remote CI green、diff review、rollback確認、owner承認 | PR 0、未実施 | Repository owner | CI方針確定後にPR判断 |
 | Runtime consumer conformance | 実ゲーム側loaderでcontractを実証 | independent loader fixture、failure cases、version support | 未着手 | Consumer / SDK owner | Starter bundleを最小consumerへ読ませる |
 | LOWPASS canary integration | 実ゲームloaderとsemantic ownerでassetを比較 | exact canary identity、fallback、asset toggle、Gate G-A再受入後 | 未着手 | LOWPASS runtime owner | 独立consumer sliceを承認後に開始 |
 | LOWPASS production texture | UV/texture付きproduction候補を作る | Blenderまたは同等tool、導入権限、UV/bake/size contract | tool unavailable | Asset pipeline owner | 外部software導入を別承認 |
@@ -177,15 +200,16 @@ git status --short --branch --untracked-files=all
 git rev-parse HEAD
 git log --oneline -5
 git fetch --prune origin
-git rev-list --left-right --count 'origin/main...HEAD'
 git branch -vv
+git rev-list --left-right --count 'HEAD...@{upstream}'
+git rev-list --left-right --count 'HEAD...origin/main'
 npm ci
 npm ls --depth=0
 npx playwright install chromium
 npm run verify
 ```
 
-新branchにupstreamがない間は`@{upstream}`を前提にしません。remote branchが作成された後だけ`git rev-list --left-right --count 'HEAD...@{upstream}'`を使用します。
+現在branchのupstreamは`origin/feat/lowpass-asset-canary-v1`です。通常pushの前後に`HEAD...@{upstream}`を確認し、push後はfetch/readbackで`0/0`を要求します。
 
 ## Authority map
 

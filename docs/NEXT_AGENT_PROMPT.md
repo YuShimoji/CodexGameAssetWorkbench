@@ -8,9 +8,9 @@
 - `docs/PROJECT_STATUS_AND_ROADMAP.md`
 - `docs/RUNTIME_BUNDLE_V1.md`
 
-現在のlocal terminal stateは`LOWPASS_ASSET_CANARY_V1_LOCAL_GREEN`です。local branchは`feat/lowpass-asset-canary-v1`、branch開始SHAは`ee2c9f2568a4318ed6cc2b9fe5216a32b1bcf588`です。push、PR、main merge、tag、release、deploymentは未実施です。
+現在のlocal terminal stateは`LOWPASS_ASSET_CANARY_V1_LOCAL_GREEN`です。branchは`feat/lowpass-asset-canary-v1`、実装・evidence commitは`c893374ab0edd7329bd1482dbd6b99960acbbb68`、upstreamは`origin/feat/lowpass-asset-canary-v1`です。2026-07-27のfetch後、実装tipはupstreamと`0/0`でした。現在のdocs-only handoff tipは`git rev-parse HEAD`で確認します。PR、main merge、tag、release、deploymentは未実施です。
 
-LOWPASS canaryの次作業を自動開始する指示はここには置きません。再開時は`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`とtracked readbackを確認し、LOWPASS本体へのconsumer integration、UV/texture tool導入、remote共有をそれぞれ別承認にします。Phase HやSecurity Cell tuningへ進みません。
+LOWPASS canaryの次作業を自動開始する指示はここには置きません。再開時は`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`とtracked readbackを確認し、remote CI / PR、LOWPASS本体へのconsumer integration、UV/texture tool導入をそれぞれ別承認にします。current `feat/**` branchはpush workflow対象外でPRもないため、remote CI runは0です。Phase HやSecurity Cell tuningへ進みません。
 
 既存Paper Glider Compatibility Packetのdocumentation pinを維持します。
 

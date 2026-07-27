@@ -1,10 +1,10 @@
 # LOWPASS Runtime Asset Canary v1
 
-最終更新: 2026-07-26 JST
+最終更新: 2026-07-27 JST
 
 ## 結論
 
-`lowpass-readability-canary-v1`は、CodexGameAssetWorkbenchの既存Runtime BundleをLOWPASS: SALVAGE ATLAS向けに小さく拡張した、local-onlyのconsumer canaryです。適合度は **B（小規模拡張で対応可能）** です。
+`lowpass-readability-canary-v1`は、CodexGameAssetWorkbenchの既存Runtime BundleをLOWPASS: SALVAGE ATLAS向けに小さく拡張した、remote-shared / not-integratedのconsumer canaryです。適合度は **B（小規模拡張で対応可能）** です。
 
 このcanaryは次を実証します。
 
@@ -150,4 +150,4 @@ canary assetが不採用でも、既存LOWPASS assetへ即時復帰できるfeat
 | UV/texture profile | production texturingを可能に | Blenderまたは同等tool、UV contract、bake、budget | tool unavailable | Asset pipeline owner | software導入権限を別途取得 |
 | LOD progression | 距離別costを制御 | LOD1/2、screen-size threshold、popping test | LOD0のみ | Runtime/asset owner | 1 assetでthin slice |
 | Rights declaration | 配布条件を明示 | owner declaration、license registry、provenance audit | `NOASSERTION` | Rights owner | distribution前の独立gate |
-| Remote/CI | 別端末とremote Windowsで再現 | push許可、branch共有、Actions run | local only | Repository owner | non-force pushは別承認 |
+| Remote/CI | 別端末とremote Windowsで再現 | exact branch、PRまたはworkflow trigger、Actions run | branch shared / upstream parity、run 0 | Repository owner | PRかtrigger変更を別承認 |
