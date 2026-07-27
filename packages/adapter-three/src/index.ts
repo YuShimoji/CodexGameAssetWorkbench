@@ -108,3 +108,4 @@ export function disposeObject(object: Object3D): void {
 
 export * from './runtime-bundle.js';
 export * from './lowpass-runtime.js';
+export * from './lowpass-artifact-consumer.js';

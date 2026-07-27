@@ -1,0 +1,429 @@
+{
+  "schemaVersion": "cgawe-lowpass-artifact-consumer-conformance-readback-1.0.0",
+  "classification": "CGAWE_LOWPASS_ARTIFACT_CONSUMER_CONFORMANCE_LOCAL_GREEN",
+  "missionBaseRevision": "ba689ff26c5f4adb856bb2e077cbb5e8035f23a9",
+  "missionBaseParent": "c893374ab0edd7329bd1482dbd6b99960acbbb68",
+  "branch": "codex/lowpass-artifact-consumer-conformance-v1",
+  "consumerContractVersion": "cgawe-lowpass-artifact-consumer-1.0.0",
+  "inputs": {
+    "glb": {
+      "name": "lowpass-readability-canary-v1.runtime.glb",
+      "bytes": 70892,
+      "sha256": "sha256:54b10bf450971139a9cfe8302f671d29bc37fda6f2631dbf5545ef69e1b4d102"
+    },
+    "manifest": {
+      "name": "lowpass-readability-canary-v1.manifest.json",
+      "bytes": 38961,
+      "sha256": "sha256:a1dd222f98c109697849279f3f5644266d685bc7b4d543534c8e4191b225c353"
+    },
+    "schema": {
+      "name": "lowpass-runtime-asset-pack-1.0.0.schema.json",
+      "bytes": 12410,
+      "sha256": "sha256:2524ad15298533fdc77e00eb4911c3df12c14a04d4fab17aad6c323bdaed4f1a"
+    }
+  },
+  "positive": {
+    "schemaValidated": true,
+    "loaded": true,
+    "attachedRoots": 1,
+    "repeatedLoadState": "already-attached",
+    "repeatedLoadRoots": 1,
+    "stats": {
+      "assets": 5,
+      "stableNodes": 50,
+      "meshes": 44,
+      "triangles": 1068,
+      "materials": 10,
+      "uniqueMaterials": 7,
+      "collisionProxies": 5,
+      "interactionAnchors": 5
+    },
+    "assets": [
+      {
+        "assetId": "asset-field-terminal",
+        "assetKey": "lowpass:equipment/field-terminal",
+        "instanceId": "instance-field-terminal",
+        "role": "field-terminal",
+        "faction": "allied",
+        "rootNodeId": "scene-instance--instance-field-terminal",
+        "stableNodes": 6,
+        "collisionProxies": 1,
+        "interactionAnchors": 1,
+        "semanticAnchors": 1,
+        "declaredBounds": {
+          "min": [
+            -0.33,
+            0.54,
+            -0.20750000000000002
+          ],
+          "max": [
+            0.33,
+            1.125,
+            0.17
+          ]
+        },
+        "runtimeBounds": {
+          "min": [
+            3.8899999856948853,
+            0.49000000953674316,
+            -0.29875001311302185
+          ],
+          "max": [
+            4.610000014305115,
+            1.125,
+            0.20999999344348907
+          ]
+        },
+        "meshCount": 5,
+        "triangleCount": 84,
+        "materialCount": 2
+      },
+      {
+        "assetId": "asset-porter-android",
+        "assetKey": "lowpass:machines/porter-android",
+        "instanceId": "instance-porter-android",
+        "role": "allied-porter",
+        "faction": "allied",
+        "rootNodeId": "scene-instance--instance-porter-android",
+        "stableNodes": 12,
+        "collisionProxies": 1,
+        "interactionAnchors": 2,
+        "semanticAnchors": 3,
+        "declaredBounds": {
+          "min": [
+            -0.90270617362572,
+            0,
+            -0.3375
+          ],
+          "max": [
+            0.90270617362572,
+            2.54,
+            0.31
+          ]
+        },
+        "runtimeBounds": {
+          "min": [
+            -0.7027061462402344,
+            0,
+            -0.6387500166893005
+          ],
+          "max": [
+            1.1027061462402343,
+            2.6449999809265137,
+            0.38999998569488525
+          ]
+        },
+        "meshCount": 11,
+        "triangleCount": 204,
+        "materialCount": 2
+      },
+      {
+        "assetId": "asset-shopping-cart",
+        "assetKey": "lowpass:props/shopping-cart",
+        "instanceId": "instance-shopping-cart",
+        "role": "push-cart",
+        "faction": "neutral",
+        "rootNodeId": "scene-instance--instance-shopping-cart",
+        "stableNodes": 13,
+        "collisionProxies": 1,
+        "interactionAnchors": 2,
+        "semanticAnchors": 2,
+        "declaredBounds": {
+          "min": [
+            -0.61,
+            0.07,
+            -0.81
+          ],
+          "max": [
+            0.61,
+            1.27,
+            0.93
+          ]
+        },
+        "runtimeBounds": {
+          "min": [
+            1.8200000047683718,
+            0.07000000029802322,
+            -0.8100000023841858
+          ],
+          "max": [
+            3.0799999952316286,
+            1.2699999809265137,
+            1.0387500524520874
+          ]
+        },
+        "meshCount": 12,
+        "triangleCount": 272,
+        "materialCount": 2
+      },
+      {
+        "assetId": "asset-needle-drone",
+        "assetKey": "lowpass:security/needle-drone",
+        "instanceId": "instance-needle-drone",
+        "role": "hostile-needle",
+        "faction": "hostile",
+        "rootNodeId": "scene-instance--instance-needle-drone",
+        "stableNodes": 9,
+        "collisionProxies": 1,
+        "interactionAnchors": 0,
+        "semanticAnchors": 2,
+        "declaredBounds": {
+          "min": [
+            -0.5307226733941217,
+            1.34,
+            -1.48
+          ],
+          "max": [
+            0.5307226733941217,
+            1.82,
+            0.555
+          ]
+        },
+        "runtimeBounds": {
+          "min": [
+            -4.730722677707672,
+            1.340000033378601,
+            -1.5387500524520874
+          ],
+          "max": [
+            -3.669277322292328,
+            1.8200000524520874,
+            0.6800000071525574
+          ]
+        },
+        "meshCount": 8,
+        "triangleCount": 236,
+        "materialCount": 2
+      },
+      {
+        "assetId": "asset-watcher-drone",
+        "assetKey": "lowpass:security/watcher-drone",
+        "instanceId": "instance-watcher-drone",
+        "role": "hostile-watcher",
+        "faction": "hostile",
+        "rootNodeId": "scene-instance--instance-watcher-drone",
+        "stableNodes": 9,
+        "collisionProxies": 1,
+        "interactionAnchors": 0,
+        "semanticAnchors": 1,
+        "declaredBounds": {
+          "min": [
+            -1.4868371612078493,
+            2.0376,
+            -0.5900000000000001
+          ],
+          "max": [
+            1.4868371612078493,
+            3.29,
+            0.48351713288445614
+          ]
+        },
+        "runtimeBounds": {
+          "min": [
+            -3.586837148666382,
+            2,
+            -0.7387499809265137
+          ],
+          "max": [
+            -0.6131628513336183,
+            3.2899999618530273,
+            0.5249999761581421
+          ]
+        },
+        "meshCount": 8,
+        "triangleCount": 272,
+        "materialCount": 2
+      }
+    ]
+  },
+  "negativeCases": [
+    {
+      "name": "unsupported-manifest-schema-version",
+      "code": "UNSUPPORTED_MANIFEST_SCHEMA_VERSION",
+      "path": "$.schemaVersion",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "glb-hash-mismatch",
+      "code": "GLB_HASH_MISMATCH",
+      "path": "$.files.glb.sha256",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "glb-byte-count-mismatch",
+      "code": "GLB_BYTE_COUNT_MISMATCH",
+      "path": "$.files.glb.bytes",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "missing-required-stable-node",
+      "code": "STABLE_NODE_MISSING",
+      "path": "$.stableNodeMap[0]",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "unresolved-collision-proxy",
+      "code": "COLLISION_PROXY_UNRESOLVED",
+      "path": "$.collisionProxyIds[0]",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "unresolved-interaction-anchor",
+      "code": "INTERACTION_ANCHOR_UNRESOLVED",
+      "path": "$.interactionAnchorIds[0]",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "malformed-truncated-glb",
+      "code": "GLB_PARSE_FAILED",
+      "path": "$.glb",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    }
+  ],
+  "scenePreservation": {
+    "positiveSentinelPreserved": true,
+    "allFailuresAttachedZeroRoots": true,
+    "allFailuresPreservedSentinel": true,
+    "allFailuresRecovered": true
+  },
+  "fallback": {
+    "consumerDisabled": true,
+    "attachedRoots": 0,
+    "sentinelPreserved": true
+  },
+  "disposal": {
+    "geometries": 44,
+    "materials": 10,
+    "repeatedDisposalReleasedResources": false,
+    "unrelatedGeometriesDisposed": 0,
+    "unrelatedMaterialsDisposed": 0
+  },
+  "isolation": {
+    "consumerEntryImportsGenerator": false,
+    "consumerEntryImportsRecipe": false,
+    "generatorCalls": 0,
+    "recipeReads": 0,
+    "networkRequests": 0,
+    "browserForbiddenSourceOrGeneratorRequests": 0
+  },
+  "browser": {
+    "viewport": {
+      "width": 1280,
+      "height": 720,
+      "deviceScaleFactor": 1
+    },
+    "localHttp200": true,
+    "nonBlankWebgl": true,
+    "validLoadSucceeded": true,
+    "disabledPreservedBaseScene": true,
+    "corruptManifestFailedClosed": true,
+    "recoverySucceeded": true,
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "externalRequests": 0,
+    "audioInitializations": 0,
+    "audioPlaybacks": 0,
+    "proofs": [
+      {
+        "mode": "valid",
+        "file": "lowpass-artifact-consumer-valid.png",
+        "bytes": 140662,
+        "sha256": "sha256:7c3148ad04fadeaab1bf11d346d623ccf5672525c415676088467cba26bdbf1c",
+        "width": 1280,
+        "height": 720,
+        "httpStatus": 200,
+        "nonBlankPixels": 632029,
+        "consumerRoots": 1,
+        "assetRoles": [
+          "field-terminal",
+          "allied-porter",
+          "push-cart",
+          "hostile-needle",
+          "hostile-watcher"
+        ],
+        "corruptFailure": "GLB_HASH_MISMATCH",
+        "corruptPartialAttachments": 0,
+        "recoverySucceeded": true,
+        "sentinelPreserved": true,
+        "meshes": 44,
+        "triangles": 1068,
+        "consoleErrors": 0,
+        "pageErrors": 0,
+        "failedResponses": 0,
+        "externalRequests": 0,
+        "audioInitializations": 0,
+        "audioPlaybacks": 0,
+        "disposal": {
+          "geometries": 44,
+          "materials": 10,
+          "alreadyDisposed": false
+        }
+      },
+      {
+        "mode": "disabled",
+        "file": "lowpass-artifact-consumer-disabled.png",
+        "bytes": 64664,
+        "sha256": "sha256:23a0116371902bff272ef410d447d7098ace34989500a3ad18e4a6120bb2962a",
+        "width": 1280,
+        "height": 720,
+        "httpStatus": 200,
+        "nonBlankPixels": 648000,
+        "consumerRoots": 0,
+        "assetRoles": [],
+        "corruptFailure": null,
+        "corruptPartialAttachments": 0,
+        "recoverySucceeded": false,
+        "sentinelPreserved": true,
+        "meshes": 0,
+        "triangles": 0,
+        "consoleErrors": 0,
+        "pageErrors": 0,
+        "failedResponses": 0,
+        "externalRequests": 0,
+        "audioInitializations": 0,
+        "audioPlaybacks": 0,
+        "disposal": {
+          "geometries": 0,
+          "materials": 0,
+          "alreadyDisposed": true
+        }
+      }
+    ]
+  },
+  "claimBoundary": {
+    "established": "artifact-only local consumer conformance",
+    "notEstablished": [
+      "LOWPASS repository or game integration",
+      "real-game camera, fog, distance, or motion evaluation",
+      "human readability or art acceptance",
+      "cross-engine portability",
+      "direct-manipulation branch integration",
+      "canonical main promotion or remote CI",
+      "security, rights, release, or deployment acceptance"
+    ]
+  },
+  "externalEffects": {
+    "push": 0,
+    "workflowRerun": 0,
+    "pullRequest": 0,
+    "mainIntegration": 0,
+    "tag": 0,
+    "release": 0,
+    "deployment": 0,
+    "forceOperation": 0
+  }
+}
