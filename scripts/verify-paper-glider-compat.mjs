@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import Ajv from 'ajv';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { recipeHash, stableStringify, validateRecipe } from '@cgawe/core';
@@ -127,7 +128,9 @@ assert(warnings.length === 0, `GLB loader warnings were emitted: ${warnings.join
 const publishedGlbUrl = resolvePaperGliderAssetUrl('https://yushimoji.github.io', canonicalManifest.integration.publishedBasePath, canonicalManifest.integration.relativeGlbPath);
 assert(publishedGlbUrl === 'https://yushimoji.github.io/paper-glider/assets/workbench/paper-glider-v1/paper-glider-archive-gate.glb', `GitHub Pages asset URL is incorrect: ${publishedGlbUrl}`);
 assertFileUrlRoundTrip(compatibilityPaths.glb);
-assert(compatibilityPaths.glb.includes('Game Projects'), 'The current verification path did not exercise the required Windows space-containing path.');
+const spacedPathProof = resolve(compatibilityPaths.root, 'Game Projects path proof', 'paper-glider-archive-gate.glb');
+assert(spacedPathProof.includes(' '), 'The constructed filesystem proof path does not contain a space.');
+assertFileUrlRoundTrip(spacedPathProof);
 
 process.stdout.write(`${JSON.stringify({
   ok: true,

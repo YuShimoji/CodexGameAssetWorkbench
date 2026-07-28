@@ -1,218 +1,147 @@
 # CodexGameAssetWorkbench 監修AI向け現状報告・長期ロードマップ
 
-最終更新: 2026-07-26 JST
+最終更新: 2026-07-28 JST
 
-## 結論
+## 現在の結論
 
-Codex Game Asset Studio Runtime Bundle v1は **`STUDIO_RUNTIME_BUNDLE_V1_CI_REPAIR_LOCAL_GREEN`** です。
+Codex Game Asset Workbenchは **`STUDIO_DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1_LOCAL_GREEN`** です。
 
-Recipe 0.1.0のWhole Recipeを、再現可能なGLBと`cgawe-runtime-bundle-1.0.0` manifestへ変換する共通entryを実装しました。Scene Instance、Part override、seed付きexpanded placement、Spline mesh、Room、Socketが同じbundleへ入り、manifestからGLB nodeへStable IDで全参照を解決できます。
+既存のRecipe 0.1.0、Spline v0.2、Runtime Bundle v1、Paper Glider compatibility packetを維持したまま、ブラウザだけでAsset / Material / Partを作り、Isolate上のPartとScene上のInstanceをrendered meshから直接選び、Move / Rotate / Scaleし、半透明previewを見ながらSceneへ1 Instance配置できるauthoring loopが成立しました。
 
-StarterとPaper Glider canaryの2入力について、GLB/manifestのbyte determinism、JSON Schema、actual GLTFLoader parse、参照、finite値、hash/bytes、tracked artifact一致を確認しました。Workbench UIはSelected AssetとWhole Recipeを区別し、不正Recipeのdownloadを0件で止め、正常時だけ2ファイルを出します。desktopと390 x 844 mobileでactual exportとstatusを確認しました。
+direct manipulationはdrag中もRecipeとInspectorを同期しますが、履歴はmouse upごとに1件です。visible placementは確定前にRecipeやStable IDを変更せず、Cancelで完全に破棄し、Confirm時だけInstanceを1件作ります。いずれもSave/Open round-trip、Undo/Redo、Validation、Selected Asset GLB exportまで同じRecipe経路を通ります。
 
-remote branch `origin/codex/runtime-bundle-v1@ee2c9f2`は既に共有済みです。GitHub Actions `Verify` run `30164433668`はNode `22.23.1`でPaper Glider exact regenerationに失敗しました。local successorはcanonical生成ランタイムNode `24.13.0`をCIへ固定し、Runtime Bundle実装、canonical packet、dependenciesを変更せずfull verificationを回復しています。今回のpush、workflow rerun、PR、main merge、tag、release、deploymentは0件です。
+このsliceのfollow-throughでは、追加済みsmokeをroot `test:browser` / `verify`へ接続し、3画面・round-trip Recipe・machine readbackを監修用artifactへ固定し、architecture、status、handoffを現在枝へ更新します。公開review枝以外のbranch、`main`、tag、release、deployment、Paper Glider repositoryは変更しません。
 
-## 成果の意味
+## Workflow上の変化
 
-これまでのWorkbenchは、選択AssetのGLB exportと、Paper Glider専用Compatibility Packetという2つのdelivery経路を持っていました。Runtime Bundle v1により、通常のStarter Recipeとconsumer canaryを同じ公開entryへ渡し、consumer固有scriptなしで複合sceneを出力できる最初の汎用経路が成立しました。
+| 以前の摩擦 | 今回の操作 | 制作判断への効果 | 証拠 |
+|---|---|---|---|
+| 複合Asset作成が既存Recipe編集に依存 | UIでAsset / Material / 4種Primitive Partを作成・複製・並べ替え・削除 | JSON手編集なしで最初のpropを組み立てられる | browser-authoring smoke |
+| Inspector値と実形状の対応を目で探す | rendered Partをclickし、輪郭・context・Inspectorを同期 | どのPartを編集するか一意になる | `01-isolate-cylinder-direct-selected.png` |
+| transform結果を数値変更後に確認 | ViewportのMove / Rotate / Scaleをdrag中preview | 空間判断とRecipe transactionが同じ操作になる | gesture hash / transform readback |
+| Add to Sceneが位置を選べない即時追加 | 半透明preview、接地、座標strip、明示Confirm | 配置前に見た目と位置を判断でき、Cancelで汚さない | `02-scene-placement-preview.png` |
+| 作ったInstanceの継続編集にTree再探索が必要 | Confirm後に新Instanceを選択し、Scene実形状から再選択 | placementから調整までselection contextが連続する | `03-scene-confirmed-selected.png` |
+| 新browser機能がfocused scriptだけに留まる | authoring / direct smokeをroot browser chainへ統合 | full verifyが新workflowの退行を検出する | `package.json` browser chain |
 
-このsliceが確立したもの:
+## 実装とinvariant
 
-- Whole Recipeを実行時artifactへ変換するversioned contract
-- UIとNode proofが共有するexport実装
-- Scene Instance overrideとViewport表示の意味論一致
-- Placement Ruleのdeterministic expansionとsequence identity
-- GLB nodeとmanifest source entityの双方向追跡に使えるStable ID
-- canonical manifestからtimestamp、local path、usernameを排除
-- rights未指定時に`NOASSERTION`を明示するfail-safe
-- actual two-input artifacts、desktop/mobile screenshots、machine readback
-- root `verify`とWindows CI候補への統合
+詳細正本は`docs/DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1.md`です。
 
-このsliceが確立していないもの:
+- IsolateはPartごとにlocal geometryとRecipe transformを分け、Stable Part IDをpointer selectionへ使います。
+- Sceneは解決済みAssetの実meshからInstance IDとPart IDを選びます。
+- 選択輪郭はraycastを持たない派生表示で、選択操作やexportへ混入しません。
+- gesture開始時のRecipe / Selectionをbaselineにし、preview frame数によらずUndo 1件にします。
+- Moveはworld、Rotate / Scaleはlocalです。Snapは0.25 unit / 15度 / 0.1です。
+- transform中とplacement中はOrbitControlsを止め、cameraと編集対象の同時移動を防ぎます。
+- placement previewはUI-only `PlacementDraft`です。Confirm時だけ既存Recipeに対して衝突しないInstance IDを生成します。
+- preview用material変更はcloneされた表示objectだけに適用し、共有Material Definitionを変更しません。
+- 明示Scene Instance配置とseeded `placementRules`は別経路です。決定論、sequence identity、Runtime Bundle expansionを変えません。
+- Recipe schema、Core generation、Runtime Bundle manifest、Paper Glider packet、rights contractは変更しません。
 
-- exact local successorのremote CI成功
-- local successorのGitHub共有またはPR
-- `main` authority
-- dependency audit clean（critical 0 / high 6）
-- external consumerによるGeneric Runtime Bundle load
-- `DECLARED` rights入力のproduct flow
-- Recipe schema 0.2 migration
-- product releaseまたはpublic deployment
+## Actual browser proof
 
-## 実装面
+focused direct-manipulation runはChromium 1600 x 1000で次を実測しました。
 
-### Contract / adapter
+| 項目 | 実測 |
+|---|---|
+| authored Asset | `asset-direct-review-prop`、3 Part、3 Material |
+| direct Part selection | Direct Box / Cylinder / Sphere |
+| Part gestures | Move / Rotate / Scale、すべてcamera locked、Undo/Redo復元 |
+| Instance gesture | Move、camera locked、Undo/Redo復元 |
+| placement preview | Recipe hash不変、Instance count不変、Cancel不変 |
+| placement confirm | exactly 1 Instance、座標`[2.5, 0.06, 2.75]`、Undo/Redo復元 |
+| Scene direct pick | confirmed Instanceをrendered Partから再選択 |
+| Save/Open | `fnv1a-7a6ed385`へ復帰 |
+| Validation | error 0 / warning 0 |
+| Selected Asset export | GLB 20,352 bytes + manifest |
+| Browser hygiene | console error 0、number input height 28px以上 |
 
-`packages/adapter-three/src/runtime-bundle.ts`が共有entryです。Recipe validationを先に実行し、errorがあれば`RuntimeBundleValidationError`で終了します。GLB生成後にGLB byte hash、world bounds、実geometry countsをmanifestへ束縛します。
+browser-first authoring focused runは、3 Part / 2 Materialの`Review Prop`、Asset / Part / Material / InstanceのCRUDとUndo/Redo、referenced Asset削除block、Part参照repair、Save/Open hash一致、GLB 20,312 bytes + manifest、Validation error 0 / warning 0、console error 0を確認しました。
 
-Scene InstanceはCore `resolveInstanceAsset`でPart overrideを適用し、Variantを同じseed規則で評価します。PlacementはCore `generateAllPlacements`の順序と`ruleId:index`を保持します。Splineは実mesh、Room/Socketはruntime metadataとGLB nodeを持ちます。
+監修用正本:
 
-### Manifest
+- `artifacts/direct-manipulation-visible-placement-v1/readback.json`
+- `artifacts/direct-manipulation-visible-placement-v1/direct-review-prop.recipe.json`
+- `artifacts/direct-manipulation-visible-placement-v1/01-isolate-cylinder-direct-selected.png`
+- `artifacts/direct-manipulation-visible-placement-v1/02-scene-placement-preview.png`
+- `artifacts/direct-manipulation-visible-placement-v1/03-scene-confirmed-selected.png`
 
-Schema正本: `schemas/runtime-bundle-1.0.0.schema.json`
+画像は選択輪郭、gizmo、Inspector同期、placement strip、半透明preview、確定後Instanceを目視確認済みです。persistent UIは左右panelと上部barに留まり、中央の編集対象を塞ぐ新しいoverlayはありません。
 
-主要field:
+## Regressionと基盤の継承
 
-- `contractVersion` / `manifestSchemaVersion`
-- `projectId`
-- `source`
-- `coordinateSystem`
-- `files`
-- `rootNodeId`
-- `sceneInstances`
-- `placements`
-- `splines`
-- `rooms`
-- `sockets`
-- `nodeMap`
-- `counts`
-- `bounds`
-- `validation`
-- `rights`
+| 既存能力 | 現在の扱い | 変更有無 |
+|---|---|---|
+| Recipe 0.1.0 | 編集・保存・検証の唯一の正本 | schema / migration変更なし |
+| Spline v0.2 | 作成、点編集、profile、adaptive sweep | 既存browser smokeで回帰 |
+| Runtime Bundle v1 | Whole Recipe GLB + versioned manifest | contract / artifact変更なし |
+| Paper Glider compatibility | pinned GLB / manifest / schema / rights | read-only、拡張なし |
+| Node canonical runtime | `.node-version`の24.13.0 | pin変更なし |
+| Windows GitHub Actions | exact Node、locked install、Chromium、root verify | browser chainだけ新smokeを追加 |
 
-manifest自身のhashをmanifest内へ循環参照させません。tracked evidenceのmanifest SHA-256はreadbackが保持します。
+compatibility verifierの空白path proofは、旧開発機のcheckout名`Game Projects`を必須にする環境依存assertから、actual GLB pathと明示的な空白入りproof pathをそれぞれfile URL round-tripするportable checkへ修正しました。packet bytes、schema、公開URL、rights、生成器は変更していません。
 
-### UI / browser
+Paper Glider固有bundleのpinは維持します。
 
-Top barには次の独立操作があります。
-
-- `Export Selected Asset GLB`: 選択Definitionだけの既存出力
-- `Export Runtime Bundle`: Whole Recipeのversioned出力
-
-Runtime Bundle成功statusはproject ID、nodes、trianglesを表示します。不正Recipeでは先頭validation messageと総error数を表示し、download eventが発生しないことをbrowser smokeで検証します。
-
-390px mobileではTransform toolをtop barから隠し、Runtime BundleとSave Recipeを維持します。document overflow、button bounds、actual 2-download、console error 0を検証しました。
-
-### CI
-
-`.github/workflows/verify.yml`:
-
-- `windows-latest`
-- `.node-version`でexact Node `24.13.0`
-- `npm ci`
-- `npm ls --depth=0`
-- Playwright Chromium
-- `npm run verify`
-- `contents: read`
-- secret、deployment、Pages mutationなし
-
-predecessor run `30164433668`はfailureです。Node `22.23.1`ではGLB JSON materialの9 componentが最大`1.1102230246251565e-16`変化し、exact manifest checkが止まりました。BIN、全24 accessor、node/mesh/material orderとreferenceは同一です。Node `24.13.0`はcanonical bytesを2回再生成し、local full verificationを通過しましたが、successor SHAのremote workflow結果はまだ存在しないため「CI green」とは報告しません。
-
-`package.json`の`engines.node >=22`は一般support範囲です。Paper Glider canonical packetのbit-exact regeneration環境は`.node-version`で固定したNode `24.13.0`です。cross-Node-patch byte determinismは保証しません。
-
-## Actual evidence
-
-| Input | GLB bytes | GLB SHA-256 | Manifest SHA-256 | Nodes | Meshes | Vertices | Triangles |
-|---|---:|---|---|---:|---:|---:|---:|
-| Starter | 90,708 | `sha256:5b39c86b7bb7999e8401a27c1dc34cb3172cc58e5cbdabc36fe071aff8d437ea` | `sha256:9378e8cb189cba95ec21cec337cf8c85aa1d0f88b93637d79a506eee9a81160c` | 41 | 26 | 1,700 | 2,720 |
-| Paper Glider canary | 30,820 | `sha256:27e13b5ed5b9b6d521d39936127e73f75c8c7de5fc3724e2240b39d6e2cd12fe` | `sha256:b8cbaee3d1b8ff155ffc19a0a4285c0389b97aca98c10b317abd87d18643cc99` | 13 | 8 | 594 | 1,064 |
-
-検証結果:
-
-- input count 2
-- deterministic GLB true
-- deterministic manifest true
-- JSON Schema true
-- GLTFLoader parse true
-- Stable node refs true
-- finite numbers true
-- hashes/bytes true
-- generic rights `NOASSERTION`
-- local disclosure absent
-- browser validation blocked download true
-- desktop Runtime Bundle download 2
-- mobile Runtime Bundle download 2
-- desktop/mobile console errors 0
-
-visual evidence:
-
-- `artifacts/runtime-bundle-v1/runtime-bundle-desktop.png`
-- `artifacts/runtime-bundle-v1/runtime-bundle-mobile.png`
-
-## 保護境界
-
-### Paper Glider
-
-Paper Glider固有bundleはbyte不変です。Generic Runtime Bundleは同じcanary Recipeを入力に使いますが、固有GLB、manifest、Schema、RIGHTS、screenshotsを上書きせず、新identityへ出力します。
-
-- Recipe hash `fnv1a-3383aa61`
-- Content hash `sha256:04461554becd391625cc834460196186e32a6c08a393e34c210bd1d45503d397`
+- Recipe `fnv1a-3383aa61`
+- content `sha256:04461554becd391625cc834460196186e32a6c08a393e34c210bd1d45503d397`
 - GLB `sha256:e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019`
-- Manifest `sha256:b9c41a053e97d061ac4795c77d8f628e93f0a40adef6f718614e614c861e1bd5`
-- Schema `sha256:abbd570b742de3ae87904069dfd0b27f26a0e223999e1cfa760dec81a26a4e39`
-- Rights `sha256:481eb1980eb1728eefb84c6a5fb5bdf307185e99e7089e511e927ebf49958c9f`
+- manifest `sha256:b9c41a053e97d061ac4795c77d8f628e93f0a40adef6f718614e614c861e1bd5`
+- schema `sha256:abbd570b742de3ae87904069dfd0b27f26a0e223999e1cfa760dec81a26a4e39`
+- rights `sha256:481eb1980eb1728eefb84c6a5fb5bdf307185e99e7089e511e927ebf49958c9f`
 - Rights ID `LicenseRef-PaperGlider-Project-Asset`
 
-Generic Runtime Bundleの`NOASSERTION`は「権利が自由である」という主張ではありません。固有LicenseRefの無断流用を避け、consumer側が独立してrightsを判断できる状態です。
+Generic Runtime Bundleのrights既定値は引き続き`NOASSERTION`です。
 
-### Recipe 0.1.0
+## Gitと公開境界
 
-Runtime BundleはRecipe schemaや既存意味論を変更しません。migrationも追加していません。未知versionは引き続きfail closedです。
+| 項目 | 現在地 |
+|---|---|
+| Review branch | `codex/direct-manipulation-visible-placement-v1` |
+| Upstream | `origin/codex/direct-manipulation-visible-placement-v1` |
+| Slice predecessor | `3f1d4d3d1905a7450a1c9d2183ce1a9f041c7392` |
+| Browser-first predecessor | `42acbaddde511589dbcadb2d3713e8df85d60130` |
+| Runtime base | `59bd610e06b5ab1e40354acf597c7eb938646308` |
+| `origin/main` | `0dd09801148ead04d211063b00d5e54f3f1cb10f` |
+| Author | `YuShimoji <160492991+YuShimoji@users.noreply.github.com>` |
+| Allowed follow-through | 同じreview branchへのnon-force commit / push |
+| Not authorized | merge、tag、release、deployment、Paper Glider互換性拡張 |
 
-### External state
+開始時はdetached HEADでしたが、worktreeはcleanで指定remote先端と一致していました。同名local tracking branchを作り、既存変更をreset / stash / overwriteしていません。最終SHAとremote parityは自己参照を避け、`git rev-parse HEAD`と`git rev-list --left-right --count HEAD...@{upstream}`で実測します。
 
-今回remote、Paper Glider repository、owner process、release surfaceを変更していません。既存remote branchは`ee2c9f2`のままで、local successorは外部公開を意味しません。
-
-## Gapとrisk
+## 残る不確実性
 
 | Gap | 影響 | 現在の緩和 | 解消条件 |
 |---|---|---|---|
-| Repair successorがlocal only | 別端末はpredecessor `ee2c9f2`までしか取得できない | exact base、差分、再開手順をrepo docsへ記録 | fresh authority後のnon-force branch更新とparity |
-| Predecessor CI failure / successor未実行 | hosted Windowsのrepair実証が未完了 | Node `24.13.0` pinとlocal full verify | exact successor push後のworkflow green |
-| `npm audit` high 6 | toolchainとAjv依存に既知advisory | critical 0、broad auto-fixを未実行、機能gateと分離 | fast-uri patchとESLint 10 migrationを専用検証 |
-| Generic consumer未実証 | contractがThree-based proof内に留まる | GLTFLoader actual parse | independent loader conformance |
-| Rights `DECLARED` flowなし | 配布判断を自動化できない | default `NOASSERTION` | owner-supplied registry + negative tests |
-| Empty Room/Socket GLB nodes | metadata consumerの実装が必要 | manifestとnodeMapで明示 | reference consumer fixture |
-| Large JS chunk | startup/download cost | warningを既知gapとして保持 | code split + budget |
-| Large Recipe benchmarkなし | export time/memory上限不明 | Starter/canary deterministic proof | scale fixture + thresholds |
-| Schema migrationなし | 将来field追加時の資産保護未確立 | 0.1.0固定、unknown fail closed | explicit migration CLI + golden |
+| physical touch未確認 | mobile/tabletでgizmo精度を保証できない | desktopをauthoring主対象にし、mobileはpanelを縮退 | 実機touch matrixと専用gesture acceptance |
+| Ground Plane限定 | terrainやmesh surfaceへ正しく接地しない | Y=0とbounds resting Yを明示 | surface raycast / normal / collision-aware contract |
+| placementでrotation/scale不可 | 向きと大きさは確定後に調整が必要 | Confirm後にInstanceを選択したままにする | placement draft transform UI |
+| selection overlap | 奥の小Partは手前objectに遮られる | Tree / Part selectをfallbackとして維持 | pick cycling、outline layers、focus command |
+| 初期JS chunk約1.38 MB | 初回load cost | local workbenchで機能一貫性を優先 | code splitとbundle budget |
+| `npm audit` high 6 | dev toolchain / Ajv依存に既知advisory | critical 0、broad auto-fixを分離 | 専用dependency sliceとfull regression |
+| remote CIはlocal proofと別 | hosted Windowsでの最終成否はpush後の外部状態 | exact Node pin、root verify | exact successor workflow green |
 
-## 可能な限り先の目標設定
+## 次に進める入口
 
-以下は現在の成果から依存順に進める提案です。各goalは独立acceptanceを持ち、remote、merge、release権限を自動的に広げません。
+| 入口 | 解くbottleneck | 選ぶと可能になること | Authority |
+|---|---|---|---|
+| Verify: review branch CI | local proofとhosted Windowsの差 | reviewerが同じSHAのroot gateを信頼できる | branch push後にActions観測 |
+| Audit: direct manipulation UX | overlap、gizmo精度、keyboard/pointer中断 | production authoringでの操作失敗を減らす | 新しいUX acceptanceが必要 |
+| Advance: surface placement | Ground Plane限定 | terrain / mesh / socketへ意味のある配置 | placement contractの別slice |
+| Excise: bundle/dependency cost | 1.38 MB chunkとhigh advisory | load/security residualを機能sliceから切り離して解消 | 依存更新authorityが必要 |
 
-| ID | Purpose | Effect | Requirements | State | Owner | Next move |
-|---|---|---|---|---|---|---|
-| RB-H1 | CI repair successorをremoteで再開可能に | 別端末がexact repairを取得 | fresh branch-update authority、non-force push、parity | predecessor共有済み / successor local | Repository owner / maintainer | 監修受入後にsuccessor SHAだけを共有 |
-| RB-CI1 | Windows verifyをremote継続実行 | regressionをPR時に検知 | successor共有、Actions許可、exact SHA workflow green | predecessor failed / repair local green | Maintainer | successor runを観測 |
-| RB-M1 | Runtime Bundleをmainline candidate化 | canonical code pathを一本化 | full diff、CI、rollback、owner review | pending external gate | Repository owner | PR/merge方針を決定 |
-| RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | Three実装と独立したloader、positive/negative fixtures | 未着手 | Consumer SDK owner | Starter loaderをthin slice化 |
-| RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash mismatch、missing node/ref、NaN、rights cases | 未着手 | Schema / SDK owner | malformed manifest fixtures追加 |
-| RB-SEC1 | Dependency advisory closeout | known high 6を解消 | advisory影響評価、Ajv/fast-uri patch、ESLint 10互換、full verify | pending | Dependency / security owner | broad `npm audit fix`を使わず更新計画 |
-| RB-R1 | Declared rights profile | 配布可否とprovenanceを明確化 | license registry、source refs、owner declaration、audit | 未着手 | Rights owner | `NOASSERTION`から別profile化 |
-| RB-I1 | Bundle import/readback | 配布artifactからsource Recipeへ戻れる | source locator、hash照合、derived artifact非正本化 | future | UI / Core owner | manifest inspectorから開始 |
-| RB-S1 | Recipe schema 0.2 migration | 長期編集資産を保護 | lossless 0.1→0.2 migration、golden、rollback | future | Schema owner | migration RFC |
-| RB-G1 | Runtime geometry profile | 実ゲーム品質を拡張 | normals/tangents、UV、texture、LOD、collision separation | future | Core / adapter owner | textured prop 1種でcontract |
-| RB-P1 | Performance budget | 大規模sceneの操作・exportを保証 | benchmark Recipes、time/memory/size thresholds、cache | future | UI / adapter owner | 10x placement fixture |
-| RB-SDK1 | Adapter SDK / conformance kit | 複数engineの実装差を抑制 | stable bundle API、fixture suite、lifecycle policy | future | Architecture owner | Three adapterをreference化 |
-| RB-U1 | UnityまたはGodot consumer | engine-neutral deliveryを実証 | SDK、rights、version matrix、sample | future owner choice | Dedicated adapter owner | engineを1つだけ選定 |
-| RB-Q1 | Supply-chain attestation | hash、rights、generator lineageを監査可能に | attestation version、signing policy、secret boundary | far | Tooling / rights owner | unsigned receipt profile |
-| RB-AI1 | Agent-safe automation | 大量Recipe操作を安全に自動化 | dry-run diff、validate/apply、policy gate、receipt | far | CLI / Core owner | machine transaction protocol |
-| RB-CAT1 | Versioned asset catalog | 再利用素材を依存・権利付きで蓄積 | package IDs、dependency graph、rights filter、previews | far | Product / rights owner | first-party 3 assets |
-| RB-10 | Owner-gated 1.0 | 制作・配布基盤として安定宣言 | main、CI、migration、consumer、rights、performance、docs、人間受入 | far terminal | Repository owner | acceptance checklistを別途固定 |
-
-### 推奨順
-
-1. **共有と再現**: RB-H1 → RB-CI1 → RB-M1
-2. **contract実証とsecurity**: RB-C1 → RB-C2 → RB-SEC1 → RB-R1
-3. **資産寿命**: RB-I1 → RB-S1
-4. **production quality**: RB-G1 → RB-P1 → RB-SDK1
-5. **ecosystem**: RB-U1 → RB-Q1 → RB-AI1 → RB-CAT1
-6. **release maturity**: RB-10
-
-最短の次価値はRB-C1です。Workbench内部のGLTFLoader proofから一歩離れ、実consumerがStarter Runtime Bundleを読み、root/nodeMap/placements/rooms/socketsを利用できれば、Generic contractの名称だけでなく可搬性が立証されます。
+mainline化はreview branch CIと監修受入後の独立判断です。`main` merge、tag、release、deploymentを次作業の暗黙の一部にしません。
 
 ## 再開コマンド
 
 ```powershell
-Set-Location 'C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench-runtime-bundle-v1-ci-repair'
 git status --short --branch --untracked-files=all
 git rev-parse HEAD
-git log --oneline -5
 git fetch --prune origin
-git branch -vv
-git rev-list --left-right --count 'origin/main...HEAD'
 git rev-list --left-right --count 'HEAD...@{upstream}'
+git rev-list --left-right --count 'origin/main...HEAD'
+git branch -vv
+node --version
 npm ci
 npm ls --depth=0
 npx playwright install chromium
@@ -220,19 +149,19 @@ npm run verify
 git diff --check
 ```
 
-upstreamは`origin/codex/runtime-bundle-v1@ee2c9f2`です。local successorはpushされていないため、remote先端が`ee2c9f2`のままかを再確認し、fresh branch-update authorityが与えられた場合だけnon-force push後の`HEAD...@{upstream} = 0/0`を確認します。
+canonical artifactのbit-exact verificationは`.node-version`のNode 24.13.0で実行します。Node 22系は一般support範囲ですが、Paper Glider GLB JSON material値がV8 patch間で微小差を持つため、cross-Node-patch byte determinismは保証しません。
 
 ## Authority map
 
 | Path | Authority |
 |---|---|
-| `docs/PROJECT_HANDOFF.md` | 現在地、保護境界、再開 |
-| `docs/PROJECT_STATUS_AND_ROADMAP.md` | この監修報告と長期目標 |
-| `docs/RUNTIME_BUNDLE_V1.md` | Contract、Stable ID、validation、evidence |
-| `schemas/runtime-bundle-1.0.0.schema.json` | Machine schema |
-| `artifacts/runtime-bundle-v1/runtime-bundle-readback.json` | Two-input actual result |
-| `.github/workflows/verify.yml` | Windows remote verification candidate |
-| `.node-version` | Paper Glider canonical regeneration用exact Node runtime |
+| `docs/PROJECT_HANDOFF.md` | 現在地、Git境界、再開順序 |
+| `docs/PROJECT_STATUS_AND_ROADMAP.md` | 監修向け現在状態と次の入口 |
+| `docs/DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1.md` | direct manipulation / placementの操作・invariant・proof |
+| `artifacts/direct-manipulation-visible-placement-v1/readback.json` | focused browser実測 |
+| `docs/ARCHITECTURE.md` | Recipe transactionと表示objectの境界 |
+| `docs/RUNTIME_BUNDLE_V1.md` | Runtime Bundle contract |
+| `schemas/runtime-bundle-1.0.0.schema.json` | Runtime manifest machine contract |
 | `docs/RECIPE_SCHEMA.md` | Recipe 0.1.0 |
 | `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | Paper Glider固有packet |
 | `docs/compat/paper-glider-v1/RIGHTS.md` | Paper Glider project-scoped rights |

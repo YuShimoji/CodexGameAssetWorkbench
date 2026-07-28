@@ -6,3 +6,4 @@
 
 - `v0.1/`: 初回checkpointのAsset isolate、corridor、Room/Socket/Placement統合画面、readback、選択Asset manifest
 - `v0.2/`: Spline作成・control point直接編集、rod/road/corridor、統合Scene、保存再読込の代表画像と、各画像のRecipe状態を対応付けたreadback、round-trip Recipe、GLB回帰manifest
+- `direct-manipulation-visible-placement-v1/`: Part/Instance直接選択、Move/Rotate/Scale、非破壊placement preview、確定後選択を示す3画像、機械可読readback、round-trip Recipe

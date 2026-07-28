@@ -62,6 +62,24 @@ Asset DefinitionはPartのPrimitive、transform、Material参照を所有しま�
 - Top barの`Revert`は最後にSave/OpenしたRecipe全体へ戻します。
 - `Reset`は汎用starter projectへ戻します。
 
+## Part / Instance直接操作
+
+IsolateではAssetをひとつの不可分objectとして描画せず、Partごとにlocal geometryとRecipe transformを分けて描画します。実meshのpointer eventからStable Part IDを選び、選択輪郭と`TransformControls`を同じgroupへ束縛します。Sceneでは解決済みAssetの実meshからInstance IDとPart IDを選び、Instance transformを操作します。
+
+直接操作はThree.js objectを正本にしません。drag開始時のRecipeとSelectionをbaselineとして保持し、drag中はRecipe previewを更新し、mouse upで履歴を1件だけ確定します。Moveはworld space、Rotate/Scaleはlocal spaceです。Snap有効時は移動0.25 unit、回転15度、scale 0.1を使います。Transform handleを掴んでいる間はOrbitControlsを止め、同じpointer inputでcameraと対象が同時に動くことを防ぎます。
+
+| 操作 | 選択対象 | Recipe反映 | Undo単位 | 視覚feedback |
+|---|---|---|---|---|
+| Isolate Move/Rotate/Scale | Asset Part | `part.transform`をpreview後commit | 1 drag | Part輪郭、mode label、gizmo、Inspector同期 |
+| Scene Move/Rotate/Scale | Scene Instance | `instance.transform`をpreview後commit | 1 drag | Instance全体輪郭、mode label、gizmo、Inspector同期 |
+| Inspector数値入力 | PartまたはInstance | 入力確定ごとにtransaction | 1入力 | ViewportをRecipeから再描画 |
+
+## 見えるScene配置
+
+`Place in Scene`は確定前の`PlacementDraft`をUI stateに作り、Scene modeへ遷移します。透明なground hit planeがpointer位置をworld X/Zへ変換し、Snap有効時は0.25 unitへ丸めます。Asset boundsの最下点からresting Yを求めるため、originが底面にないAssetもpreview時にGround Planeへ接地します。
+
+previewは半透明material、cyan輪郭、座標stripで確定位置を示します。この間はRecipe、History、Stable IDを変更しません。Cancel、Escape、右clickはいずれもdraftだけを破棄します。Confirm時だけ`createInstanceDraft`で衝突しないStable IDを割り当て、Scene Instanceを1件追加し、そのInstanceを選択します。確定全体がUndo/Redo 1件です。これはseed付き`placementRules`の生成結果を編集する機能ではなく、人がScene Instanceを明示配置するauthoring操作です。
+
 ## 派生出力
 
 選択Asset exporterはDefinition 1件だけをブラウザ内で実変換します。同時に生成するsidecarのvertex/triangle/bounds/material統計も、その選択Assetに限定しています。
@@ -77,6 +95,7 @@ Browser smokeはSelected AssetとRuntime Bundleの両経路を実行します。
 - JSON Schema 0.1.0は明示的version gateを持ちますが、過去versionからのmigrationはまだありません。
 - Splineの作業平面はv0.2ではY=0のGround Planeです。任意平面、surface snap、Bezier tangent editorは未対応です。
 - Viewportの点追加・挿入は1 clickで完了し、挿入対象segmentは選択点の直後（末尾選択時は最後のsegment）です。
+- Assetの見える配置はY=0 Ground Planeに対するbounds接地です。任意surfaceへのraycast、collision-aware placement、rotation preview、touch専用gizmoは未対応です。
 - Runtime Bundle import/reopenと、Generic contractを利用する独立consumerは未実装です。
 - Primitive geometryはレビュー用途の中立MeshDataで、UVやtangent、textureは持ちません。
 - 初期JavaScript bundleはThree/R3Fを含むため約1.36 MB（gzip約380 KB）です。v0.2ではローカルworkbenchの機能一貫性を優先しています。

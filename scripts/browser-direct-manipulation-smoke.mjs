@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,11 +12,20 @@ import { recipeHash, validateRecipe } from '@cgawe/core';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = resolve(root, 'output/playwright/direct-manipulation');
+const artifactDir = resolve(root, 'artifacts/direct-manipulation-visible-placement-v1');
+const writeArtifacts = process.argv.includes('--write-artifacts');
 const recipePath = resolve(outputDir, 'direct-review-prop.recipe.json');
 const readbackPath = resolve(outputDir, 'readback.json');
-const isolateScreenshot = resolve(outputDir, '01-isolate-cylinder-direct-selected.png');
-const placementScreenshot = resolve(outputDir, '02-scene-placement-preview.png');
-const confirmedScreenshot = resolve(outputDir, '03-scene-confirmed-selected.png');
+const evidenceFiles = {
+  recipe: 'direct-review-prop.recipe.json',
+  readback: 'readback.json',
+  isolateScreenshot: '01-isolate-cylinder-direct-selected.png',
+  placementScreenshot: '02-scene-placement-preview.png',
+  confirmedScreenshot: '03-scene-confirmed-selected.png',
+};
+const isolateScreenshot = resolve(outputDir, evidenceFiles.isolateScreenshot);
+const placementScreenshot = resolve(outputDir, evidenceFiles.placementScreenshot);
+const confirmedScreenshot = resolve(outputDir, evidenceFiles.confirmedScreenshot);
 const appRoot = resolve(root, 'apps/workbench');
 const previewPort = await findAvailablePort();
 const baseUrl = `http://127.0.0.1:${previewPort}`;
@@ -384,7 +393,6 @@ try {
   if (consoleErrors.length) throw new Error(`Browser console errors:\n${consoleErrors.join('\n')}`);
   const readback = {
     ok: true,
-    baseUrl,
     browser: 'chromium',
     viewport: { width: 1600, height: 1000 },
     recipeHash: recipeHash(roundtripRecipe),
@@ -417,10 +425,18 @@ try {
       warnings: issues.filter((issue) => issue.severity === 'warning').length,
     },
     export: { glb: 'asset-direct-review-prop.glb', glbBytes, manifest: 'asset-direct-review-prop.manifest.json' },
-    screenshots: [isolateScreenshot, placementScreenshot, confirmedScreenshot],
+    screenshots: [
+      evidenceFiles.isolateScreenshot,
+      evidenceFiles.placementScreenshot,
+      evidenceFiles.confirmedScreenshot,
+    ],
     consoleErrorCount: consoleErrors.length,
   };
   await writeFile(readbackPath, `${JSON.stringify(readback, null, 2)}\n`, 'utf8');
+  if (writeArtifacts) {
+    await mkdir(artifactDir, { recursive: true });
+    await Promise.all(Object.values(evidenceFiles).map((name) => copyFile(resolve(outputDir, name), resolve(artifactDir, name))));
+  }
   process.stdout.write(`${JSON.stringify(readback, null, 2)}\n`);
   await context.close();
 } finally {

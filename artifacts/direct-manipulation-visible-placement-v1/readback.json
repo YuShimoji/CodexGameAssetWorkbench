@@ -1,0 +1,317 @@
+{
+  "ok": true,
+  "browser": "chromium",
+  "viewport": {
+    "width": 1600,
+    "height": 1000
+  },
+  "recipeHash": "fnv1a-7a6ed385",
+  "asset": {
+    "id": "asset-direct-review-prop",
+    "parts": [
+      {
+        "id": "part-direct-review-prop-box-1",
+        "name": "Direct Box",
+        "primitive": "box",
+        "materialId": "mat-direct-amber",
+        "transform": {
+          "position": [
+            -2,
+            0.55,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "id": "part-direct-review-prop-cylinder-1",
+        "name": "Direct Cylinder",
+        "primitive": "cylinder",
+        "materialId": "mat-direct-teal",
+        "transform": {
+          "position": [
+            1,
+            0.8,
+            0
+          ],
+          "rotation": [
+            1.5707963267948963,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1.8
+          ]
+        }
+      },
+      {
+        "id": "part-direct-review-prop-sphere-1",
+        "name": "Direct Sphere",
+        "primitive": "sphere",
+        "materialId": "mat-direct-violet",
+        "transform": {
+          "position": [
+            2,
+            0.65,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    ]
+  },
+  "materials": [
+    {
+      "id": "mat-direct-amber",
+      "name": "Direct Amber",
+      "color": "#d88935",
+      "roughness": 0.38,
+      "metalness": 0.22
+    },
+    {
+      "id": "mat-direct-teal",
+      "name": "Direct Teal",
+      "color": "#2bb8ad",
+      "roughness": 0.38,
+      "metalness": 0.22
+    },
+    {
+      "id": "mat-direct-violet",
+      "name": "Direct Violet",
+      "color": "#8d6ed6",
+      "roughness": 0.38,
+      "metalness": 0.22
+    }
+  ],
+  "directSelection": [
+    "Direct Box",
+    "Direct Cylinder",
+    "Direct Sphere"
+  ],
+  "gestures": {
+    "move": {
+      "mode": "translate",
+      "cameraState": "Camera locked",
+      "beforeHash": "fnv1a-d8a47865",
+      "afterHash": "fnv1a-e8c3a332",
+      "before": [
+        "0",
+        "0.8",
+        "0"
+      ],
+      "during": [
+        "1",
+        "0.8",
+        "0"
+      ],
+      "after": [
+        "1",
+        "0.8",
+        "0"
+      ],
+      "undoRestored": true,
+      "redoRestored": true
+    },
+    "rotate": {
+      "mode": "rotate",
+      "cameraState": "Camera locked",
+      "beforeHash": "fnv1a-e8c3a332",
+      "afterHash": "fnv1a-27318b32",
+      "before": [
+        "0",
+        "0",
+        "0"
+      ],
+      "during": [
+        "1.571",
+        "0",
+        "0"
+      ],
+      "after": [
+        "1.571",
+        "0",
+        "0"
+      ],
+      "undoRestored": true,
+      "redoRestored": true
+    },
+    "scale": {
+      "mode": "scale",
+      "cameraState": "Camera locked",
+      "beforeHash": "fnv1a-27318b32",
+      "afterHash": "fnv1a-5e15ad00",
+      "before": [
+        "1",
+        "1",
+        "1"
+      ],
+      "during": [
+        "1",
+        "1",
+        "1.8"
+      ],
+      "after": [
+        "1",
+        "1",
+        "1.8"
+      ],
+      "undoRestored": true,
+      "redoRestored": true
+    },
+    "instanceMove": {
+      "mode": "translate",
+      "cameraState": "Camera locked",
+      "beforeHash": "fnv1a-766a0cf6",
+      "afterHash": "fnv1a-7a6ed385",
+      "before": [
+        "2.5",
+        "0.064",
+        "2.75"
+      ],
+      "during": [
+        "3.25",
+        "0.064",
+        "2.75"
+      ],
+      "after": [
+        "3.25",
+        "0.064",
+        "2.75"
+      ],
+      "undoRestored": true,
+      "redoRestored": true
+    }
+  },
+  "placement": {
+    "previewDidNotMutate": true,
+    "cancelDidNotMutate": true,
+    "confirmedExactlyOne": true,
+    "position": [
+      2.5,
+      0.06,
+      2.75
+    ],
+    "undoRestored": true,
+    "redoRestored": true,
+    "scenePicking": true
+  },
+  "numberControlAudit": [
+    {
+      "testId": "primitive-radius",
+      "height": 28,
+      "width": 160,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "primitive-segments",
+      "height": 28,
+      "width": 160,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-position-x",
+      "height": 28,
+      "width": 93.75,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-position-y",
+      "height": 28,
+      "width": 94.203125,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-position-z",
+      "height": 28,
+      "width": 94.1875,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-rotation-x",
+      "height": 28,
+      "width": 93.75,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-rotation-y",
+      "height": 28,
+      "width": 94.203125,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-rotation-z",
+      "height": 28,
+      "width": 94.1875,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-scale-x",
+      "height": 28,
+      "width": 93.75,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-scale-y",
+      "height": 28,
+      "width": 94.203125,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "part-scale-z",
+      "height": 28,
+      "width": 94.1875,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "material-roughness",
+      "height": 28,
+      "width": 160,
+      "appearance": "textfield"
+    },
+    {
+      "testId": "material-metalness",
+      "height": 28,
+      "width": 160,
+      "appearance": "textfield"
+    }
+  ],
+  "saveOpen": {
+    "hash": "fnv1a-7a6ed385",
+    "restored": true
+  },
+  "validation": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "export": {
+    "glb": "asset-direct-review-prop.glb",
+    "glbBytes": 20352,
+    "manifest": "asset-direct-review-prop.manifest.json"
+  },
+  "screenshots": [
+    "01-isolate-cylinder-direct-selected.png",
+    "02-scene-placement-preview.png",
+    "03-scene-confirmed-selected.png"
+  ],
+  "consoleErrorCount": 0
+}

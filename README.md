@@ -1,6 +1,6 @@
 # Codex Game Asset Workbench
 
-Codexが編集するJSON Recipeと、人間が操作するブラウザUIを同じ保存・検証経路へ接続する、エンジン非依存のプロシージャル3Dアセット基盤です。v0.2は汎用starter projectをActive Artifactとして読み込み、Primitive、Material、Instance、Room、Socket、Seed付き配置に加え、Splineの作成・control point・profile keyframeをViewportとInspectorから直接編集できます。
+Codexが編集するJSON Recipeと、人間が操作するブラウザUIを同じ保存・検証経路へ接続する、エンジン非依存のプロシージャル3Dアセット基盤です。v0.2は汎用starter projectをActive Artifactとして読み込み、Primitive、Material、Instance、Room、Socket、Seed付き配置、Splineを扱います。Asset・Material・Partの新規作成から、Viewport上のPart/Instance直接選択、Move/Rotate/Scale、位置を見ながらのScene配置、保存・再読込・GLB派生出力までをブラウザ内で完結できます。
 
 ## 起動
 
@@ -35,8 +35,11 @@ npm run test:browser
 ## Workbenchで実装済みの操作
 
 - Asset Catalogから複合Assetを選び、Isolate表示する
+- Asset、Material、box / cylinder / plane / sphere Partをブラウザ内で新規作成・複製・並べ替え・安全に削除する
 - OrbitControlsで回転・パン・ズームする
-- Scene Instanceを選択し、TransformControlsまたは数値入力で移動・回転・拡縮する
+- Isolate上の実形状をクリックしてPartを選び、選択輪郭とTransformControlsを見ながら移動・回転・拡縮する
+- Scene上の実形状をクリックしてInstanceを選び、TransformControlsまたは数値入力で移動・回転・拡縮する
+- Assetを半透明previewとしてGround Plane上へ動かし、表示座標を確認して1 Instanceだけ確定する。取消中はRecipeを変更しない
 - Scene TreeからPart、Spline、Room、SocketをStable IDのまま選択する
 - 明示的なSpline作成モードでGround Planeをクリックし、確定または取消する
 - 選択Splineのcontrol pointをViewportで選択・gizmo移動し、Ground Planeクリックで追加・segment挿入、ToolbarまたはDeleteキーで削除する
@@ -77,11 +80,13 @@ npm run build
 npm run typecheck
 npm run lint
 npm test
+npm run test:authoring
+npm run test:direct-manipulation
 npm run test:browser
 git diff --check
 ```
 
-実画面証跡、保存→再読込に使ったRecipe、GLB/manifest、機械可読readbackの生出力は`output/playwright/`へ生成され、Gitでは追跡しません。基準版として選別した証跡は[`artifacts`](./artifacts)に保存します。
+`test:browser`はv0.2 Spline回帰、browser-first authoring、direct manipulation / visible placement、Paper Glider compatibility visual smokeを同じroot gateで実行します。実画面証跡、保存→再読込に使ったRecipe、GLB/manifest、機械可読readbackの生出力は`output/playwright/`へ生成され、Gitでは追跡しません。direct manipulationの基準版は`npm run direct-manipulation:generate`で[`artifacts/direct-manipulation-visible-placement-v1`](./artifacts/direct-manipulation-visible-placement-v1)へ選別します。設計・証拠境界は[`docs/DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1.md`](./docs/DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1.md)を参照してください。
 
 ## Runtime Bundle v1
 
