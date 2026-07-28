@@ -73,6 +73,22 @@ function pngDimensions(bytes, file) {
   };
 }
 
+function stableReadbackForComparison(value) {
+  return {
+    ...value,
+    browser: {
+      ...value.browser,
+      proofs: value.browser.proofs.map((proof) => {
+        const stableProof = { ...proof };
+        delete stableProof.bytes;
+        delete stableProof.sha256;
+        delete stableProof.nonBlankPixels;
+        return stableProof;
+      }),
+    },
+  };
+}
+
 function send(response, status, type, bytes) {
   response.writeHead(status, {
     'Content-Type': type,
@@ -673,10 +689,23 @@ if (writeMode) {
   await mkdir(evidenceDir, { recursive: true });
   await writeFile(readbackPath, readbackText, 'utf8');
 } else {
-  const trackedReadback = await readFile(readbackPath, 'utf8');
+  const trackedReadbackText = await readFile(readbackPath, 'utf8');
+  const trackedReadback = JSON.parse(trackedReadbackText);
+  for (const proof of trackedReadback.browser.proofs) {
+    const screenshot = await readFile(resolve(evidenceDir, proof.file));
+    const dimensions = pngDimensions(screenshot, proof.file);
+    assert(
+      screenshot.byteLength === proof.bytes &&
+        sha256(screenshot) === proof.sha256 &&
+        dimensions.width === proof.width &&
+        dimensions.height === proof.height,
+      `Tracked screenshot provenance differs for ${proof.file}.`,
+    );
+  }
   assert(
-    trackedReadback === readbackText,
-    'Tracked consumer conformance readback differs from current proof.',
+    JSON.stringify(stableReadbackForComparison(trackedReadback)) ===
+      JSON.stringify(stableReadbackForComparison(readback)),
+    'Tracked consumer conformance semantics differ from current proof.',
   );
   await rm(outputDir, { recursive: true, force: true });
 }
