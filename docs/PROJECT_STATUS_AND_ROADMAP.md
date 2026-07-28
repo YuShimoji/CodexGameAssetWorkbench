@@ -4,13 +4,15 @@
 
 ## 現在の結論
 
-Codex Game Asset Workbenchは **`STUDIO_DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1_LOCAL_GREEN`** です。
+Codex Game Asset Workbenchは **`STUDIO_DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1_REVIEW_BRANCH_GREEN`** です。
 
 既存のRecipe 0.1.0、Spline v0.2、Runtime Bundle v1、Paper Glider compatibility packetを維持したまま、ブラウザだけでAsset / Material / Partを作り、Isolate上のPartとScene上のInstanceをrendered meshから直接選び、Move / Rotate / Scaleし、半透明previewを見ながらSceneへ1 Instance配置できるauthoring loopが成立しました。
 
 direct manipulationはdrag中もRecipeとInspectorを同期しますが、履歴はmouse upごとに1件です。visible placementは確定前にRecipeやStable IDを変更せず、Cancelで完全に破棄し、Confirm時だけInstanceを1件作ります。いずれもSave/Open round-trip、Undo/Redo、Validation、Selected Asset GLB exportまで同じRecipe経路を通ります。
 
-このsliceのfollow-throughでは、追加済みsmokeをroot `test:browser` / `verify`へ接続し、3画面・round-trip Recipe・machine readbackを監修用artifactへ固定し、architecture、status、handoffを現在枝へ更新します。公開review枝以外のbranch、`main`、tag、release、deployment、Paper Glider repositoryは変更しません。
+このsliceのfollow-throughでは、追加済みsmokeをroot `test:browser` / `verify`へ接続し、3画面・round-trip Recipe・machine readbackを監修用artifactへ固定し、architecture、status、handoffを現在枝へ更新しました。公開review枝以外のbranch、`main`、tag、release、deployment、Paper Glider repositoryは変更していません。
+
+implementation / evidence commit `dac9dfea7b95e12be2b1f4ae0045074e033da647`は同じreview branchへnon-force push済みで、GitHub Actions `Verify` run `30325159695`がWindows / Node 24.13.0で5分0秒、greenです。この文書を含むdocs-only follow-throughのexact SHAとrunは自己参照固定せず、GitとActionsで実測します。
 
 ## Workflow上の変化
 
@@ -77,7 +79,7 @@ browser-first authoring focused runは、3 Part / 2 Materialの`Review Prop`、A
 | Runtime Bundle v1 | Whole Recipe GLB + versioned manifest | contract / artifact変更なし |
 | Paper Glider compatibility | pinned GLB / manifest / schema / rights | read-only、拡張なし |
 | Node canonical runtime | `.node-version`の24.13.0 | pin変更なし |
-| Windows GitHub Actions | exact Node、locked install、Chromium、root verify | browser chainだけ新smokeを追加 |
+| Windows GitHub Actions | exact Node、locked install、Chromium、root verify | `dac9dfe` run `30325159695` green |
 
 compatibility verifierの空白path proofは、旧開発機のcheckout名`Game Projects`を必須にする環境依存assertから、actual GLB pathと明示的な空白入りproof pathをそれぞれfile URL round-tripするportable checkへ修正しました。packet bytes、schema、公開URL、rights、生成器は変更していません。
 
@@ -119,18 +121,18 @@ Generic Runtime Bundleのrights既定値は引き続き`NOASSERTION`です。
 | selection overlap | 奥の小Partは手前objectに遮られる | Tree / Part selectをfallbackとして維持 | pick cycling、outline layers、focus command |
 | 初期JS chunk約1.38 MB | 初回load cost | local workbenchで機能一貫性を優先 | code splitとbundle budget |
 | `npm audit` high 6 | dev toolchain / Ajv依存に既知advisory | critical 0、broad auto-fixを分離 | 専用dependency sliceとfull regression |
-| remote CIはlocal proofと別 | hosted Windowsでの最終成否はpush後の外部状態 | exact Node pin、root verify | exact successor workflow green |
+| Actions v4 Node 20 deprecation annotation | checkout/setup-node v4が将来runnerで非推奨runtimeを参照 | hosted runはNode 24へ強制されgreen、appのNode pinは24.13.0 | actions v5 migrationを専用差分で検証 |
 
 ## 次に進める入口
 
 | 入口 | 解くbottleneck | 選ぶと可能になること | Authority |
 |---|---|---|---|
-| Verify: review branch CI | local proofとhosted Windowsの差 | reviewerが同じSHAのroot gateを信頼できる | branch push後にActions観測 |
+| Audit: Actions runtime | v4 actionのNode 20 deprecation | 将来runner更新前にworkflow warningを消せる | action major更新の専用review |
 | Audit: direct manipulation UX | overlap、gizmo精度、keyboard/pointer中断 | production authoringでの操作失敗を減らす | 新しいUX acceptanceが必要 |
 | Advance: surface placement | Ground Plane限定 | terrain / mesh / socketへ意味のある配置 | placement contractの別slice |
 | Excise: bundle/dependency cost | 1.38 MB chunkとhigh advisory | load/security residualを機能sliceから切り離して解消 | 依存更新authorityが必要 |
 
-mainline化はreview branch CIと監修受入後の独立判断です。`main` merge、tag、release、deploymentを次作業の暗黙の一部にしません。
+mainline化はgreen review branchの監修受入後に行う独立判断です。`main` merge、tag、release、deploymentを次作業の暗黙の一部にしません。
 
 ## 再開コマンド
 

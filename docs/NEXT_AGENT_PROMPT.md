@@ -7,9 +7,9 @@
 - `docs/DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1.md`
 - `docs/ARCHITECTURE.md`
 
-現在のlocal terminal stateは`STUDIO_DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1_LOCAL_GREEN`です。branchは`codex/direct-manipulation-visible-placement-v1`、slice predecessorは`3f1d4d3d1905a7450a1c9d2183ce1a9f041c7392`です。最終successorは`git rev-parse HEAD`、remote共有状態は`git rev-list --left-right --count 'HEAD...@{upstream}'`で実測します。
+現在のterminal stateは`STUDIO_DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1_REVIEW_BRANCH_GREEN`です。branchは`codex/direct-manipulation-visible-placement-v1`、slice predecessorは`3f1d4d3d1905a7450a1c9d2183ce1a9f041c7392`です。implementation / evidence commit `dac9dfea7b95e12be2b1f4ae0045074e033da647`のGitHub Actions `Verify` run `30325159695`はgreenです。最終docs-only successorは`git rev-parse HEAD`、remote共有状態は`git rev-list --left-right --count 'HEAD...@{upstream}'`で実測します。
 
-次の候補はstatus文書にありますが、いずれも新しいauthorityを要します。review branchのCI観測、direct manipulation UX audit、surface placement、dependency / bundle costのどれを選ぶかを監修者が決めるまで、merge、tag、release、deployment、Paper Glider互換性拡張を開始しません。
+次の候補はstatus文書にありますが、いずれも新しいauthorityを要します。Actions v5 migration、direct manipulation UX audit、surface placement、dependency / bundle costのどれを選ぶかを監修者が決めるまで、merge、tag、release、deployment、Paper Glider互換性拡張を開始しません。
 
 既存Paper Glider Compatibility Packetのdocumentation pinとrights境界を維持します。
 

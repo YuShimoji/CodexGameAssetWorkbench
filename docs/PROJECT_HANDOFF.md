@@ -4,11 +4,11 @@
 
 ## 現在地
 
-現在の開発状態は **`STUDIO_DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1_LOCAL_GREEN`** です。
+現在の開発状態は **`STUDIO_DIRECT_MANIPULATION_VISIBLE_PLACEMENT_V1_REVIEW_BRANCH_GREEN`** です。
 
 browser-first authoringでAsset / Material / Partを作成し、Viewport上の実meshからPart / Instanceを直接選び、Move / Rotate / Scaleし、半透明previewを見ながらSceneへ1 Instanceを配置できます。direct gestureはRecipe previewを更新しながらUndo履歴を1件にまとめます。placement previewは確定前にRecipeやStable IDを変更せず、Confirm時だけInstanceを追加します。
 
-このhandoffを含むsuccessorは、既存review branch `codex/direct-manipulation-visible-placement-v1`を起点に、root browser gate、監修用artifact、正本文書を完成させるものです。`main`、tag、release、deployment、Paper Glider repositoryへのauthorityはありません。
+implementation / evidence commit `dac9dfea7b95e12be2b1f4ae0045074e033da647`は既存review branch `codex/direct-manipulation-visible-placement-v1`へnon-force push済みです。GitHub Actions `Verify` run `30325159695`はWindows / Node 24.13.0で5分0秒、greenでした。このhandoffを含むdocs-only follow-throughのexact SHAとrunは自己参照固定せず、GitとActionsで実測します。`main`、tag、release、deployment、Paper Glider repositoryへのauthorityはありません。
 
 ## 開始状態とGit境界
 
@@ -92,6 +92,15 @@ git diff --check
 3. direct manipulation / visible placement / Save-Open / export smoke
 4. Paper Glider compatibility visual smoke
 
+Hosted proof:
+
+- workflow: `Verify`
+- implementation / evidence SHA: `dac9dfea7b95e12be2b1f4ae0045074e033da647`
+- run: `30325159695`
+- job: `windows-verify`
+- result: success、5分0秒
+- annotation: `actions/checkout@v4`と`actions/setup-node@v4`のNode 20 deprecation。runnerはNode 24へ強制し、repository verificationはgreen
+
 focused direct proofの主要値:
 
 | 項目 | 値 |
@@ -147,7 +156,7 @@ Paper Glider pin:
 | placement中rotation/scaleなし | Confirm後にInstance選択を保持 | PlacementDraftのtransform項目を設計 |
 | JS chunk約1.38 MB | warningとして分離、機能errorではない | build budgetを決めてcode split |
 | `npm audit` high 6 | critical 0、auto-fix未実施 | advisory別impactと更新matrix |
-| hosted CI外部状態 | local exact runtime proofと分離 | pushed successor SHAのActionsを観測 |
+| Actions v4 Node 20 deprecation | current runはNode 24 forcedでgreen | actions v5 migrationを専用review |
 
 ## 再開順序
 
