@@ -14,15 +14,21 @@ jobs:
   windows-verify:
     runs-on: windows-latest
     timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: Game Projects/CodexGameAssetWorkbench
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          path: Game Projects/CodexGameAssetWorkbench
 
       - name: Use Node.js 24.13.0
         uses: actions/setup-node@v4
         with:
           node-version: 24.13.0
           cache: npm
+          cache-dependency-path: Game Projects/CodexGameAssetWorkbench/package-lock.json
 
       - name: Install locked dependencies
         run: npm ci
