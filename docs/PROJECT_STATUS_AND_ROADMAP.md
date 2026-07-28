@@ -1,18 +1,18 @@
 # CodexGameAssetWorkbench 監修AI向け現状報告・長期ロードマップ
 
-最終更新: 2026-07-27 JST
+最終更新: 2026-07-28 JST
 
 ## 結論
 
-Codex Game Asset Studioの最新local stateは **`LOWPASS_ASSET_CANARY_V1_LOCAL_GREEN`** です。基盤であるRuntime Bundle v1の **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** も維持しています。
+Codex Game Asset Studioの最新portable stateは、LOWPASS canaryの **`LOWPASS_ASSET_CANARY_V1_LOCAL_GREEN`** とartifact-only consumerの **`CGAWE_LOWPASS_ARTIFACT_CONSUMER_CONFORMANCE_LOCAL_GREEN`** を保持し、exact consumer branchのWindows remote verifyまでgreenです。基盤であるRuntime Bundle v1の **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** も維持しています。
 
 Recipe 0.1.0のWhole Recipeを、再現可能なGLBと`cgawe-runtime-bundle-1.0.0` manifestへ変換する共通entryを実装しました。Scene Instance、Part override、seed付きexpanded placement、Spline mesh、Room、Socketが同じbundleへ入り、manifestからGLB nodeへStable IDで全参照を解決できます。
 
 StarterとPaper Glider canaryの2入力について、GLB/manifestのbyte determinism、JSON Schema、actual GLTFLoader parse、参照、finite値、hash/bytes、tracked artifact一致を確認しました。Workbench UIはSelected AssetとWhole Recipeを区別し、不正Recipeのdownloadを0件で止め、正常時だけ2ファイルを出します。desktopと390 x 844 mobileでactual exportとstatusを確認しました。
 
-LOWPASS consumer canaryはbranch `feat/lowpass-asset-canary-v1`に固定しました。実装・evidence commitは`c893374ab0edd7329bd1482dbd6b99960acbbb68`、開始SHAは`ee2c9f2568a4318ed6cc2b9fe5216a32b1bcf588`です。2026-07-27の`git fetch --prune origin`後、`origin/feat/lowpass-asset-canary-v1`も`c893374...`で、実装tipの`HEAD...@{upstream}`は`0/0`でした。現在の監修報告はその実装tip上のdocs-only successorであり、最終tipはこの文書を含むcommitを`git rev-parse HEAD`で確認します。PR、main merge、tag、release、deploymentは未実施です。
+artifact-only consumerはbranch `codex/lowpass-artifact-consumer-conformance-v1`に固定しました。baseは`ba689ff26c5f4adb856bb2e077cbb5e8035f23a9`、consumer実装/evidenceは`f4b6c5fdd18ae03678532610757e75ef1f84807f`、remote-green code tipは`a73e35f7d35a5ea120f9322e7ba1417ce10b7b4a`です。2026-07-28のfetch/readback後にupstreamと`0/0`でした。現在の監修報告はそのcode tip上のdocs-only successorであり、最終tipはこの文書を含むcommitを`git rev-parse HEAD`で確認します。PR、main merge、tag、release、deploymentは未実施です。
 
-`.github/workflows/verify.yml`はremoteに存在しますが、push triggerは`main`と`codex/**`で、`feat/lowpass-asset-canary-v1`は対象外です。2026-07-27の`gh run list --branch feat/lowpass-asset-canary-v1`は空で、PRも存在しないため、このbranchのremote CI結果はありません。
+`.github/workflows/verify.yml`は`main`と`codex/**`のpushを対象にし、Windows、Node 24.13.0、space-containing checkout path、locked install、dependency tree、Chromium、full verifyを実行します。run `30365270420`はexact SHA `a73e35f...`で全step greenでした。
 
 ## LOWPASS consumer canary
 
@@ -45,9 +45,17 @@ BlenderはPATHに存在しないため、UV、texture、Blender Python/headless 
 
 このsliceはLOWPASS本体を変更していません。Phase G人間評価、Phase H、Security Cellの距離・delay・scan・音・文言は境界外です。
 
-2026-07-26のfull local verificationはNode `v24.13.0`、npm `11.6.2`で実行し、`npm ls --depth=0`、Schema、production build、typecheck、lint、8 files / 25 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、Workbench/Paper Glider/LOWPASS browser proof、`git diff --check`がPASSしました。Vite 1,364.33 kB chunkの既知warningは残しています。
+2026-07-28のfull local verificationはNode `v24.13.0`、npm `11.6.2`で実行し、Schema、production build、typecheck、lint、9 files / 34 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、artifact consumer、Workbench/Paper Glider/LOWPASS/consumer browser proof、`git diff --check`がPASSしました。Vite 1,364.33 kB chunkの既知warningは残しています。
 
-2026-07-27の同期後minimal gateでは同じNode/npm identityで`npm ls --depth=0`、`npm run lowpass:check`、`git diff --check`がPASSしました。LOWPASS checkは70,892 bytes、5 assets、1,068 triangles、tracked PS1-off/on visual proof一致を再確認しました。incoming commitがなかったため、`npm ci`、full `npm run verify`、browser proofの再生成はこの同期では行っていません。
+2026-07-28のremote run `30365270420`は同じNode identityとspace-containing Windows pathでlocked install、dependency tree、Chromium、full `npm run verify`を実行し、exact SHA `a73e35f...`で全step PASSしました。
+
+### Artifact-only consumer conformance
+
+`LowpassArtifactConsumer`はtracked GLB、manifest、schemaだけを読み、Recipe/generatorを読みません。positive/repeated load、disabled fallback、7 negative cases、partial attachment 0、recovery、scene preservation、resource disposalを検証します。actual resultは5 assets、50 stable nodes、44 meshes、1,068 triangles、geometry disposal 44、material disposal 10です。
+
+browser proofはvalid/disabled各1280 x 720、HTTP 200、non-blank WebGL、console/page/response error 0、external request 0、audio initialization/playback 0です。tracked PNGのbytes/hash/寸法はcanonical provenanceとして固定し、cross-runではrunner依存のpixel bytes/hash/countを除いたload/failure/recovery/disposal/network/audio意味条件を比較します。
+
+このconsumerはWorkbench内のartifact-only referenceであり、LOWPASS repository/game integration、cross-engine portability、人間のreadability/art acceptanceは確立しません。machine readbackは`artifacts/lowpass-consumer-conformance-v1/lowpass-artifact-consumer-conformance.readback.json`です。
 
 ## 成果の意味
 
@@ -64,14 +72,14 @@ BlenderはPATHに存在しないため、UV、texture、Blender Python/headless 
 - rights未指定時に`NOASSERTION`を明示するfail-safe
 - actual two-input artifacts、desktop/mobile screenshots、machine readback
 - root `verify`とWindows CI候補への統合
+- artifact-only reference consumer、7 negative cases、fail-closed recovery/disposal
+- exact `codex/**` branchのWindows remote CI成功
 
 このsliceが確立していないもの:
 
-- remote CI成功
-- GitHub上の共有branchまたはPR
-- `main` authority
+- PRまたは`main` authority
 - dependency audit clean（critical 0 / high 6）
-- external consumerによるGeneric Runtime Bundle load
+- repository外/実ゲームconsumerによるload
 - `DECLARED` rights入力のproduct flow
 - Recipe schema 0.2 migration
 - product releaseまたはpublic deployment
@@ -125,7 +133,8 @@ Runtime Bundle成功statusはproject ID、nodes、trianglesを表示します。
 `.github/workflows/verify.yml`:
 
 - `windows-latest`
-- Node 22
+- Node 24.13.0
+- `Game Projects/CodexGameAssetWorkbench`へのspace-containing checkout
 - `npm ci`
 - `npm ls --depth=0`
 - Playwright Chromium
@@ -133,7 +142,7 @@ Runtime Bundle成功statusはproject ID、nodes、trianglesを表示します。
 - `contents: read`
 - secret、deployment、Pages mutationなし
 
-remote workflow結果は存在しないため、local verificationの代替として「CI green」とは報告しません。初回remote CIには、ownerがPRを作成して`pull_request` triggerを使うか、workflow trigger方針を別変更として承認する必要があります。
+exact branch/SHAのremote workflow結果は[run 30365270420](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30365270420)です。`a73e35f7d35a5ea120f9322e7ba1417ce10b7b4a`で全step greenですが、PR、main merge、release、deployment、owner acceptanceの代替ではありません。`actions/checkout@v4` / `actions/setup-node@v4`のNode 20 deprecation annotationは非blockingで、action major更新は別のdependency review対象です。
 
 ## Actual evidence
 
@@ -196,9 +205,9 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 
 | Gap | 影響 | 現在の緩和 | 解消条件 |
 |---|---|---|---|
-| Remote CI未実行 | Windows再現性がlocal evidenceだけ | workflowをtracked化、branch/upstream parityを確保 | owner承認後のPRまたは別trigger方針とworkflow green |
+| PR/main未判断 | remote-green branchがcanonical mainではない | exact branch/SHA/runを固定、PR 0を明示 | owner review後にPR/main方針を決定 |
 | `npm audit` high 6（2026-07-26観測、この同期では未再実行） | toolchainとAjv依存に既知advisory | critical 0、broad auto-fixを未実行、機能gateと分離 | fresh audit後、fast-uri patchとESLint 10 migrationを専用検証 |
-| Generic consumer未実証 | contractがThree-based proof内に留まる | GLTFLoader actual parse | independent loader conformance |
+| External consumer未実証 | artifact-only reference consumerがWorkbench/Three内に留まる | generator/Recipe非依存、7 negative cases、remote CI | repository外または実ゲームconsumer conformance |
 | Rights `DECLARED` flowなし | 配布判断を自動化できない | default `NOASSERTION` | owner-supplied registry + negative tests |
 | Empty Room/Socket GLB nodes | metadata consumerの実装が必要 | manifestとnodeMapで明示 | reference consumer fixture |
 | Large JS chunk | startup/download cost | warningを既知gapとして保持 | code split + budget |
@@ -211,11 +220,11 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 
 | ID | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|---|
-| RB-H1 | Remote exact handoffを維持 | 別端末がexact branchを取得 | normal push、fetch/readback、parity | 実装tip`c893374`まで達成、docs successorは都度readback | Repository owner / maintainer | 各normal push後に`0/0`を確認 |
-| RB-CI1 | Windows verifyをremote継続実行 | regressionをPR時に検知 | ownerのPR/triggers判断、Actions許可、workflow green | workflow tracked、current branch run 0 | Maintainer | PRを作るかtrigger変更を別承認 |
+| RB-H1 | Remote exact handoffを維持 | 別端末がexact branchを取得 | normal push、fetch/readback、parity | code tip`a73e35f`まで達成、docs successorは都度readback | Repository owner / maintainer | 各normal push後に`0/0`を確認 |
+| RB-CI1 | Windows verifyをremote継続実行 | regressionをbranch/PR時に検知 | Actions許可、workflow green | run `30365270420` green | Maintainer | branch更新時にexact SHA greenを維持 |
 | RB-M1 | Runtime Bundleをmainline candidate化 | canonical code pathを一本化 | full diff、CI、rollback、owner review | pending external gate | Repository owner | PR/merge方針を決定 |
-| RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | Three実装と独立したloader、positive/negative fixtures | 未着手 | Consumer SDK owner | Starter loaderをthin slice化 |
-| RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash mismatch、missing node/ref、NaN、rights cases | 未着手 | Schema / SDK owner | malformed manifest fixtures追加 |
+| RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | generator/Recipe非依存loader、positive/negative fixtures | Workbench artifact-only reference consumer達成、external未実証 | Consumer SDK owner | repository外consumerを別sliceで選定 |
+| RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash/bytes mismatch、missing node/ref、malformed GLB、rights cases | LOWPASS consumer 7 cases達成、generic rights等は未完 | Schema / SDK owner | generic/right-specific fixtureを別slice化 |
 | RB-SEC1 | Dependency advisory closeout | known high 6を解消 | advisory影響評価、Ajv/fast-uri patch、ESLint 10互換、full verify | pending | Dependency / security owner | broad `npm audit fix`を使わず更新計画 |
 | RB-R1 | Declared rights profile | 配布可否とprovenanceを明確化 | license registry、source refs、owner declaration、audit | 未着手 | Rights owner | `NOASSERTION`から別profile化 |
 | RB-I1 | Bundle import/readback | 配布artifactからsource Recipeへ戻れる | source locator、hash照合、derived artifact非正本化 | future | UI / Core owner | manifest inspectorから開始 |
@@ -239,19 +248,19 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 
 ### 推奨順
 
-1. **共有と再現**: RB-H1（達成・維持）→ RB-CI1 → RB-M1
-2. **contract実証とsecurity**: RB-C1 → RB-C2 → RB-SEC1 → RB-R1
+1. **共有と再現**: RB-H1 / RB-CI1（達成・維持）→ RB-M1
+2. **contract実証とsecurity**: RB-C1（reference達成、external残）→ RB-C2 → RB-SEC1 → RB-R1
 3. **資産寿命**: RB-I1 → RB-S1
 4. **production quality**: RB-G1 → RB-P1 → RB-SDK1
 5. **ecosystem**: RB-U1 → RB-Q1 → RB-AI1 → RB-CAT1
 6. **release maturity**: RB-10
 
-このrepositoryでの最短の次価値はRB-CI1です。remote exact handoffは成立したため、ownerがPRまたはworkflow trigger方針を選び、Node 22 / Windowsの初回remote runを観測します。その後にRB-M1の統合判断へ進みます。LOWPASS consumer integration（LP-I1）は別repository・別ownerの承認後だけ開始し、このtaskからは進めません。
+このrepositoryでの最短の次価値はRB-M1のowner判断です。remote exact handoff、artifact-only consumer、Node 24.13.0 / Windowsの初回remote greenは成立したため、Repository ownerがexact branch/SHA/runをreviewし、PR/main候補へ進めるかを決定します。LOWPASS consumer integration（LP-I1）は別repository・別ownerの承認後だけ開始し、このtaskからは進めません。
 
 ## 再開コマンド
 
 ```powershell
-Set-Location 'C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench'
+Set-Location 'C:\Users\thank\Storage\Game Projects\CodexGameAssetWorkbench-lowpass-artifact-consumer-conformance-v1'
 git status --short --branch --untracked-files=all
 git rev-parse HEAD
 git log --oneline -5
@@ -266,7 +275,7 @@ npm run verify
 git diff --check
 ```
 
-現在branchのupstreamは`origin/feat/lowpass-asset-canary-v1`です。通常pushの前後に`HEAD...@{upstream}`を確認し、push後はfetch/readbackで`0/0`を要求します。`origin/main`は`0dd09801148ead04d211063b00d5e54f3f1cb10f`で、実装tip`c893374`から見て`HEAD...origin/main = 13/0`です。これをmain統合済みとは解釈しません。
+現在branchのupstreamは`origin/codex/lowpass-artifact-consumer-conformance-v1`です。通常pushの前後に`HEAD...@{upstream}`を確認し、push後はfetch/readbackで`0/0`を要求します。`origin/main`は`0dd09801148ead04d211063b00d5e54f3f1cb10f`で、remote-green code tip`a73e35f`から見て`HEAD...origin/main = 18/0`です。これをmain統合済みとは解釈しません。
 
 ## Authority map
 
@@ -280,7 +289,8 @@ git diff --check
 | `schemas/lowpass-runtime-asset-pack-1.0.0.schema.json` | LOWPASS machine schema |
 | `artifacts/runtime-bundle-v1/runtime-bundle-readback.json` | Two-input actual result |
 | `artifacts/lowpass-canary-v1/lowpass-readability-canary-v1.readback.json` | LOWPASS actual result |
-| `.github/workflows/verify.yml` | Windows remote verification candidate |
+| `artifacts/lowpass-consumer-conformance-v1/lowpass-artifact-consumer-conformance.readback.json` | Artifact-only consumer actual result |
+| `.github/workflows/verify.yml` | Windows remote verification |
 | `docs/RECIPE_SCHEMA.md` | Recipe 0.1.0 |
 | `docs/PAPER_GLIDER_COMPATIBILITY_PACKET_V1.md` | Paper Glider固有packet |
 | `docs/compat/paper-glider-v1/RIGHTS.md` | Paper Glider project-scoped rights |

@@ -1,6 +1,6 @@
 # LOWPASS Runtime Asset Canary v1
 
-最終更新: 2026-07-27 JST
+最終更新: 2026-07-28 JST
 
 ## 結論
 
@@ -16,7 +16,7 @@
 - PS1-off / PS1-onの1200 x 675 visual proofで役割と陣営のシルエットを比較する
 - invalid Recipeとinvalid LOWPASS definitionを構造化errorでfail closedにする
 
-LOWPASS本体への統合、Phase Gの人間感覚評価、Phase H、既存Security Cellの距離・delay・scan・音・文言の調整はこの成果に含みません。
+Workbench内のartifact-only reference consumerとexact branchのWindows remote CIは成立しました。LOWPASS本体への統合、Phase Gの人間感覚評価、Phase H、既存Security Cellの距離・delay・scan・音・文言の調整はこの成果に含みません。
 
 ## 正本と派生物
 
@@ -29,6 +29,9 @@ LOWPASS本体への統合、Phase Gの人間感覚評価、Phase H、既存Secur
 | Generator/check | `scripts/lowpass-canary.mjs` | Determinism、schema、actual load、budget、tracked artifact照合 |
 | Visual proof | `scripts/lowpass-canary-proof.mjs` | local HTTP + PlaywrightによるPS1-off/on証拠生成 |
 | Derived artifacts | `artifacts/lowpass-canary-v1/` | GLB、manifest、readback、2 visual proofs |
+| Artifact consumer | `packages/adapter-three/src/lowpass-artifact-consumer.ts` | GLB/manifest/schemaだけを読むreference loader、fallback、dispose |
+| Consumer conformance | `scripts/lowpass-consumer-conformance.mjs` / `scripts/lowpass-consumer-proof.mjs` | positive/negative/recovery/isolationとbrowser proof |
+| Consumer evidence | `artifacts/lowpass-consumer-conformance-v1/` | machine readback、valid/disabled visual proofs |
 
 Recipeとconsumer definitionが編集正本です。GLB、manifest、readback、PNGは正本から再生成できるtracked evidenceで、逆方向の編集正本にはしません。
 
@@ -150,4 +153,4 @@ canary assetが不採用でも、既存LOWPASS assetへ即時復帰できるfeat
 | UV/texture profile | production texturingを可能に | Blenderまたは同等tool、UV contract、bake、budget | tool unavailable | Asset pipeline owner | software導入権限を別途取得 |
 | LOD progression | 距離別costを制御 | LOD1/2、screen-size threshold、popping test | LOD0のみ | Runtime/asset owner | 1 assetでthin slice |
 | Rights declaration | 配布条件を明示 | owner declaration、license registry、provenance audit | `NOASSERTION` | Rights owner | distribution前の独立gate |
-| Remote/CI | 別端末とremote Windowsで再現 | exact branch、PRまたはworkflow trigger、Actions run | branch shared / upstream parity、run 0 | Repository owner | PRかtrigger変更を別承認 |
+| Remote/CI | 別端末とremote Windowsで再現 | exact branch、Node 24.13.0、space-containing path、Actions run | run `30365270420`、SHA `a73e35f...` green | Maintainer | branch更新時にexact SHA greenを維持 |
