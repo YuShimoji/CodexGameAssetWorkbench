@@ -270,6 +270,31 @@ describe('LOWPASS artifact consumer', () => {
     expect(materialDispose).not.toHaveBeenCalled();
   });
 
+  it('accepts a self-consistent synthetic DECLARED rights fixture', async () => {
+    const inputs = fixture();
+    inputs.manifest.license = {
+      status: 'DECLARED',
+      licenseId: 'LicenseRef-CGAWE-Synthetic-Test-Only',
+      notice: 'Synthetic test declaration; not a distribution grant.',
+    };
+    for (const asset of inputs.manifest.assets) {
+      asset.sourceProvenance.rightsStatus = 'DECLARED';
+    }
+    const { scene } = createSentinelScene();
+    const consumer = new LowpassArtifactConsumer();
+    const loaded = await consumer.load({ ...inputs, target: scene });
+    expect(loaded.ok).toBe(true);
+    if (!loaded.ok || loaded.state === 'disabled') {
+      throw new Error('Expected the synthetic DECLARED fixture to load.');
+    }
+    expect(loaded.result.manifest.license).toEqual(inputs.manifest.license);
+    expect(consumer.dispose()).toMatchObject({
+      geometries: 44,
+      materials: 10,
+      alreadyDisposed: false,
+    });
+  });
+
   it('fails closed on an unsupported manifest schema and recovers', async () => {
     const inputs = fixture();
     inputs.manifest.schemaVersion = 'lowpass-runtime-asset-pack-9.9.9';
@@ -277,6 +302,36 @@ describe('LOWPASS artifact consumer', () => {
       inputs,
       'UNSUPPORTED_MANIFEST_SCHEMA_VERSION',
     );
+  });
+
+  it('fails closed on an unknown rights status and recovers', async () => {
+    const inputs = fixture();
+    inputs.manifest.license.status = 'UNREVIEWED';
+    await expectFailClosedThenRecover(inputs, 'RIGHTS_DECLARATION_INVALID');
+  });
+
+  it('fails closed on an empty rights notice and recovers', async () => {
+    const inputs = fixture();
+    inputs.manifest.license.notice = '   ';
+    await expectFailClosedThenRecover(inputs, 'RIGHTS_DECLARATION_INVALID');
+  });
+
+  it('requires a license ID for DECLARED rights and recovers', async () => {
+    const inputs = fixture();
+    inputs.manifest.license = {
+      status: 'DECLARED',
+      notice: 'Synthetic test declaration; not a distribution grant.',
+    };
+    for (const asset of inputs.manifest.assets) {
+      asset.sourceProvenance.rightsStatus = 'DECLARED';
+    }
+    await expectFailClosedThenRecover(inputs, 'RIGHTS_DECLARATION_INVALID');
+  });
+
+  it('fails closed when asset rights disagree with the pack and recovers', async () => {
+    const inputs = fixture();
+    inputs.manifest.assets[0].sourceProvenance.rightsStatus = 'DECLARED';
+    await expectFailClosedThenRecover(inputs, 'RIGHTS_DECLARATION_INVALID');
   });
 
   it('fails closed on a GLB hash mismatch and recovers', async () => {

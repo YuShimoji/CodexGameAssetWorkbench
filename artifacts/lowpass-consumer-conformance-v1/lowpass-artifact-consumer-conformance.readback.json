@@ -1,10 +1,10 @@
 {
   "schemaVersion": "cgawe-lowpass-artifact-consumer-conformance-readback-1.0.0",
-  "classification": "CGAWE_LOWPASS_ARTIFACT_CONSUMER_CONFORMANCE_LOCAL_GREEN",
-  "missionBaseRevision": "ba689ff26c5f4adb856bb2e077cbb5e8035f23a9",
-  "missionBaseParent": "c893374ab0edd7329bd1482dbd6b99960acbbb68",
-  "branch": "codex/lowpass-artifact-consumer-conformance-v1",
-  "consumerContractVersion": "cgawe-lowpass-artifact-consumer-1.0.0",
+  "classification": "CGAWE_LOWPASS_ARTIFACT_CONSUMER_RIGHTS_GATE_LOCAL_GREEN",
+  "missionBaseRevision": "4c8b05e9af7582807f42016d9e3d3ceff278592c",
+  "missionBaseParent": "a73e35f7d35a5ea120f9322e7ba1417ce10b7b4a",
+  "branch": "codex/lowpass-consumer-rights-gate-v1",
+  "consumerContractVersion": "cgawe-lowpass-artifact-consumer-1.1.0",
   "inputs": {
     "glb": {
       "name": "lowpass-readability-canary-v1.runtime.glb",
@@ -18,13 +18,15 @@
     },
     "schema": {
       "name": "lowpass-runtime-asset-pack-1.0.0.schema.json",
-      "bytes": 12410,
-      "sha256": "sha256:2524ad15298533fdc77e00eb4911c3df12c14a04d4fab17aad6c323bdaed4f1a"
+      "bytes": 12818,
+      "sha256": "sha256:cf7590ee5a64858cc2ce956c4370297d9f02cc9989604d40aad91665c104d170"
     }
   },
   "positive": {
     "schemaValidated": true,
     "loaded": true,
+    "defaultRightsStatus": "NOASSERTION",
+    "syntheticDeclaredRightsAccepted": true,
     "attachedRoots": 1,
     "repeatedLoadState": "already-attached",
     "repeatedLoadRoots": 1,
@@ -246,6 +248,38 @@
       "recoverySucceeded": true
     },
     {
+      "name": "unknown-rights-status",
+      "code": "RIGHTS_DECLARATION_INVALID",
+      "path": "$.license.status",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "empty-rights-notice",
+      "code": "RIGHTS_DECLARATION_INVALID",
+      "path": "$.license.notice",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "declared-rights-without-license-id",
+      "code": "RIGHTS_DECLARATION_INVALID",
+      "path": "$.license.licenseId",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
+      "name": "asset-rights-status-mismatch",
+      "code": "RIGHTS_DECLARATION_INVALID",
+      "path": "$.assets[0].sourceProvenance.rightsStatus",
+      "partialAttachments": 0,
+      "sentinelPreserved": true,
+      "recoverySucceeded": true
+    },
+    {
       "name": "glb-hash-mismatch",
       "code": "GLB_HASH_MISMATCH",
       "path": "$.files.glb.sha256",
@@ -405,15 +439,15 @@
     ]
   },
   "claimBoundary": {
-    "established": "artifact-only local consumer conformance",
+    "established": "artifact-only consumer conformance with fail-closed rights metadata validation",
     "notEstablished": [
       "LOWPASS repository or game integration",
       "real-game camera, fog, distance, or motion evaluation",
       "human readability or art acceptance",
       "cross-engine portability",
       "direct-manipulation branch integration",
-      "canonical main promotion or remote CI",
-      "security, rights, release, or deployment acceptance"
+      "repository-external rights authority or distribution grant",
+      "security, release, or deployment acceptance"
     ]
   },
   "externalEffects": {

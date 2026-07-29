@@ -263,6 +263,15 @@ function validateDefinition(recipe: Recipe, definition: LowpassAssetPackDefiniti
   if (definition.unitScaleMeters !== 1) {
     push('LOWPASS_UNIT_SCALE_UNSUPPORTED', null, '$.unitScaleMeters', 'LOWPASS canary assets must use one meter units.');
   }
+  if (definition.rights.status !== 'NOASSERTION' && definition.rights.status !== 'DECLARED') {
+    push('LOWPASS_RIGHTS_STATUS_INVALID', null, '$.rights.status', 'rights.status must be NOASSERTION or DECLARED.');
+  }
+  if (!definition.rights.notice?.trim()) {
+    push('LOWPASS_RIGHTS_NOTICE_REQUIRED', null, '$.rights.notice', 'A non-empty rights notice is required.');
+  }
+  if (definition.rights.status === 'DECLARED' && !definition.rights.licenseId?.trim()) {
+    push('LOWPASS_RIGHTS_LICENSE_ID_REQUIRED', null, '$.rights.licenseId', 'DECLARED rights require a non-empty licenseId.');
+  }
   const assetKeys = new Set<string>();
   const declaredAssetIds = new Set<string>();
   for (const [index, contractAsset] of definition.assets.entries()) {

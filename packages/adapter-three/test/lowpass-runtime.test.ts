@@ -101,4 +101,23 @@ describe('LOWPASS runtime asset pack', () => {
       ]),
     } satisfies Partial<LowpassAssetContractError>);
   });
+
+  it('fails before export when DECLARED rights omit a license ID', async () => {
+    const invalid = structuredClone(definition);
+    invalid.rights = {
+      status: 'DECLARED',
+      notice: 'Synthetic test declaration; not a distribution grant.',
+    };
+
+    await expect(buildLowpassRuntimeAssetPack(recipe, invalid)).rejects.toMatchObject({
+      name: 'LowpassAssetContractError',
+      issues: expect.arrayContaining([
+        expect.objectContaining({
+          code: 'LOWPASS_RIGHTS_LICENSE_ID_REQUIRED',
+          assetId: null,
+          path: '$.rights.licenseId',
+        }),
+      ]),
+    } satisfies Partial<LowpassAssetContractError>);
+  });
 });

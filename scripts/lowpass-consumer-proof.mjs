@@ -620,10 +620,10 @@ assert(
 const conformance = await runArtifactConsumerConformance();
 const readback = {
   schemaVersion: 'cgawe-lowpass-artifact-consumer-conformance-readback-1.0.0',
-  classification: 'CGAWE_LOWPASS_ARTIFACT_CONSUMER_CONFORMANCE_LOCAL_GREEN',
-  missionBaseRevision: 'ba689ff26c5f4adb856bb2e077cbb5e8035f23a9',
-  missionBaseParent: 'c893374ab0edd7329bd1482dbd6b99960acbbb68',
-  branch: 'codex/lowpass-artifact-consumer-conformance-v1',
+  classification: 'CGAWE_LOWPASS_ARTIFACT_CONSUMER_RIGHTS_GATE_LOCAL_GREEN',
+  missionBaseRevision: '4c8b05e9af7582807f42016d9e3d3ceff278592c',
+  missionBaseParent: 'a73e35f7d35a5ea120f9322e7ba1417ce10b7b4a',
+  branch: 'codex/lowpass-consumer-rights-gate-v1',
   consumerContractVersion: conformance.consumerContractVersion,
   inputs: conformance.inputs,
   positive: conformance.positive,
@@ -658,15 +658,15 @@ const readback = {
     proofs: browserProofs,
   },
   claimBoundary: {
-    established: 'artifact-only local consumer conformance',
+    established: 'artifact-only consumer conformance with fail-closed rights metadata validation',
     notEstablished: [
       'LOWPASS repository or game integration',
       'real-game camera, fog, distance, or motion evaluation',
       'human readability or art acceptance',
       'cross-engine portability',
       'direct-manipulation branch integration',
-      'canonical main promotion or remote CI',
-      'security, rights, release, or deployment acceptance',
+      'repository-external rights authority or distribution grant',
+      'security, release, or deployment acceptance',
     ],
   },
   externalEffects: {

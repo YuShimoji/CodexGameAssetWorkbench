@@ -10,7 +10,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { LowpassRuntimeAssetManifest } from './lowpass-runtime.js';
 
 export const LOWPASS_ARTIFACT_CONSUMER_CONTRACT_VERSION =
-  'cgawe-lowpass-artifact-consumer-1.0.0';
+  'cgawe-lowpass-artifact-consumer-1.1.0';
 export const SUPPORTED_LOWPASS_ASSET_PACK_SCHEMA_VERSION =
   'lowpass-runtime-asset-pack-1.0.0';
 export const SUPPORTED_RUNTIME_BUNDLE_CONTRACT_VERSION =
@@ -34,6 +34,7 @@ export type LowpassArtifactConsumerErrorCode =
   | 'INVALID_BOUNDS'
   | 'COUNT_MISMATCH'
   | 'BUDGET_EXCEEDED'
+  | 'RIGHTS_DECLARATION_INVALID'
   | 'UNEXPECTED_ERROR';
 
 export interface LowpassArtifactConsumerError {
@@ -208,6 +209,59 @@ function requireString(value: unknown, path: string): asserts value is string {
   }
 }
 
+function validateRightsDeclaration(
+  value: unknown,
+  assets: unknown[],
+): void {
+  if (!isRecord(value)) {
+    fail(
+      'RIGHTS_DECLARATION_INVALID',
+      '$.license must be a rights declaration object.',
+      '$.license',
+    );
+  }
+  if (value.status !== 'NOASSERTION' && value.status !== 'DECLARED') {
+    fail(
+      'RIGHTS_DECLARATION_INVALID',
+      '$.license.status must be NOASSERTION or DECLARED.',
+      '$.license.status',
+    );
+  }
+  if (typeof value.notice !== 'string' || value.notice.trim().length === 0) {
+    fail(
+      'RIGHTS_DECLARATION_INVALID',
+      '$.license.notice must be a non-empty rights notice.',
+      '$.license.notice',
+    );
+  }
+  if (
+    value.status === 'DECLARED' &&
+    (typeof value.licenseId !== 'string' || value.licenseId.trim().length === 0)
+  ) {
+    fail(
+      'RIGHTS_DECLARATION_INVALID',
+      '$.license.licenseId is required when rights status is DECLARED.',
+      '$.license.licenseId',
+    );
+  }
+  assets.forEach((asset, index) => {
+    if (!isRecord(asset) || !isRecord(asset.sourceProvenance)) {
+      fail(
+        'RIGHTS_DECLARATION_INVALID',
+        'Each asset must include rights provenance.',
+        `$.assets[${index}].sourceProvenance`,
+      );
+    }
+    if (asset.sourceProvenance.rightsStatus !== value.status) {
+      fail(
+        'RIGHTS_DECLARATION_INVALID',
+        'Asset rights status must match the pack-level declaration.',
+        `$.assets[${index}].sourceProvenance.rightsStatus`,
+      );
+    }
+  });
+}
+
 function validateManifest(value: unknown): LowpassRuntimeAssetManifest {
   if (!isRecord(value)) {
     fail('MANIFEST_INVALID', 'The LOWPASS manifest must be an object.', '$');
@@ -259,6 +313,7 @@ function validateManifest(value: unknown): LowpassRuntimeAssetManifest {
   requireArray(value.collisionProxyIds, '$.collisionProxyIds');
   requireArray(value.interactionAnchorIds, '$.interactionAnchorIds');
   requireArray(value.assets, '$.assets');
+  validateRightsDeclaration(value.license, value.assets);
   if (!isRecord(value.budgets)) {
     fail('MANIFEST_INVALID', '$.budgets must be an object.', '$.budgets');
   }

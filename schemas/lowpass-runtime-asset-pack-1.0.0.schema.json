@@ -342,9 +342,23 @@
       "required": ["status", "notice"],
       "properties": {
         "status": { "enum": ["NOASSERTION", "DECLARED"] },
-        "licenseId": { "$ref": "#/$defs/nonEmptyString" },
-        "notice": { "$ref": "#/$defs/nonEmptyString" }
-      }
+        "licenseId": { "type": "string", "minLength": 1, "pattern": "\\S" },
+        "notice": { "type": "string", "minLength": 1, "pattern": "\\S" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "DECLARED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "licenseId": { "type": "string", "minLength": 1, "pattern": "\\S" }
+            },
+            "required": ["licenseId"]
+          }
+        }
+      ]
     }
   }
 }

@@ -331,6 +331,30 @@ export async function runArtifactConsumerConformance() {
       'Disabled consumer changed the base scene.',
     );
 
+    const declaredScene = createSentinelScene();
+    const declaredManifest = structuredClone(manifest);
+    declaredManifest.license = {
+      status: 'DECLARED',
+      licenseId: 'LicenseRef-CGAWE-Synthetic-Test-Only',
+      notice: 'Synthetic test declaration; not a distribution grant.',
+    };
+    for (const asset of declaredManifest.assets) {
+      asset.sourceProvenance.rightsStatus = 'DECLARED';
+    }
+    const declaredConsumer = new LowpassArtifactConsumer();
+    const declared = await declaredConsumer.load({
+      glb: Uint8Array.from(glb),
+      manifest: declaredManifest,
+      target: declaredScene.scene,
+    });
+    assert(
+      declared.ok &&
+        declared.state === 'loaded' &&
+        declared.result.manifest.license.status === 'DECLARED',
+      'A self-consistent synthetic DECLARED rights fixture did not load.',
+    );
+    declaredConsumer.dispose();
+
     const negativeCases = [];
     const unsupportedSchema = cloneInputs(glb, manifest);
     unsupportedSchema.manifest.schemaVersion =
@@ -340,6 +364,57 @@ export async function runArtifactConsumerConformance() {
         name: 'unsupported-manifest-schema-version',
         expectedCode: 'UNSUPPORTED_MANIFEST_SCHEMA_VERSION',
         inputs: unsupportedSchema,
+        validGlb: glb,
+        validManifest: manifest,
+      }),
+    );
+    const unknownRightsStatus = cloneInputs(glb, manifest);
+    unknownRightsStatus.manifest.license.status = 'UNREVIEWED';
+    negativeCases.push(
+      await failClosedCase({
+        name: 'unknown-rights-status',
+        expectedCode: 'RIGHTS_DECLARATION_INVALID',
+        inputs: unknownRightsStatus,
+        validGlb: glb,
+        validManifest: manifest,
+      }),
+    );
+    const emptyRightsNotice = cloneInputs(glb, manifest);
+    emptyRightsNotice.manifest.license.notice = '   ';
+    negativeCases.push(
+      await failClosedCase({
+        name: 'empty-rights-notice',
+        expectedCode: 'RIGHTS_DECLARATION_INVALID',
+        inputs: emptyRightsNotice,
+        validGlb: glb,
+        validManifest: manifest,
+      }),
+    );
+    const declaredWithoutLicenseId = cloneInputs(glb, manifest);
+    declaredWithoutLicenseId.manifest.license = {
+      status: 'DECLARED',
+      notice: 'Synthetic test declaration; not a distribution grant.',
+    };
+    for (const asset of declaredWithoutLicenseId.manifest.assets) {
+      asset.sourceProvenance.rightsStatus = 'DECLARED';
+    }
+    negativeCases.push(
+      await failClosedCase({
+        name: 'declared-rights-without-license-id',
+        expectedCode: 'RIGHTS_DECLARATION_INVALID',
+        inputs: declaredWithoutLicenseId,
+        validGlb: glb,
+        validManifest: manifest,
+      }),
+    );
+    const inconsistentAssetRights = cloneInputs(glb, manifest);
+    inconsistentAssetRights.manifest.assets[0].sourceProvenance.rightsStatus =
+      'DECLARED';
+    negativeCases.push(
+      await failClosedCase({
+        name: 'asset-rights-status-mismatch',
+        expectedCode: 'RIGHTS_DECLARATION_INVALID',
+        inputs: inconsistentAssetRights,
         validGlb: glb,
         validManifest: manifest,
       }),
@@ -439,6 +514,9 @@ export async function runArtifactConsumerConformance() {
       positive: {
         schemaValidated: true,
         loaded: true,
+        defaultRightsStatus: loaded.result.manifest.license.status,
+        syntheticDeclaredRightsAccepted:
+          declared.ok && declared.state === 'loaded',
         attachedRoots: 1,
         repeatedLoadState: repeated.state,
         repeatedLoadRoots: 1,
