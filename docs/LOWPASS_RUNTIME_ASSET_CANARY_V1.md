@@ -1,6 +1,6 @@
 # LOWPASS Runtime Asset Canary v1
 
-最終更新: 2026-07-28 JST
+最終更新: 2026-07-29 JST
 
 ## 結論
 
@@ -16,7 +16,7 @@
 - PS1-off / PS1-onの1200 x 675 visual proofで役割と陣営のシルエットを比較する
 - invalid Recipeとinvalid LOWPASS definitionを構造化errorでfail closedにする
 
-Workbench内のartifact-only reference consumerとexact branchのWindows remote CIは成立しました。LOWPASS本体への統合、Phase Gの人間感覚評価、Phase H、既存Security Cellの距離・delay・scan・音・文言の調整はこの成果に含みません。
+Workbench内のartifact-only reference consumer 1.1.0、rights declarationのfail-closed構造検証、exact branchのWindows remote CIは成立しました。LOWPASS本体への統合、実在素材のrights承認、Phase Gの人間感覚評価、Phase H、既存Security Cellの距離・delay・scan・音・文言の調整はこの成果に含みません。
 
 ## 正本と派生物
 
@@ -87,6 +87,15 @@ npm run lowpass:visual
 
 `npm run verify`は既存Schema、build、typecheck、lint、Vitest、generic Runtime Bundle、Paper Glider compatibility、browser smokeに加えてLOWPASS canary checkとvisual proofを実行します。
 
+Artifact-only consumer conformanceはcontract `cgawe-lowpass-artifact-consumer-1.1.0`で、default `NOASSERTION`とsynthetic `DECLARED`をpositive確認し、次のrights failureをGLB attachment前に拒否します。
+
+- unknown rights status
+- blank notice
+- `DECLARED`でlicense ID欠落
+- assetとpackのrights status不一致
+
+既存7 casesと合わせてnegativeは11 casesです。全caseでpartial attachment 0、scene sentinel保持、recovery成功を検証します。LOWPASS schema、producer、consumerは非空notice、`DECLARED`時の非空license ID、asset/pack status一致を同じ境界で検証します。
+
 ## 変更管理
 
 | contract | before | after | compatibility | migration / user impact |
@@ -96,6 +105,7 @@ npm run lowpass:visual
 | Root verification | Generic Runtime BundleとPaper Gliderまで | `lowpass:check`とLOWPASS visual proofを追加 | 既存gateを削除・緩和しない | verify時間が増加し、Playwright Chromiumが必要 |
 | Runtime material disposal | Meshごとにdisposeを呼ぶ | geometry/material objectをSetで一度ずつdispose | 重複disposeを避けるだけで公開API不変 | migrationなし |
 | Visual proof output | LOWPASS proofなし | tracked evidenceとignored local proof outputを分離 | 既存`output/playwright`/`output/compat`を維持 | local `output/lowpass-canary-proof/`は非正本 |
+| Consumer rights declaration | license metadataをattachment後まで明示検証しない | consumer 1.1.0、schema/producer alignment、4 rights failure cases | default `NOASSERTION`は維持。synthetic DECLAREDは構造試験のみ | 1.0.0 consumerは1.1.0 contractへ更新が必要 |
 
 ## Visual proof
 
@@ -127,7 +137,9 @@ npm run lowpass:visual
 
 geometry、flat material、semantic node、runtime packageは検証済みです。UV unwrap、texture bake、atlas、mipmap、compressionは別sliceです。
 
-source typeは`project-owned-procedural-recipe`ですが、rights statusは`NOASSERTION`です。このcanaryは第三者配布許諾や一般licenseを主張しません。Paper Glider固有の`LicenseRef-PaperGlider-Project-Asset`を流用していません。
+source typeは`project-owned-procedural-recipe`ですが、実canaryのrights statusは`NOASSERTION`です。このcanaryは第三者配布許諾や一般licenseを主張しません。Paper Glider固有の`LicenseRef-PaperGlider-Project-Asset`を流用していません。
+
+conformance内の`LicenseRef-CGAWE-Synthetic-Test-Only`は`DECLARED`構造を通過できることだけを示すテスト値です。license registryへの登録、素材の出所確認、rights ownerの宣言、配布許諾を一切与えません。
 
 ## LOWPASS統合の最小境界
 
@@ -152,5 +164,5 @@ canary assetが不採用でも、既存LOWPASS assetへ即時復帰できるfeat
 | In-game readability | 実カメラ・霧・距離で役割を判定 | Gate G-A再受入後、固定scenario、asset toggle | 未評価 | Human evaluator / art owner | 技術統合後に別評価 |
 | UV/texture profile | production texturingを可能に | Blenderまたは同等tool、UV contract、bake、budget | tool unavailable | Asset pipeline owner | software導入権限を別途取得 |
 | LOD progression | 距離別costを制御 | LOD1/2、screen-size threshold、popping test | LOD0のみ | Runtime/asset owner | 1 assetでthin slice |
-| Rights declaration | 配布条件を明示 | owner declaration、license registry、provenance audit | `NOASSERTION` | Rights owner | distribution前の独立gate |
-| Remote/CI | 別端末とremote Windowsで再現 | exact branch、Node 24.13.0、space-containing path、Actions run | run `30365270420`、SHA `a73e35f...` green | Maintainer | branch更新時にexact SHA greenを維持 |
+| Rights declaration | 配布条件を明示 | owner declaration、license registry、provenance audit | 構造検証green、実canaryは`NOASSERTION` | Rights owner | distribution前に実宣言を独立審査 |
+| Remote/CI | 別端末とremote Windowsで再現 | exact branch、Node 24.13.0、space-containing path、Actions run | run `30449320168`、SHA `c1a4f87...` green | Maintainer | branch更新時にexact SHA greenを維持 |

@@ -7,10 +7,15 @@
 - `docs/PROJECT_HANDOFF.md`
 - `docs/PROJECT_STATUS_AND_ROADMAP.md`
 - `docs/RUNTIME_BUNDLE_V1.md`
+- `docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`
 
-現在のlocal terminal stateは`LOWPASS_ASSET_CANARY_V1_LOCAL_GREEN`です。branchは`feat/lowpass-asset-canary-v1`、実装・evidence commitは`c893374ab0edd7329bd1482dbd6b99960acbbb68`、upstreamは`origin/feat/lowpass-asset-canary-v1`です。2026-07-27のfetch後、実装tipはupstreamと`0/0`でした。現在のdocs-only handoff tipは`git rev-parse HEAD`で確認します。PR、main merge、tag、release、deploymentは未実施です。
+現在のportable stateは **`CGAWE_LOWPASS_ARTIFACT_CONSUMER_RIGHTS_GATE_LOCAL_GREEN`** です。branchは`codex/lowpass-consumer-rights-gate-v1`、baseは`origin/main`の`4c8b05e9af7582807f42016d9e3d3ceff278592c`、実装・evidence commitは`c1a4f87e8d5633ee1010bd2f91d4589ced5690ac`です。[GitHub Actions run 30449320168](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30449320168)はこのexact SHAでgreenでした。現在のdocs-only handoff tipは`git rev-parse HEAD`で確認します。
 
-LOWPASS canaryの次作業を自動開始する指示はここには置きません。再開時は`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`とtracked readbackを確認し、remote CI / PR、LOWPASS本体へのconsumer integration、UV/texture tool導入をそれぞれ別承認にします。current `feat/**` branchはpush workflow対象外でPRもないため、remote CI runは0です。Phase HやSecurity Cell tuningへ進みません。
+`LowpassArtifactConsumer` contract 1.1.0は`NOASSERTION`とsynthetic `DECLARED`を構造検証し、unknown status、blank notice、DECLAREDでlicense ID欠落、asset/pack rights不一致をattachment前にfail closedにします。schema、producer、consumerは同じ制約へ揃え、11 negative cases、9 files / 40 tests、full local/remote verifyを通過しました。synthetic LicenseRefはテスト専用で、rights ownerの宣言、license registry、配布許諾、公開承認を意味しません。
+
+`origin/main`は開始時点で旧consumer conformance docs tip `4c8b05e...`まで進んでいました。このtaskはそこからbranchを作成し、PR、main merge、tag、release、deployment、公開・アクセス変更を行っていません。
+
+次のrepository-local候補は、Generic Runtime Bundle側のrights schema/producer/failure fixtureをLOWPASSと同じfail-closed境界へ揃えるthin sliceです。実装前にcurrent authorityとremote parityを再確認し、LOWPASS本体integration、Phase G/H、Security Cell tuning、UV/texture tool導入、実際のrights宣言はそれぞれ別owner gateとして扱います。
 
 既存Paper Glider Compatibility Packetのdocumentation pinを維持します。
 
