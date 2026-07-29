@@ -9,13 +9,15 @@
 - `docs/RUNTIME_BUNDLE_V1.md`
 - `docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`
 
-現在のportable stateは **`CGAWE_LOWPASS_ARTIFACT_CONSUMER_RIGHTS_GATE_LOCAL_GREEN`** です。branchは`codex/lowpass-consumer-rights-gate-v1`、baseは`origin/main`の`4c8b05e9af7582807f42016d9e3d3ceff278592c`、実装・evidence commitは`c1a4f87e8d5633ee1010bd2f91d4589ced5690ac`です。[GitHub Actions run 30449320168](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30449320168)はこのexact SHAでgreenでした。現在のdocs-only handoff tipは`git rev-parse HEAD`で確認します。
+現在のportable stateは **`CGAWE_GENERIC_RUNTIME_BUNDLE_RIGHTS_GATE_REMOTE_GREEN`** です。branchは`codex/runtime-bundle-rights-gate-v1`、baseはexact predecessor `05fe3ce5111b1656fa145dfdc1cf163c9b9b6162`、実装・evidence commitは`15b029d9df533fc4ad8bcc782b6d214e244cb007`です。[GitHub Actions run 30470902752](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30470902752)はこのexact SHAでgreenでした。現在のdocs-only handoff tipは`git rev-parse HEAD`で確認します。
 
-`LowpassArtifactConsumer` contract 1.1.0は`NOASSERTION`とsynthetic `DECLARED`を構造検証し、unknown status、blank notice、DECLAREDでlicense ID欠落、asset/pack rights不一致をattachment前にfail closedにします。schema、producer、consumerは同じ制約へ揃え、11 negative cases、9 files / 40 tests、full local/remote verifyを通過しました。synthetic LicenseRefはテスト専用で、rights ownerの宣言、license registry、配布許諾、公開承認を意味しません。
+Generic Runtime Bundle contract / manifest versionは`cgawe-runtime-bundle-1.0.0` / `1.0.0`のままです。default `NOASSERTION`とsynthetic `DECLARED`がpassし、unknown status、blank notice、DECLARED license ID欠落、blank license IDはscene geometryとexporterより前に専用errorでfail closedになります。4 failuresはexporter invocation 0、output 0で、valid recoveryも成立しました。9 files / 41 testsとfull local/remote verifyがgreenです。
 
-`origin/main`は開始時点で旧consumer conformance docs tip `4c8b05e...`まで進んでいました。このtaskはそこからbranchを作成し、PR、main merge、tag、release、deployment、公開・アクセス変更を行っていません。
+StarterとPaper Glider generic Runtime BundleのGLB/manifest hash、Paper Glider compatibility packet、LOWPASS canary、LOWPASS consumer 1.1.0は不変です。synthetic LicenseRefは構造試験専用で、rights ownerの宣言、license registry、配布許諾、公開承認を意味しません。
 
-次のrepository-local候補は、Generic Runtime Bundle側のrights schema/producer/failure fixtureをLOWPASSと同じfail-closed境界へ揃えるthin sliceです。実装前にcurrent authorityとremote parityを再確認し、LOWPASS本体integration、Phase G/H、Security Cell tuning、UV/texture tool導入、実際のrights宣言はそれぞれ別owner gateとして扱います。
+`origin/main`は開始時点の`4c8b05e...`のままです。このtaskはPR、main merge、tag、release、deployment、公開・アクセス変更を行っていません。
+
+この文書は次作業を自動選定しません。残るbounded gateはreal rights authority、PR/main promotion、external consumer conformance、dependency advisory closeoutです。いずれも対応ownerと新しい明示authorityを確認してから開始します。
 
 既存Paper Glider Compatibility Packetのdocumentation pinを維持します。
 

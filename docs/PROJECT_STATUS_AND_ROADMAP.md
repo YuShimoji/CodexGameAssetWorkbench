@@ -1,18 +1,31 @@
 # CodexGameAssetWorkbench 監修AI向け現状報告・長期ロードマップ
 
-最終更新: 2026-07-29 JST
+最終更新: 2026-07-30 JST
 
 ## 結論
 
-Codex Game Asset Studioの最新portable stateは、LOWPASS canaryとartifact-only consumer conformanceを保持した **`CGAWE_LOWPASS_ARTIFACT_CONSUMER_RIGHTS_GATE_LOCAL_GREEN`** です。基盤であるRuntime Bundle v1の **`STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN`** も維持しています。
+Codex Game Asset Studioの最新portable stateは、既存LOWPASS consumer rights gateを保持した **`CGAWE_GENERIC_RUNTIME_BUNDLE_RIGHTS_GATE_REMOTE_GREEN`** です。Runtime Bundle contract / manifest versionは`cgawe-runtime-bundle-1.0.0` / `1.0.0`のままです。
 
 Recipe 0.1.0のWhole Recipeを、再現可能なGLBと`cgawe-runtime-bundle-1.0.0` manifestへ変換する共通entryを実装しました。Scene Instance、Part override、seed付きexpanded placement、Spline mesh、Room、Socketが同じbundleへ入り、manifestからGLB nodeへStable IDで全参照を解決できます。
 
 StarterとPaper Glider canaryの2入力について、GLB/manifestのbyte determinism、JSON Schema、actual GLTFLoader parse、参照、finite値、hash/bytes、tracked artifact一致を確認しました。Workbench UIはSelected AssetとWhole Recipeを区別し、不正Recipeのdownloadを0件で止め、正常時だけ2ファイルを出します。desktopと390 x 844 mobileでactual exportとstatusを確認しました。
 
-開始時の`origin/main`は旧consumer conformance docs tip `4c8b05e9af7582807f42016d9e3d3ceff278592c`まで進んでいました。このtaskはそこからbranch `codex/lowpass-consumer-rights-gate-v1`を作成し、rights gate実装/evidence `c1a4f87e8d5633ee1010bd2f91d4589ced5690ac`をnormal pushしました。現在の監修報告はそのcode tip上のdocs-only successorであり、最終tipはこの文書を含むcommitを`git rev-parse HEAD`で確認します。このtaskではPR、main merge、tag、release、deploymentを行っていません。
+開始時のexact predecessorは`05fe3ce5111b1656fa145dfdc1cf163c9b9b6162`、`origin/main`は`4c8b05e9af7582807f42016d9e3d3ceff278592c`でした。このtaskはpredecessorからbranch `codex/runtime-bundle-rights-gate-v1`を作成し、Generic Runtime Bundle rights gate実装/evidence `15b029d9df533fc4ad8bcc782b6d214e244cb007`をnormal pushしました。現在の監修報告はそのcode tip上のdocs-only successorであり、最終tipはこの文書を含むcommitを`git rev-parse HEAD`で確認します。このtaskではPR、main merge、tag、release、deploymentを行っていません。
 
-`.github/workflows/verify.yml`は`main`と`codex/**`のpushを対象にし、Windows、Node 24.13.0、space-containing checkout path、locked install、dependency tree、Chromium、full verifyを実行します。[run 30449320168](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30449320168)はexact SHA `c1a4f87...`で全step greenでした。
+`.github/workflows/verify.yml`は`main`と`codex/**`のpushを対象にし、Windows、Node 24.13.0、space-containing checkout path、locked install、dependency tree、Chromium、full verifyを実行します。[run 30470902752](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30470902752)はexact SHA `15b029d...`で全step greenでした。
+
+## Generic Runtime Bundle rights conformance
+
+`buildRuntimeBundle`はRecipe validationの直後、`Group`作成、scene geometry、`GLTFExporter.parseAsync`より前にeffective rightsを検証します。statusは`NOASSERTION` / `DECLARED`だけ、noticeは非whitespace必須、`DECLARED`は非whitespace license ID必須で、入力のtrim、repair、downgradeはしません。
+
+- positive: default `NOASSERTION`、synthetic `DECLARED`
+- negative: unknown status、blank notice、DECLARED license ID欠落、blank license ID
+- malformed result: exporter invocation 0、output file 0
+- recovery: negative sequence後のdefault valid build成功
+- contract / manifest version: `cgawe-runtime-bundle-1.0.0` / `1.0.0`維持
+- Starter / Paper Glider generic Runtime BundleのGLB・manifest identity: 不変
+
+synthetic `LicenseRef-CGAWE-Synthetic-Test-Only`は構造試験専用で、実在license、配布許諾、rights owner承認、公開承認を意味しません。
 
 ## LOWPASS consumer canary
 
@@ -45,9 +58,9 @@ BlenderはPATHに存在しないため、UV、texture、Blender Python/headless 
 
 このsliceはLOWPASS本体を変更していません。Phase G人間評価、Phase H、Security Cellの距離・delay・scan・音・文言は境界外です。
 
-2026-07-29のfull local verificationはNode `v24.13.0`、npm `11.6.2`で実行し、Schema、production build、typecheck、lint、9 files / 40 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、artifact consumer、Workbench/Paper Glider/LOWPASS/consumer browser proof、`git diff --check`がPASSしました。Vite 1,364.33 kB chunkの既知warningは残しています。
+2026-07-30のfull local verificationはNode `v24.13.0`、npm `11.6.2`で実行し、Schema、production build、typecheck、lint、9 files / 41 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、artifact consumer、Workbench/Paper Glider/LOWPASS/consumer browser proof、`git diff --check`がPASSしました。Vite 1,365.69 kB chunkの既知warningは残しています。
 
-2026-07-29のremote run `30449320168`は同じNode identityとspace-containing Windows pathでlocked install、dependency tree、Chromium、full `npm run verify`を実行し、exact SHA `c1a4f87...`で全step PASSしました。
+2026-07-30のremote run `30470902752`は同じNode identityとspace-containing Windows pathでlocked install、dependency tree、Chromium、full `npm run verify`を実行し、exact SHA `15b029d...`で全step PASSしました。
 
 ### Artifact-only consumer conformance
 
@@ -145,7 +158,7 @@ Runtime Bundle成功statusはproject ID、nodes、trianglesを表示します。
 - `contents: read`
 - secret、deployment、Pages mutationなし
 
-exact branch/SHAのremote workflow結果は[run 30449320168](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30449320168)です。`c1a4f87e8d5633ee1010bd2f91d4589ced5690ac`で全step greenですが、PR、main merge、rights approval、release、deployment、owner acceptanceの代替ではありません。`actions/checkout@v4` / `actions/setup-node@v4`のNode 20 deprecation annotationは非blockingで、action major更新は別のdependency review対象です。
+exact branch/SHAのremote workflow結果は[run 30470902752](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30470902752)です。`15b029d9df533fc4ad8bcc782b6d214e244cb007`で全step greenですが、PR、main merge、実rights declaration、release、deployment、owner acceptanceの代替ではありません。`actions/checkout@v4` / `actions/setup-node@v4`のNode 20 deprecation annotationは非blockingで、action major更新は別のdependency review対象です。
 
 ## Actual evidence
 
@@ -164,7 +177,11 @@ exact branch/SHAのremote workflow結果は[run 30449320168](https://github.com/
 - Stable node refs true
 - finite numbers true
 - hashes/bytes true
-- generic rights `NOASSERTION`
+- generic rights default `NOASSERTION` true
+- generic rights synthetic `DECLARED` true
+- generic malformed exporter invocation 0
+- generic malformed output file 0
+- generic valid recovery true
 - local disclosure absent
 - browser validation blocked download true
 - desktop Runtime Bundle download 2
@@ -198,7 +215,7 @@ Runtime BundleはRecipe schemaや既存意味論を変更しません。migratio
 
 ### Portable stateとterminal-local state
 
-remoteで取得できるportable stateは、tracked source/docs/schema/sampleと`artifacts/**`です。2026-07-29の同期前にtracked/staged/unstaged/untracked差分はなく、tracked LOWPASS artifactsもcleanでした。
+remoteで取得できるportable stateは、tracked source/docs/schema/sampleと`artifacts/**`です。2026-07-30の同期前にtracked/staged/unstaged/untracked差分はなく、tracked Runtime Bundle / LOWPASS artifactsもcleanでした。
 
 `.serena/`、root/workspaceの`node_modules/`、各`dist/`、`*.tsbuildinfo`、`output/compat/`、`output/playwright/`、`output/lowpass-canary-proof/`はignoredまたはterminal-localです。これらをcommit、clean、stash、別worktreeへのコピー対象にしません。
 
@@ -211,7 +228,7 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 | PR/main未判断 | remote-green branchがcanonical mainではない | exact branch/SHA/runを固定、PR 0を明示 | owner review後にPR/main方針を決定 |
 | `npm audit` high 6（2026-07-26観測、この同期では未再実行） | toolchainとAjv依存に既知advisory | critical 0、broad auto-fixを未実行、機能gateと分離 | fresh audit後、fast-uri patchとESLint 10 migrationを専用検証 |
 | External consumer未実証 | artifact-only reference consumerがWorkbench/Three内に留まる | generator/Recipe非依存、11 negative cases、remote CI | repository外または実ゲームconsumer conformance |
-| Rights authorityなし | 構造的に有効でも実在素材の配布可否は判断できない | default `NOASSERTION`、synthetic DECLARED test、fail-closed consumer | owner-supplied registry + provenance audit + explicit approval |
+| Rights authorityなし | 構造的に有効でも実在素材の配布可否は判断できない | default `NOASSERTION`、synthetic DECLARED test、fail-closed producer / consumer | owner-supplied registry + provenance audit + explicit approval |
 | Empty Room/Socket GLB nodes | metadata consumerの実装が必要 | manifestとnodeMapで明示 | reference consumer fixture |
 | Large JS chunk | startup/download cost | warningを既知gapとして保持 | code split + budget |
 | Large Recipe benchmarkなし | export time/memory上限不明 | Starter/canary deterministic proof | scale fixture + thresholds |
@@ -223,11 +240,11 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 
 | ID | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|---|
-| RB-H1 | Remote exact handoffを維持 | 別端末がexact branchを取得 | normal push、fetch/readback、parity | code tip`c1a4f87`まで達成、docs successorは都度readback | Repository owner / maintainer | 各normal push後に`0/0`を確認 |
-| RB-CI1 | Windows verifyをremote継続実行 | regressionをbranch/PR時に検知 | Actions許可、workflow green | run `30449320168` green | Maintainer | branch更新時にexact SHA greenを維持 |
-| RB-M1 | rights gateをmainline candidate化 | canonical consumer contractを更新 | full diff、CI、rollback、owner review | pending external gate | Repository owner | PR/merge方針を決定 |
+| RB-H1 | Remote exact handoffを維持 | 別端末がexact branchを取得 | normal push、fetch/readback、parity | implementation tip `15b029d`まで達成、docs successorは都度readback | Repository owner / maintainer | 各normal push後に`0/0`を確認 |
+| RB-CI1 | Windows verifyをremote継続実行 | regressionをbranch/PR時に検知 | Actions許可、workflow green | run `30470902752` green | Maintainer | branch更新時にexact SHA greenを維持 |
+| RB-M1 | Generic rights gateをmainline candidate化 | canonical Runtime Bundle contractを更新 | full diff、CI、rollback、owner review | pending owner gate | Repository owner | PR/merge方針を決定 |
 | RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | generator/Recipe非依存loader、positive/negative fixtures | Workbench artifact-only reference consumer達成、external未実証 | Consumer SDK owner | repository外consumerを別sliceで選定 |
-| RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash/bytes mismatch、missing node/ref、malformed GLB、rights cases | LOWPASS consumer 11 casesとrights 4 cases達成、generic Runtime Bundle rightsは未完 | Schema / SDK owner | generic rights schema/producer fixtureをthin slice化 |
+| RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash/bytes mismatch、missing node/ref、malformed GLB、rights cases | Generic rights 4 casesとLOWPASS consumer 11 casesをrepository内で達成、externalはRB-C1 | Schema / SDK owner | in-repo fixturesを維持し、external evidenceはRB-C1で扱う |
 | RB-SEC1 | Dependency advisory closeout | known high 6を解消 | advisory影響評価、Ajv/fast-uri patch、ESLint 10互換、full verify | pending | Dependency / security owner | broad `npm audit fix`を使わず更新計画 |
 | RB-R1 | Declared rights profile | 配布可否とprovenanceを明確化 | license registry、source refs、owner declaration、audit | 構造検証のみ達成、実宣言なし | Rights owner | `NOASSERTION`からowner-approved profile化 |
 | RB-I1 | Bundle import/readback | 配布artifactからsource Recipeへ戻れる | source locator、hash照合、derived artifact非正本化 | future | UI / Core owner | manifest inspectorから開始 |
@@ -251,14 +268,14 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 
 ### 推奨順
 
-1. **共有と再現**: RB-H1 / RB-CI1（達成・維持）→ rights gateのRB-M1
-2. **contract実証とsecurity**: RB-C2 generic rights alignment → RB-C1 external consumer → RB-SEC1 → RB-R1
+1. **共有と再現**: RB-H1 / RB-CI1（達成・維持）→ owner-gated RB-M1
+2. **contract実証とsecurity**: RB-C1 external consumer → RB-SEC1 → RB-R1
 3. **資産寿命**: RB-I1 → RB-S1
 4. **production quality**: RB-G1 → RB-P1 → RB-SDK1
 5. **ecosystem**: RB-U1 → RB-Q1 → RB-AI1 → RB-CAT1
 6. **release maturity**: RB-10
 
-このrepositoryでowner判断なしに進められる次の最短価値は、RB-C2のGeneric Runtime Bundle rights schema/producer/failure fixtureをLOWPASSと同じfail-closed境界へ揃えるthin sliceです。並行する外部gateとして、Repository ownerはexact branch/SHA/runをreviewしてPR/main候補化を判断し、Rights ownerは実在素材のregistry/declarationを別途審査します。LOWPASS consumer integration（LP-I1）は別repository・別ownerの承認後だけ開始します。
+RB-C2はrepository-localなGeneric Runtime Bundle rightsについて完了しました。この文書は次作業を自動選定しません。残るbounded gateはRepository ownerによるPR/main判断、Consumer / SDK ownerによるexternal conformance、Dependency / security ownerによるadvisory closeout、Rights ownerによる実在素材のregistry/declarationです。LOWPASS consumer integration（LP-I1）は別repository・別ownerの承認後だけ開始します。
 
 ## 再開コマンド
 
@@ -278,7 +295,7 @@ npm run verify
 git diff --check
 ```
 
-現在branchのupstreamは`origin/codex/lowpass-consumer-rights-gate-v1`です。通常pushの前後に`HEAD...@{upstream}`を確認し、push後はfetch/readbackで`0/0`を要求します。開始時の`origin/main`は`4c8b05e9af7582807f42016d9e3d3ceff278592c`で、implementation tip `c1a4f87...`はahead 1 / behind 0です。これはrights gateのmain統合を意味しません。
+現在branchのupstreamは`origin/codex/runtime-bundle-rights-gate-v1`です。通常pushの前後に`HEAD...@{upstream}`を確認し、push後はfetch/readbackで`0/0`を要求します。開始時のexact predecessorは`05fe3ce...`、`origin/main`は`4c8b05e...`で、implementation tip `15b029d...`はmainに対してahead 3 / behind 0です。これはrights gateのmain統合を意味しません。
 
 ## Authority map
 

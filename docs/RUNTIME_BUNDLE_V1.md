@@ -2,6 +2,8 @@
 
 `cgawe-runtime-bundle-1.0.0`は、Recipe 0.1.0のWhole Recipeを、実行時に読み込めるGLBとversioned manifestへ決定論的に変換する汎用contractです。編集正本は引き続きRecipeであり、GLBとmanifestは同じRecipeから再生成できる派生物です。
 
+2026-07-30のrights validation correctionはcontract versionとvalid output formatを変更せず、malformed declarationをgeometry/export前に拒否するconformance修正です。
+
 ## 出力
 
 `buildRuntimeBundle(recipe)`は次を返します。
@@ -49,12 +51,20 @@ Three.jsがnode nameを読み替えないASCII安全形式を使用します。R
 - RecipeはCore canonical JSONのFNV-1a識別子とSHA-256を保持
 - GLBはbyte lengthとSHA-256を保持
 - Generic exportのrights既定値は`NOASSERTION`
+- statusは`NOASSERTION`または`DECLARED`だけを受理
+- noticeは1文字以上の非whitespaceを必須とする
+- `DECLARED`は1文字以上の非whitespaceを持つlicense IDを必須とする
+- license IDを明示する場合はstatusにかかわらず非whitespaceを必須とする
 
-Paper Glider固有の`LicenseRef-PaperGlider-Project-Asset`はGeneric Runtime Bundleへ自動継承しません。明示的なrights入力を与える場合だけ`DECLARED`を使用します。既存`paper-glider-compat-v1` packetとそのbyte identityは別contractとして維持します。
+producerは入力をtrim、repair、downgrade、別値へ置換しません。default `NOASSERTION`の既存manifest bytesは不変です。Paper Glider固有の`LicenseRef-PaperGlider-Project-Asset`はGeneric Runtime Bundleへ自動継承しません。synthetic `LicenseRef-CGAWE-Synthetic-Test-Only`は構造試験専用で、license、配布許諾、rights owner承認を与えません。既存`paper-glider-compat-v1` packetとそのbyte identityは別contractとして維持します。
 
 ## Fail-closed validation
 
-Recipe validation errorが1件でもあれば`RuntimeBundleValidationError`を返し、GLTFExporterを呼びません。Workbench UIは先頭error messageと総error数を通知し、ダウンロードを開始しません。正常時はGLBとmanifestの2ファイルを保存し、project ID、node count、triangle countをstatusへ表示します。
+Recipe validation errorが1件でもあれば`RuntimeBundleValidationError`を返し、GLTFExporterを呼びません。
+
+Recipeがvalidならeffective rightsを次に検証し、失敗時は`RuntimeBundleRightsValidationError`とstable `issues[].code/path/message`を返します。この検証は`Group`作成、scene geometry、`GLTFExporter.parseAsync`より前です。failureはGLB、manifest、partial bundleを返しません。negative sequence後のvalid buildも同じprocessで成功することを検証します。
+
+Workbench UIはRecipe error時に先頭messageと総error数を通知し、ダウンロードを開始しません。正常時だけGLBとmanifestの2ファイルを保存し、project ID、node count、triangle countをstatusへ表示します。
 
 ## 再生成と検証
 
@@ -71,7 +81,11 @@ npm run runtime:check
 - node map、scene part、placement part、room/socket参照
 - finite transforms、bounds、counts
 - GLB hashとbytes
-- Generic rights `NOASSERTION`
+- Generic default rights `NOASSERTION`
+- synthetic `DECLARED`のschema/producer pass
+- unknown status、blank notice、DECLARED license ID欠落、blank license IDの4 failures
+- malformed rightsのexporter invocation 0、output file 0
+- negative sequence後のvalid recovery
 - canonical manifestからlocal disclosureがないこと
 - tracked artifactとのbyte一致
 
@@ -79,7 +93,7 @@ actual evidence:
 
 - `starter-atelier.runtime.glb`: 90,708 bytes、41 manifest nodes、2,720 triangles
 - `paper-glider-archive-gate-v1.runtime.glb`: 30,820 bytes、13 manifest nodes、1,064 triangles
-- `runtime-bundle-readback.json`: 2入力のmachine-readable検証結果
+- `runtime-bundle-readback.json`: 2入力identityとbounded rights positive/negative/recoveryのmachine-readable検証結果
 - `runtime-bundle-desktop.png`: desktop export success
 - `runtime-bundle-mobile.png`: 390 x 844 export success
 
