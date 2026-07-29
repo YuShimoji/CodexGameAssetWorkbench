@@ -20,10 +20,29 @@ import { buildAssetObject, buildSplineObject, disposeObject } from './index.js';
 export const RUNTIME_BUNDLE_CONTRACT_VERSION = 'cgawe-runtime-bundle-1.0.0';
 export const RUNTIME_BUNDLE_MANIFEST_VERSION = '1.0.0';
 
-export interface RuntimeBundleRights {
-  status: 'NOASSERTION' | 'DECLARED';
-  licenseId?: string;
-  notice: string;
+export type RuntimeBundleRights =
+  | {
+    status: 'NOASSERTION';
+    licenseId?: string;
+    notice: string;
+  }
+  | {
+    status: 'DECLARED';
+    licenseId: string;
+    notice: string;
+  };
+
+export type RuntimeBundleRightsValidationCode =
+  | 'RUNTIME_BUNDLE_RIGHTS_DECLARATION_INVALID'
+  | 'RUNTIME_BUNDLE_RIGHTS_STATUS_INVALID'
+  | 'RUNTIME_BUNDLE_RIGHTS_NOTICE_INVALID'
+  | 'RUNTIME_BUNDLE_RIGHTS_LICENSE_ID_REQUIRED'
+  | 'RUNTIME_BUNDLE_RIGHTS_LICENSE_ID_INVALID';
+
+export interface RuntimeBundleRightsValidationIssue {
+  code: RuntimeBundleRightsValidationCode;
+  path: string;
+  message: string;
 }
 
 export interface RuntimeBundleNode {
@@ -156,6 +175,60 @@ export class RuntimeBundleValidationError extends Error {
   }
 }
 
+export class RuntimeBundleRightsValidationError extends Error {
+  readonly issues: RuntimeBundleRightsValidationIssue[];
+
+  constructor(issues: RuntimeBundleRightsValidationIssue[]) {
+    super(`Runtime Bundle blocked by ${issues.length} rights validation error${issues.length === 1 ? '' : 's'}.`);
+    this.name = 'RuntimeBundleRightsValidationError';
+    this.issues = issues;
+  }
+}
+
+function validateRuntimeBundleRights(rights: unknown): RuntimeBundleRightsValidationIssue[] {
+  if (!rights || typeof rights !== 'object' || Array.isArray(rights)) {
+    return [{
+      code: 'RUNTIME_BUNDLE_RIGHTS_DECLARATION_INVALID',
+      path: 'rights',
+      message: 'Runtime Bundle rights must be an object.',
+    }];
+  }
+
+  const candidate = rights as { status?: unknown; licenseId?: unknown; notice?: unknown };
+  const issues: RuntimeBundleRightsValidationIssue[] = [];
+  if (candidate.status !== 'NOASSERTION' && candidate.status !== 'DECLARED') {
+    issues.push({
+      code: 'RUNTIME_BUNDLE_RIGHTS_STATUS_INVALID',
+      path: 'rights.status',
+      message: 'Runtime Bundle rights status must be NOASSERTION or DECLARED.',
+    });
+  }
+  if (typeof candidate.notice !== 'string' || !/\S/.test(candidate.notice)) {
+    issues.push({
+      code: 'RUNTIME_BUNDLE_RIGHTS_NOTICE_INVALID',
+      path: 'rights.notice',
+      message: 'Runtime Bundle rights notice must contain a non-whitespace character.',
+    });
+  }
+
+  const hasLicenseId = Object.prototype.hasOwnProperty.call(candidate, 'licenseId')
+    && candidate.licenseId !== undefined;
+  if (candidate.status === 'DECLARED' && !hasLicenseId) {
+    issues.push({
+      code: 'RUNTIME_BUNDLE_RIGHTS_LICENSE_ID_REQUIRED',
+      path: 'rights.licenseId',
+      message: 'Runtime Bundle DECLARED rights require a licenseId.',
+    });
+  } else if (hasLicenseId && (typeof candidate.licenseId !== 'string' || !/\S/.test(candidate.licenseId))) {
+    issues.push({
+      code: 'RUNTIME_BUNDLE_RIGHTS_LICENSE_ID_INVALID',
+      path: 'rights.licenseId',
+      message: 'Runtime Bundle rights licenseId must contain a non-whitespace character.',
+    });
+  }
+  return issues;
+}
+
 function applyTransform(object: Object3D, transform: Transform): void {
   object.position.set(...transform.position);
   object.rotation.set(...transform.rotation);
@@ -254,6 +327,10 @@ export async function buildRuntimeBundle(recipe: Recipe, options: RuntimeBundleO
   const issues = validateRecipe(recipe);
   if (issues.some((issue) => issue.severity === 'error')) throw new RuntimeBundleValidationError(issues);
 
+  const effectiveRights: unknown = options.rights === undefined ? defaultRights() : options.rights;
+  const rightsIssues = validateRuntimeBundleRights(effectiveRights);
+  if (rightsIssues.length > 0) throw new RuntimeBundleRightsValidationError(rightsIssues);
+  const rights = structuredClone(effectiveRights) as RuntimeBundleRights;
   const root = new Group();
   const rootNodeId = `runtime-root--${nodeToken(recipe.projectId)}`;
   const nodeMap: RuntimeBundleNode[] = [];
@@ -436,7 +513,7 @@ export async function buildRuntimeBundle(recipe: Recipe, options: RuntimeBundleO
         warningCount: warnings.length,
         warningCodes: [...new Set(warnings.map((issue) => issue.code))].sort(),
       },
-      rights: structuredClone(options.rights ?? defaultRights()),
+      rights,
     };
     return { glb: exported, manifest, manifestText: canonicalManifestText(manifest) };
   } finally {

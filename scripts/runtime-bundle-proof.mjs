@@ -3,9 +3,11 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {
   RUNTIME_BUNDLE_CONTRACT_VERSION,
+  RuntimeBundleRightsValidationError,
   buildRuntimeBundle,
 } from '@cgawe/adapter-three';
 import { parseRecipe } from '@cgawe/schema';
@@ -180,14 +182,121 @@ async function runCase(entry) {
   return { caseId: entry.id, recipeFile: entry.recipe.slice(root.length + 1).replaceAll('\\', '/'), ...inspection };
 }
 
+async function runRightsConformance(recipe) {
+  const originalParseAsync = GLTFExporter.prototype.parseAsync;
+  let exporterInvocations = 0;
+  GLTFExporter.prototype.parseAsync = async function countedParseAsync(...args) {
+    exporterInvocations += 1;
+    return originalParseAsync.apply(this, args);
+  };
+
+  try {
+    const defaultBefore = exporterInvocations;
+    const defaultBundle = await buildRuntimeBundle(recipe);
+    assert(exporterInvocations === defaultBefore + 1, 'Default NOASSERTION build did not invoke the exporter exactly once.');
+    assert(validateManifest(defaultBundle.manifest), `Default rights manifest schema failed:\n${ajv.errorsText(validateManifest.errors, { separator: '\n' })}`);
+    assert(defaultBundle.manifest.rights.status === 'NOASSERTION', 'Default rights status drifted from NOASSERTION.');
+
+    const syntheticDeclared = {
+      status: 'DECLARED',
+      licenseId: 'LicenseRef-CGAWE-Synthetic-Test-Only',
+      notice: 'Synthetic conformance data only; this is not a license or distribution grant.',
+    };
+    const declaredBefore = exporterInvocations;
+    const declaredBundle = await buildRuntimeBundle(recipe, { rights: syntheticDeclared });
+    assert(exporterInvocations === declaredBefore + 1, 'Synthetic DECLARED build did not invoke the exporter exactly once.');
+    assert(validateManifest(declaredBundle.manifest), `Synthetic DECLARED manifest schema failed:\n${ajv.errorsText(validateManifest.errors, { separator: '\n' })}`);
+    assert(JSON.stringify(declaredBundle.manifest.rights) === JSON.stringify(syntheticDeclared), 'Synthetic DECLARED rights were repaired or replaced.');
+
+    const malformedCases = [
+      {
+        id: 'unknown-status',
+        rights: { status: 'UNKNOWN', notice: 'Unknown status must fail.' },
+        expectedCode: 'RUNTIME_BUNDLE_RIGHTS_STATUS_INVALID',
+      },
+      {
+        id: 'blank-notice',
+        rights: { status: 'NOASSERTION', notice: ' \t ' },
+        expectedCode: 'RUNTIME_BUNDLE_RIGHTS_NOTICE_INVALID',
+      },
+      {
+        id: 'declared-missing-license-id',
+        rights: { status: 'DECLARED', notice: 'A DECLARED fixture requires a license identifier.' },
+        expectedCode: 'RUNTIME_BUNDLE_RIGHTS_LICENSE_ID_REQUIRED',
+      },
+      {
+        id: 'declared-blank-license-id',
+        rights: { status: 'DECLARED', licenseId: ' \t ', notice: 'A blank license identifier must fail.' },
+        expectedCode: 'RUNTIME_BUNDLE_RIGHTS_LICENSE_ID_INVALID',
+      },
+    ];
+    const negatives = [];
+    for (const entry of malformedCases) {
+      const callsBefore = exporterInvocations;
+      let bundle;
+      let caught;
+      try {
+        bundle = await buildRuntimeBundle(recipe, { rights: entry.rights });
+      } catch (error) {
+        caught = error;
+      }
+      assert(bundle === undefined, `${entry.id} produced a partial Runtime Bundle.`);
+      assert(caught instanceof RuntimeBundleRightsValidationError, `${entry.id} did not return RuntimeBundleRightsValidationError.`);
+      const errorCodes = caught.issues.map((issue) => issue.code);
+      assert(errorCodes.includes(entry.expectedCode), `${entry.id} did not expose ${entry.expectedCode}.`);
+      assert(exporterInvocations === callsBefore, `${entry.id} invoked GLTFExporter before failing.`);
+      negatives.push({
+        caseId: entry.id,
+        errorName: caught.name,
+        errorCodes,
+        exporterInvocations: exporterInvocations - callsBefore,
+        outputFilesProduced: 0,
+      });
+    }
+
+    const recoveryBefore = exporterInvocations;
+    const recovery = await buildRuntimeBundle(recipe);
+    assert(exporterInvocations === recoveryBefore + 1, 'Valid recovery did not invoke the exporter exactly once.');
+    assert(recovery.manifest.rights.status === 'NOASSERTION', 'Valid recovery did not restore default NOASSERTION rights.');
+
+    return {
+      positives: {
+        defaultNoAssertion: {
+          status: defaultBundle.manifest.rights.status,
+          exporterInvocations: 1,
+        },
+        syntheticDeclared: {
+          status: declaredBundle.manifest.rights.status,
+          licenseId: declaredBundle.manifest.rights.licenseId,
+          exporterInvocations: 1,
+          testOnly: true,
+        },
+      },
+      negatives,
+      recovery: {
+        status: recovery.manifest.rights.status,
+        exporterInvocations: exporterInvocations - recoveryBefore,
+      },
+      malformedExporterInvocations: negatives.reduce((sum, entry) => sum + entry.exporterInvocations, 0),
+      malformedOutputFilesProduced: negatives.reduce((sum, entry) => sum + entry.outputFilesProduced, 0),
+      claimBoundary: 'Synthetic DECLARED data proves structural conformance only and grants no license or distribution permission.',
+    };
+  } finally {
+    GLTFExporter.prototype.parseAsync = originalParseAsync;
+  }
+}
+
 await mkdir(artifactDir, { recursive: true });
 const results = [];
 for (const entry of cases) results.push(await runCase(entry));
+const rightsRecipe = parseRecipe(JSON.parse(await readFile(cases[0].recipe, 'utf8')));
+const rightsConformance = await runRightsConformance(rightsRecipe);
 
 const readback = {
   contractVersion: RUNTIME_BUNDLE_CONTRACT_VERSION,
-  state: 'STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN',
+  state: 'CGAWE_GENERIC_RUNTIME_BUNDLE_RIGHTS_GATE_LOCAL_GREEN',
   inputs: results,
+  rightsConformance,
   checks: {
     inputCount: results.length,
     deterministicGlb: true,
@@ -198,6 +307,10 @@ const readback = {
     finiteNumbers: true,
     fileHashesAndBytes: true,
     genericRightsNoAssertion: true,
+    syntheticDeclaredRights: true,
+    rightsValidationBeforeExport: rightsConformance.malformedExporterInvocations === 0,
+    malformedRightsOutputFiles: rightsConformance.malformedOutputFilesProduced,
+    validRecoveryAfterRightsFailures: rightsConformance.recovery.status === 'NOASSERTION',
     localDisclosureAbsent: true,
   },
   browserEvidence: {

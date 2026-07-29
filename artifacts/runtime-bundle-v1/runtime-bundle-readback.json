@@ -1,6 +1,6 @@
 {
   "contractVersion": "cgawe-runtime-bundle-1.0.0",
-  "state": "STUDIO_RUNTIME_BUNDLE_V1_LOCAL_GREEN",
+  "state": "CGAWE_GENERIC_RUNTIME_BUNDLE_RIGHTS_GATE_LOCAL_GREEN",
   "inputs": [
     {
       "caseId": "starter",
@@ -83,6 +83,65 @@
       "rights": "NOASSERTION"
     }
   ],
+  "rightsConformance": {
+    "positives": {
+      "defaultNoAssertion": {
+        "status": "NOASSERTION",
+        "exporterInvocations": 1
+      },
+      "syntheticDeclared": {
+        "status": "DECLARED",
+        "licenseId": "LicenseRef-CGAWE-Synthetic-Test-Only",
+        "exporterInvocations": 1,
+        "testOnly": true
+      }
+    },
+    "negatives": [
+      {
+        "caseId": "unknown-status",
+        "errorName": "RuntimeBundleRightsValidationError",
+        "errorCodes": [
+          "RUNTIME_BUNDLE_RIGHTS_STATUS_INVALID"
+        ],
+        "exporterInvocations": 0,
+        "outputFilesProduced": 0
+      },
+      {
+        "caseId": "blank-notice",
+        "errorName": "RuntimeBundleRightsValidationError",
+        "errorCodes": [
+          "RUNTIME_BUNDLE_RIGHTS_NOTICE_INVALID"
+        ],
+        "exporterInvocations": 0,
+        "outputFilesProduced": 0
+      },
+      {
+        "caseId": "declared-missing-license-id",
+        "errorName": "RuntimeBundleRightsValidationError",
+        "errorCodes": [
+          "RUNTIME_BUNDLE_RIGHTS_LICENSE_ID_REQUIRED"
+        ],
+        "exporterInvocations": 0,
+        "outputFilesProduced": 0
+      },
+      {
+        "caseId": "declared-blank-license-id",
+        "errorName": "RuntimeBundleRightsValidationError",
+        "errorCodes": [
+          "RUNTIME_BUNDLE_RIGHTS_LICENSE_ID_INVALID"
+        ],
+        "exporterInvocations": 0,
+        "outputFilesProduced": 0
+      }
+    ],
+    "recovery": {
+      "status": "NOASSERTION",
+      "exporterInvocations": 1
+    },
+    "malformedExporterInvocations": 0,
+    "malformedOutputFilesProduced": 0,
+    "claimBoundary": "Synthetic DECLARED data proves structural conformance only and grants no license or distribution permission."
+  },
   "checks": {
     "inputCount": 2,
     "deterministicGlb": true,
@@ -93,6 +152,10 @@
     "finiteNumbers": true,
     "fileHashesAndBytes": true,
     "genericRightsNoAssertion": true,
+    "syntheticDeclaredRights": true,
+    "rightsValidationBeforeExport": true,
+    "malformedRightsOutputFiles": 0,
+    "validRecoveryAfterRightsFailures": true,
     "localDisclosureAbsent": true
   },
   "browserEvidence": {
