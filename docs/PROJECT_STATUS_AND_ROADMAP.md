@@ -1,10 +1,10 @@
 # CodexGameAssetWorkbench 監修AI向け現状報告・長期ロードマップ
 
-最終更新: 2026-07-30 JST
+最終更新: 2026-08-04 JST
 
 ## 結論
 
-Codex Game Asset Studioの最新portable stateは、既存LOWPASS consumer rights gateを保持した **`CGAWE_GENERIC_RUNTIME_BUNDLE_RIGHTS_GATE_REMOTE_GREEN`** です。Runtime Bundle contract / manifest versionは`cgawe-runtime-bundle-1.0.0` / `1.0.0`のままです。
+Codex Game Asset Studioの最新portable producer stateは **`CGAWE_GENERIC_RUNTIME_BUNDLE_RIGHTS_GATE_REMOTE_GREEN`**、別repositoryのLOWPASS実ゲームconsumerは **`LOWPASS_EXTERNAL_GAME_CONSUMER_LOCAL_GREEN`** です。Runtime Bundle contract / manifest versionは`cgawe-runtime-bundle-1.0.0` / `1.0.0`のままです。
 
 Recipe 0.1.0のWhole Recipeを、再現可能なGLBと`cgawe-runtime-bundle-1.0.0` manifestへ変換する共通entryを実装しました。Scene Instance、Part override、seed付きexpanded placement、Spline mesh、Room、Socketが同じbundleへ入り、manifestからGLB nodeへStable IDで全参照を解決できます。
 
@@ -56,7 +56,7 @@ Roles:
 
 BlenderはPATHに存在しないため、UV、texture、Blender Python/headless export、production texturingは未完了です。外部software導入は行っていません。rightsは`NOASSERTION`で、Paper Glider固有LicenseRefを流用していません。
 
-このsliceはLOWPASS本体を変更していません。Phase G人間評価、Phase H、Security Cellの距離・delay・scan・音・文言は境界外です。
+producer slice自体はLOWPASS本体を変更していません。その後、LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`が別repositoryのactual game loaderとして同じGLB SHAを読込み、primitive fallbackとexternal distribution fail-closeを維持しました。Phase H、Security Cell規則、rights、production art、人間art受入は境界外です。
 
 2026-07-30のfull local verificationはNode `v24.13.0`、npm `11.6.2`で実行し、Schema、production build、typecheck、lint、9 files / 41 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、artifact consumer、Workbench/Paper Glider/LOWPASS/consumer browser proof、`git diff --check`がPASSしました。Vite 1,365.69 kB chunkの既知warningは残しています。
 
@@ -71,6 +71,12 @@ browser proofはvalid/disabled各1280 x 720、HTTP 200、non-blank WebGL、conso
 rights境界はdefault `NOASSERTION`とsynthetic `DECLARED`をpositive確認し、unknown status、blank notice、DECLAREDのlicense ID欠落、asset/pack rights不一致をattachment前にfail closedにします。LOWPASS schema、producer、consumerは同じ制約へ揃えました。synthetic `LicenseRef-CGAWE-Synthetic-Test-Only`は構造試験専用であり、実在素材のlicense、配布許諾、rights owner承認ではありません。
 
 このconsumerはWorkbench内のartifact-only referenceであり、LOWPASS repository/game integration、cross-engine portability、人間のreadability/art acceptance、実在素材のrights authorityは確立しません。machine readbackは`artifacts/lowpass-consumer-conformance-v1/lowpass-artifact-consumer-conformance.readback.json`です。
+
+### External LOWPASS game consumer conformance
+
+LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`は、70,892 byte / SHA-256 `54b10bf...e1b4d102`のGLBを実ゲームruntimeでparseし、5 role、15 semantic binding、3 lifecycle disposal、registry / manifest rights parity、external-distribution拒否、primitive fallbackを検証します。importerは7追跡成果物との再現一致を検査し、external buildはinternal GLBを0件にします。34 files / 202 tests、typecheck、external build、diff checkはPASSです。
+
+machine receiptは`artifacts/lowpass-external-consumer-conformance-v1/lowpass-external-consumer-conformance.readback.json`です。consumer branchは未pushのためremote portabilityは未成立です。cross-engine、rights、production art、人間art受入、PR/main、release/deployは別gateです。
 
 ## 成果の意味
 
@@ -227,7 +233,7 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 |---|---|---|---|
 | PR/main未判断 | remote-green branchがcanonical mainではない | exact branch/SHA/runを固定、PR 0を明示 | owner review後にPR/main方針を決定 |
 | `npm audit` high 6（2026-07-26観測、この同期では未再実行） | toolchainとAjv依存に既知advisory | critical 0、broad auto-fixを未実行、機能gateと分離 | fresh audit後、fast-uri patchとESLint 10 migrationを専用検証 |
-| External consumer未実証 | artifact-only reference consumerがWorkbench/Three内に留まる | generator/Recipe非依存、11 negative cases、remote CI | repository外または実ゲームconsumer conformance |
+| External consumer remote portability未実証 | LOWPASS actual game consumerはlocal greenだがbranch未push | exact consumer commit、machine receipt、34 files / 202 tests、external build | owner判断後のnormal pushとremote readback |
 | Rights authorityなし | 構造的に有効でも実在素材の配布可否は判断できない | default `NOASSERTION`、synthetic DECLARED test、fail-closed producer / consumer | owner-supplied registry + provenance audit + explicit approval |
 | Empty Room/Socket GLB nodes | metadata consumerの実装が必要 | manifestとnodeMapで明示 | reference consumer fixture |
 | Large JS chunk | startup/download cost | warningを既知gapとして保持 | code split + budget |
@@ -243,8 +249,8 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 | RB-H1 | Remote exact handoffを維持 | 別端末がexact branchを取得 | normal push、fetch/readback、parity | implementation tip `15b029d`まで達成、docs successorは都度readback | Repository owner / maintainer | 各normal push後に`0/0`を確認 |
 | RB-CI1 | Windows verifyをremote継続実行 | regressionをbranch/PR時に検知 | Actions許可、workflow green | run `30470902752` green | Maintainer | branch更新時にexact SHA greenを維持 |
 | RB-M1 | Generic rights gateをmainline candidate化 | canonical Runtime Bundle contractを更新 | full diff、CI、rollback、owner review | pending owner gate | Repository owner | PR/merge方針を決定 |
-| RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | generator/Recipe非依存loader、positive/negative fixtures | Workbench artifact-only reference consumer達成、external未実証 | Consumer SDK owner | repository外consumerを別sliceで選定 |
-| RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash/bytes mismatch、missing node/ref、malformed GLB、rights cases | Generic rights 4 casesとLOWPASS consumer 11 casesをrepository内で達成、externalはRB-C1 | Schema / SDK owner | in-repo fixturesを維持し、external evidenceはRB-C1で扱う |
+| RB-C1 | Independent consumer conformance | Generic contractの可搬性を証明 | generator/Recipe非依存loader、positive/negative fixtures | LOWPASS actual game consumerでlocal technical green、remote未共有 | Consumer SDK owner | consumer branchのpush / remote readbackをowner判断 |
+| RB-C2 | Contract failure suite | 互換破壊を早期検知 | unknown version、hash/bytes mismatch、missing node/ref、malformed GLB、rights cases | Generic rights 4 cases、Workbench LOWPASS 11 cases、external LOWPASS hash/version/rights/fallbackを達成 | Schema / SDK owner | fixturesとreceiptを維持 |
 | RB-SEC1 | Dependency advisory closeout | known high 6を解消 | advisory影響評価、Ajv/fast-uri patch、ESLint 10互換、full verify | pending | Dependency / security owner | broad `npm audit fix`を使わず更新計画 |
 | RB-R1 | Declared rights profile | 配布可否とprovenanceを明確化 | license registry、source refs、owner declaration、audit | 構造検証のみ達成、実宣言なし | Rights owner | `NOASSERTION`からowner-approved profile化 |
 | RB-I1 | Bundle import/readback | 配布artifactからsource Recipeへ戻れる | source locator、hash照合、derived artifact非正本化 | future | UI / Core owner | manifest inspectorから開始 |
@@ -258,8 +264,8 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 | RB-CAT1 | Versioned asset catalog | 再利用素材を依存・権利付きで蓄積 | package IDs、dependency graph、rights filter、previews | far | Product / rights owner | first-party 3 assets |
 | RB-10 | Owner-gated 1.0 | 制作・配布基盤として安定宣言 | main、CI、migration、consumer、rights、performance、docs、人間受入 | far terminal | Repository owner | acceptance checklistを別途固定 |
 | LP-GA | LOWPASS Gate G-A再受入 | 復旧した操作性でPhase G感覚評価を再開 | LOWPASS exact commit、Gamepad実機、ミュートなし、人間PASS/G-TUNE/FAIL | 別repoでpending human | Human evaluator | canary統合より先にGate G-Aを再評価可能 |
-| LP-I1 | Canary loader fixture | LOWPASS実runtimeでcontractを読込む | exact artifact hash、version fail-close、asset fallback | 未着手 | LOWPASS runtime owner | 独立integration branch |
-| LP-I2 | Side-by-side readability | 既存assetとcanaryを同一条件で比較 | same camera/seed/scenario、toggle、resource metrics | 未着手 | Runtime / art owner | LP-I1後 |
+| LP-I1 | Canary loader fixture | LOWPASS実runtimeでcontractを読込む | exact artifact hash、version fail-close、asset fallback | local technical green at `80c8a71` | LOWPASS runtime owner | remote共有はowner gate |
+| LP-I2 | Side-by-side readability | 既存assetとcanaryを同一条件で比較 | same camera/seed/scenario、toggle、resource metrics | 24 tracked A/Bとruntime toggle達成、human判定なし | Runtime / art owner | production方向を人間評価 |
 | LP-A1 | Human art acceptance | silhouette、faction、interaction affordanceを判定 | PS1-off/on、実game fog/light/distance、human rubric | 未着手 | Human art owner | 技術greenと分離 |
 | LP-T1 | UV/texture canary | production material routeを実証 | Blender等の利用承認、UV、bake、atlas、mipmap、budget | tool unavailable | Asset pipeline owner | external tool gate |
 | LP-L1 | LOD/collision profile | 距離別costとphysics境界を安定化 | LOD1/2、screen threshold、proxy policy、popping test | future | Runtime / asset owner | accepted asset 1種から |
@@ -269,13 +275,13 @@ remoteで取得できるportable stateは、tracked source/docs/schema/sampleと
 ### 推奨順
 
 1. **共有と再現**: RB-H1 / RB-CI1（達成・維持）→ owner-gated RB-M1
-2. **contract実証とsecurity**: RB-C1 external consumer → RB-SEC1 → RB-R1
+2. **contract実証とsecurity**: RB-C1 local達成 → owner-gated remote parity → RB-SEC1 → RB-R1
 3. **資産寿命**: RB-I1 → RB-S1
 4. **production quality**: RB-G1 → RB-P1 → RB-SDK1
 5. **ecosystem**: RB-U1 → RB-Q1 → RB-AI1 → RB-CAT1
 6. **release maturity**: RB-10
 
-RB-C2はrepository-localなGeneric Runtime Bundle rightsについて完了しました。この文書は次作業を自動選定しません。残るbounded gateはRepository ownerによるPR/main判断、Consumer / SDK ownerによるexternal conformance、Dependency / security ownerによるadvisory closeout、Rights ownerによる実在素材のregistry/declarationです。LOWPASS consumer integration（LP-I1）は別repository・別ownerの承認後だけ開始します。
+RB-C2とLOWPASS actual game consumerのlocal technical conformanceは完了しました。この文書は次作業を自動選定しません。残るbounded gateはRepository ownerによるPR/main判断、LOWPASS consumer branchのremote共有、Dependency / security ownerによるadvisory closeout、Rights ownerによる実在素材のregistry/declaration、人間art受入です。
 
 ## 再開コマンド
 

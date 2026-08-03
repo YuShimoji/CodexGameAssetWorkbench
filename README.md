@@ -109,7 +109,7 @@ npm run lowpass:check
 npm run lowpass:visual
 ```
 
-GLB、manifest、machine readback、PS1-off/on visual proofは[`artifacts/lowpass-canary-v1`](./artifacts/lowpass-canary-v1)にあります。Blenderはこの環境のPATHに存在せず、UV/texture stageは未完了です。LOWPASS本体への統合、Phase G人間評価、Phase Hは実施していません。契約、検証、統合境界は[`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`](./docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md)を参照してください。
+GLB、manifest、machine readback、PS1-off/on visual proofは[`artifacts/lowpass-canary-v1`](./artifacts/lowpass-canary-v1)にあります。別repositoryのLOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`でactual game loaderのlocal technical conformanceが成立し、receiptは[`artifacts/lowpass-external-consumer-conformance-v1`](./artifacts/lowpass-external-consumer-conformance-v1)にあります。consumer branchは未pushです。Blenderはこの環境のPATHに存在せず、UV/texture、rights、production art、人間art受入、Phase Hは未完了です。契約、検証、統合境界は[`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`](./docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md)を参照してください。
 
 ## Paper Glider compatibility packet
 

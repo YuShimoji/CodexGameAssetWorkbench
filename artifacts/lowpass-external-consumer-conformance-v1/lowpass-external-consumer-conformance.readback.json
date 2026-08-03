@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cgawe-lowpass-external-consumer-conformance-receipt-1.0.0",
+  "state": "LOWPASS_EXTERNAL_GAME_CONSUMER_LOCAL_GREEN",
+  "producer": {
+    "repository": "CodexGameAssetWorkbench",
+    "sourceCommit": "c893374ab0edd7329bd1482dbd6b99960acbbb68",
+    "manifestVersion": "lowpass-runtime-asset-pack-1.0.0",
+    "glbBytes": 70892,
+    "glbSha256": "54b10bf450971139a9cfe8302f671d29bc37fda6f2631dbf5545ef69e1b4d102"
+  },
+  "consumer": {
+    "repository": "LOWPASS-SALVAGE-ATLAS",
+    "branch": "codex/visual-overhaul-concepts-v1",
+    "commit": "80c8a7108509d83544c1997e667ad11fe621b3b1",
+    "remotePublished": false,
+    "runtimeLoader": "src/render/assets/CanaryMissionAssetPack.ts",
+    "registry": "src/game/content/generated/lowpassCanaryRegistry.json",
+    "fixture": "src/game/content/fixtures/lowpassCanaryConsumerFixture.json",
+    "consumerReadback": "public/assets/lowpass-canary-v1/asset-consumer-readback.json"
+  },
+  "checks": {
+    "externalRepository": true,
+    "actualGameRuntimeLoader": true,
+    "runtimeGeneratorDependency": false,
+    "exactGlbHash": true,
+    "manifestVersionFailClosed": true,
+    "fiveRoleBindingsResolved": true,
+    "semanticBindingsResolved": 15,
+    "primitiveFallback": true,
+    "invalidHashRejectedBeforeRegistryOutput": true,
+    "rightsRegistryManifestParity": true,
+    "externalDistributionBlocked": true,
+    "externalBuildInternalGlbCount": 0,
+    "threeLifecycleDisposalCycles": true,
+    "trackedImporterOutputsReproduced": 7
+  },
+  "verification": {
+    "testFiles": 34,
+    "tests": 202,
+    "typecheck": "PASS",
+    "externalBuild": "PASS",
+    "externalAssetBoundary": "PASS",
+    "diffCheck": "PASS"
+  },
+  "acceptanceBoundary": {
+    "established": "Pinned internal-only Canary conformance in a separate repository and actual LOWPASS game runtime",
+    "notEstablished": [
+      "consumer remote portability",
+      "distribution rights",
+      "production asset approval",
+      "human art acceptance",
+      "cross-engine portability",
+      "PR or main promotion",
+      "release or deployment"
+    ]
+  }
+}

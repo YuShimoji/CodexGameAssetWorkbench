@@ -1,14 +1,14 @@
 # CodexGameAssetWorkbench project handoff
 
-最終更新: 2026-07-30 JST
+最終更新: 2026-08-04 JST
 
 ## 現在地
 
-現在のportable開発状態は、既存LOWPASS consumer rights gateを保持した **`CGAWE_GENERIC_RUNTIME_BUNDLE_RIGHTS_GATE_REMOTE_GREEN`** です。Runtime Bundle contract / manifest versionは`cgawe-runtime-bundle-1.0.0` / `1.0.0`のままです。
+現在のportable producer状態は **`CGAWE_GENERIC_RUNTIME_BUNDLE_RIGHTS_GATE_REMOTE_GREEN`**、別repositoryのLOWPASS実ゲームconsumerは **`LOWPASS_EXTERNAL_GAME_CONSUMER_LOCAL_GREEN`** です。Runtime Bundle contract / manifest versionは`cgawe-runtime-bundle-1.0.0` / `1.0.0`のままです。
 
 編集正本はRecipe 0.1.0のままです。Runtime BundleはScene Instance、instance override、expanded placement、Spline mesh、Room volume、SocketをひとつのGLBへ展開し、Stable IDとsource referenceをmanifestへ残す派生物です。
 
-Generic rights gate branchはremoteへ共有され、[GitHub Actions run 30470902752](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30470902752)がexact implementation/evidence SHA `15b029d9df533fc4ad8bcc782b6d214e244cb007`でgreenです。PR、`main`統合、tag、release、deploymentは行っていません。local/remoteの構造的green、rights ownerの宣言、配布許諾、外部consumer、main昇格は独立したgateです。
+Generic rights gate branchはremoteへ共有され、[GitHub Actions run 30470902752](https://github.com/YuShimoji/CodexGameAssetWorkbench/actions/runs/30470902752)がexact implementation/evidence SHA `15b029d9df533fc4ad8bcc782b6d214e244cb007`でgreenです。PR、`main`統合、tag、release、deploymentは行っていません。LOWPASS external consumerはlocal greenですが未pushであり、rights ownerの宣言、配布許諾、consumer remote共有、main昇格は独立したgateです。
 
 ## Generic Runtime Bundle rights gate
 
@@ -42,7 +42,7 @@ Generic rights gate branchはremoteへ共有され、[GitHub Actions run 3047090
 
 BlenderはPATHに存在しません。外部softwareは導入せず、UVなし、texture 0、Blender Python/headless未試験、production texturing未完了をmanifest/readbackへ明示しました。
 
-LOWPASS本体への統合、Phase G人間評価、Phase H、Security Cellの距離・delay・scan・音・文言の変更は実施していません。詳細は`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`です。
+producer sliceではLOWPASS本体を変更していません。その後、LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`でactual game loaderへの技術統合が成立しました。Phase H、Security Cell規則、rights、production art、人間art受入は変更・承認していません。詳細は`docs/LOWPASS_RUNTIME_ASSET_CANARY_V1.md`です。
 
 ## Artifact-only consumer conformance
 
@@ -62,6 +62,12 @@ LOWPASS本体への統合、Phase G人間評価、Phase H、Security Cellの距�
 tracked PNGのbytes/hash/寸法はcanonical provenanceとして厳密検証します。runner固有のpixel bytes/hash/non-blank pixel countはcross-run等価条件から除き、寸法、非blank閾値、load/failure/recovery/disposal/network/audioの意味条件はremoteでも厳密に検証します。これはLOWPASS repository/game integration、cross-engine portability、人間のreadability/art acceptanceを確立しません。
 
 synthetic `LicenseRef-CGAWE-Synthetic-Test-Only`は構造的な`DECLARED`処理を検証するだけで、実素材へのlicense付与、配布許諾、rights owner承認ではありません。schema、producer、consumerは、非空notice、`DECLARED`時の非空license ID、asset/pack status一致を同じfail-closed境界で検証します。
+
+## External LOWPASS game consumer
+
+LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`は、exact GLB SHA、manifest version、5 role / 15 semantic binding、runtime parse、3 lifecycle disposal、rights parity、external-distribution拒否、primitive fallbackを実ゲームloaderで検証します。importerの7追跡成果物再現、34 files / 202 tests、typecheck、external build、internal GLB 0件、diff checkはPASSです。
+
+machine receiptは`artifacts/lowpass-external-consumer-conformance-v1/lowpass-external-consumer-conformance.readback.json`です。consumer branchは未pushで、remote portability、cross-engine、rights、production art、人間art受入を確立しません。
 
 ## Git authority
 
@@ -91,7 +97,7 @@ branchはexact predecessor `05fe3ce...`から開始しました。既存Runtime 
 - `.serena/`、root/workspace `node_modules/`、各`dist/`、`*.tsbuildinfo`、`output/compat/`、`output/playwright/`、`output/lowpass-canary-proof/`はignored / terminal-localです。commit、stash、clean、転送対象にしません。
 - `codex/browser-first-authoring-loop-v1`、`codex/direct-manipulation-visible-placement-v1`、`codex/runtime-bundle-v1`の別worktreeは保護し、このtaskでは内容・branch・processを変更していません。
 
-結論として、Generic Runtime Bundle rights conformanceはlocal/remote Windowsでgreenです。残るgateはreal rights authority、PR/main promotion、external consumer conformance、dependency advisory closeoutです。
+結論として、Generic Runtime Bundle rights conformanceはlocal/remote Windows、LOWPASS actual game consumerはlocalでgreenです。残るgateはreal rights authority、PR/main promotion、consumer remote portability、dependency advisory closeout、人間art受入です。
 
 ## Runtime Bundle v1
 
@@ -213,7 +219,7 @@ Viteの500 kB chunk-size warningは継続しています。build error、Runtime
 | Remote parity維持 | 別端末がexact branchを取得し続ける | normal push、fetch/readback、`0/0` | `15b029d`まで達成 | Repository owner / maintainer | docs successor push後もparity確認 |
 | Remote CI | Windows / Node 24.13.0と空白pathで再現性を確認 | exact branch、Actions run | run `30470902752` green | Maintainer | final docs tipでもgreenを確認 |
 | PR / main昇格 | Generic rights gateをcanonical main候補にする | remote CI green、diff review、rollback確認、owner承認 | PR 0、未実施 | Repository owner | exact branch/runをreviewして判断 |
-| External consumer conformance | repository外/実ゲームloaderでcontractを実証 | external fixture、failure cases、version support | Workbench内artifact-only reference consumerまで達成 | Consumer / SDK owner | external consumerを別sliceで選定 |
+| External consumer remote portability | repository外/実ゲームloaderの証拠を別端末へ共有 | exact LOWPASS branch、normal push、remote readback | local technical green at `80c8a71`、未push | LOWPASS repository owner | push可否を判断し、許可時だけnormal push |
 | Rights declaration authority | 実在素材の配布条件を確定 | license registry、provenance、owner declaration、audit | 構造検証のみ達成、実rightsは`NOASSERTION` | Rights owner | 実宣言を別gateで登録・審査 |
 | Dependency audit | known high advisoryを解消 | advisory影響評価、Ajv/fast-uri patch、ESLint 10互換確認、full regression | critical 0 / high 6 | Dependency / security owner | broad auto-fixを避けて専用slice化 |
 

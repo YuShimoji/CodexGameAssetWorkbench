@@ -1,10 +1,10 @@
 # LOWPASS Runtime Asset Canary v1
 
-最終更新: 2026-07-29 JST
+最終更新: 2026-08-04 JST
 
 ## 結論
 
-`lowpass-readability-canary-v1`は、CodexGameAssetWorkbenchの既存Runtime BundleをLOWPASS: SALVAGE ATLAS向けに小さく拡張した、remote-shared / not-integratedのconsumer canaryです。適合度は **B（小規模拡張で対応可能）** です。
+`lowpass-readability-canary-v1`は、CodexGameAssetWorkbenchの既存Runtime BundleをLOWPASS: SALVAGE ATLAS向けに小さく拡張したconsumer canaryです。producerはremote-shared、LOWPASS実ゲームconsumerはlocal technical greenです。適合度は **B（小規模拡張で対応可能）** です。
 
 このcanaryは次を実証します。
 
@@ -16,7 +16,7 @@
 - PS1-off / PS1-onの1200 x 675 visual proofで役割と陣営のシルエットを比較する
 - invalid Recipeとinvalid LOWPASS definitionを構造化errorでfail closedにする
 
-Workbench内のartifact-only reference consumer 1.1.0、rights declarationのfail-closed構造検証、exact branchのWindows remote CIは成立しました。LOWPASS本体への統合、実在素材のrights承認、Phase Gの人間感覚評価、Phase H、既存Security Cellの距離・delay・scan・音・文言の調整はこの成果に含みません。
+Workbench内のartifact-only reference consumer 1.1.0、rights declarationのfail-closed構造検証、exact branchのWindows remote CIに加え、LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`でactual game loader、exact hash、version / rights fail-close、primitive fallback、5 role / 15 semantic binding、3 lifecycle、external build除外が成立しました。consumer branchは未pushで、実在素材のrights承認、production art承認、Phase H、既存Security Cell規則の変更はこの成果に含みません。
 
 ## 正本と派生物
 
@@ -32,6 +32,7 @@ Workbench内のartifact-only reference consumer 1.1.0、rights declarationのfai
 | Artifact consumer | `packages/adapter-three/src/lowpass-artifact-consumer.ts` | GLB/manifest/schemaだけを読むreference loader、fallback、dispose |
 | Consumer conformance | `scripts/lowpass-consumer-conformance.mjs` / `scripts/lowpass-consumer-proof.mjs` | positive/negative/recovery/isolationとbrowser proof |
 | Consumer evidence | `artifacts/lowpass-consumer-conformance-v1/` | machine readback、valid/disabled visual proofs |
+| External game receipt | `artifacts/lowpass-external-consumer-conformance-v1/lowpass-external-consumer-conformance.readback.json` | 別repositoryのactual LOWPASS runtime conformanceと未達gate |
 
 Recipeとconsumer definitionが編集正本です。GLB、manifest、readback、PNGは正本から再生成できるtracked evidenceで、逆方向の編集正本にはしません。
 
@@ -156,12 +157,14 @@ conformance内の`LicenseRef-CGAWE-Synthetic-Test-Only`は`DECLARED`構造を通
 
 canary assetが不採用でも、既存LOWPASS assetへ即時復帰できるfeature flagまたはfixture-level switchを保持します。実ゲーム統合の技術greenとPhase G人間評価は別gateです。
 
+上記1〜8はLOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`で技術的に成立しました。34 files / 202 tests、typecheck、external build、internal GLB 0件の境界を再確認しています。これはconsumer branchのremote共有、rights、production art、人間評価を完了しません。
+
 ## 既知の残作業
 
 | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|
-| LOWPASS consumer fixture | 実ゲームloaderでcontractを実証 | exact artifact identity、fail-closed version、fallback | 未着手 | LOWPASS runtime owner | 独立integration slice |
-| In-game readability | 実カメラ・霧・距離で役割を判定 | Gate G-A再受入後、固定scenario、asset toggle | 未評価 | Human evaluator / art owner | 技術統合後に別評価 |
+| LOWPASS consumer fixture | 実ゲームloaderでcontractを実証 | exact artifact identity、fail-closed version、fallback | local technical green / branch未push | LOWPASS runtime owner | remote共有はowner判断後にnormal push |
+| In-game readability | 実カメラ・霧・距離で役割を判定 | 固定scenario、asset toggle、human rubric | 自動・browser evidenceあり / human未評価 | Human evaluator / art owner | production方向を人間評価 |
 | UV/texture profile | production texturingを可能に | Blenderまたは同等tool、UV contract、bake、budget | tool unavailable | Asset pipeline owner | software導入権限を別途取得 |
 | LOD progression | 距離別costを制御 | LOD1/2、screen-size threshold、popping test | LOD0のみ | Runtime/asset owner | 1 assetでthin slice |
 | Rights declaration | 配布条件を明示 | owner declaration、license registry、provenance audit | 構造検証green、実canaryは`NOASSERTION` | Rights owner | distribution前に実宣言を独立審査 |
