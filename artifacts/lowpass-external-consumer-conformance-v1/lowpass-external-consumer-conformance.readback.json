@@ -1,18 +1,20 @@
 {
   "schemaVersion": "cgawe-lowpass-external-consumer-conformance-receipt-1.0.0",
-  "state": "LOWPASS_EXTERNAL_GAME_CONSUMER_LOCAL_GREEN",
+  "state": "LOWPASS_EXTERNAL_GAME_CONSUMER_DECLARED_RIGHTS_REMOTE_GREEN",
   "producer": {
     "repository": "CodexGameAssetWorkbench",
-    "sourceCommit": "c893374ab0edd7329bd1482dbd6b99960acbbb68",
+    "sourceCommit": "5d33ba89f141303072e2bc782c8f54302c6fd572",
     "manifestVersion": "lowpass-runtime-asset-pack-1.0.0",
     "glbBytes": 70892,
-    "glbSha256": "54b10bf450971139a9cfe8302f671d29bc37fda6f2631dbf5545ef69e1b4d102"
+    "glbSha256": "54b10bf450971139a9cfe8302f671d29bc37fda6f2631dbf5545ef69e1b4d102",
+    "manifestSha256": "9b2e9b87805456f72ca66fd0e4915bff1b23c1c4f4f4c6e7052fdfb4c8ee9f05",
+    "licenseId": "LicenseRef-LOWPASS-Project-Owned-Procedural-Canary-v1"
   },
   "consumer": {
     "repository": "LOWPASS-SALVAGE-ATLAS",
     "branch": "codex/visual-overhaul-concepts-v1",
-    "commit": "80c8a7108509d83544c1997e667ad11fe621b3b1",
-    "remotePublished": false,
+    "commit": "07bd94b5d40a6811e66699bcb58f097d4f59a107",
+    "remotePublished": true,
     "runtimeLoader": "src/render/assets/CanaryMissionAssetPack.ts",
     "registry": "src/game/content/generated/lowpassCanaryRegistry.json",
     "fixture": "src/game/content/fixtures/lowpassCanaryConsumerFixture.json",
@@ -29,26 +31,24 @@
     "primitiveFallback": true,
     "invalidHashRejectedBeforeRegistryOutput": true,
     "rightsRegistryManifestParity": true,
-    "externalDistributionBlocked": true,
-    "externalBuildInternalGlbCount": 0,
+    "projectScopedDistributionApproved": true,
+    "externalBuildCanaryGlbCount": 1,
     "threeLifecycleDisposalCycles": true,
     "trackedImporterOutputsReproduced": 7
   },
   "verification": {
     "testFiles": 34,
-    "tests": 202,
+    "tests": 203,
     "typecheck": "PASS",
     "externalBuild": "PASS",
     "externalAssetBoundary": "PASS",
     "diffCheck": "PASS"
   },
   "acceptanceBoundary": {
-    "established": "Pinned internal-only Canary conformance in a separate repository and actual LOWPASS game runtime",
+    "established": "Pinned DECLARED project-scoped Canary conformance in the remotely published LOWPASS game runtime and external build",
     "notEstablished": [
-      "consumer remote portability",
-      "distribution rights",
-      "production asset approval",
-      "human art acceptance",
+      "independent human readability scoring",
+      "standalone asset redistribution or general third-party reuse",
       "cross-engine portability",
       "PR or main promotion",
       "release or deployment"

@@ -16,7 +16,7 @@
 - PS1-off / PS1-onの1200 x 675 visual proofで役割と陣営のシルエットを比較する
 - invalid Recipeとinvalid LOWPASS definitionを構造化errorでfail closedにする
 
-Workbench内のartifact-only reference consumer 1.1.0、rights declarationのfail-closed構造検証、exact branchのWindows remote CIに加え、LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`でactual game loader、exact hash、version / rights fail-close、primitive fallback、5 role / 15 semantic binding、3 lifecycleが成立しました。両consumer/producer branchはremote共有済みです。2026-08-04のowner指示により、このproject-owned procedural packはLOWPASS project内のproduction利用とgame build同梱を承認されました。Phase Hと既存Security Cell規則の変更はこの成果に含みません。
+Workbench内のartifact-only reference consumer 1.1.0、rights declarationのfail-closed構造検証、exact branchのWindows remote CIに加え、LOWPASS commit `07bd94b5d40a6811e66699bcb58f097d4f59a107`でactual game loader、exact GLB/manifest hash、version / rights fail-close、primitive fallback、5 role / 15 semantic binding、3 lifecycle、external build同梱検証が成立しました。両consumer/producer branchはremote共有済みです。2026-08-04のowner指示により、このproject-owned procedural packはLOWPASS project内のproduction利用とgame build同梱を承認されました。Phase Hと既存Security Cell規則の変更はこの成果に含みません。
 
 ## 正本と派生物
 
@@ -159,7 +159,7 @@ conformance内の`LicenseRef-CGAWE-Synthetic-Test-Only`は`DECLARED`構造を通
 
 canary assetが不採用でも、既存LOWPASS assetへ即時復帰できるfeature flagまたはfixture-level switchを保持します。実ゲーム統合の技術greenとPhase G人間評価は別gateです。
 
-上記1〜8はLOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`で技術的に成立しました。34 files / 202 tests、typecheck、build境界を再確認しています。consumer branchのremote共有は完了し、project-scoped rightsとproduction利用は2026-08-04のowner指示で承認済みです。専用のhuman readability採点とrelease acceptanceは別gateです。
+上記1〜8はLOWPASS commit `07bd94b5d40a6811e66699bcb58f097d4f59a107`で技術的に成立しました。34 files / 203 tests、typecheck、production/external build、external-mode browser loadを再確認しています。consumer branchのremote共有は完了し、project-scoped rightsとproduction利用は2026-08-04のowner指示で承認済みです。専用のhuman readability採点とrelease acceptanceは別gateです。
 
 ## 既知の残作業
 

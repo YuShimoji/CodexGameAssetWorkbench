@@ -56,7 +56,7 @@ Roles:
 
 BlenderはPATHに存在しないため、UV、texture、Blender Python/headless export、production texturingは未完了です。外部software導入は行っていません。rightsは`DECLARED`で、`LicenseRef-LOWPASS-Project-Owned-Procedural-Canary-v1`がLOWPASS gameの開発・build・配布へproject-scoped permissionを与えます。Paper Glider固有LicenseRefは流用していません。
 
-producer slice自体はLOWPASS本体を変更していません。その後、LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`が別repositoryのactual game loaderとして同じGLB SHAを読込み、primitive fallbackと旧rights/external distribution fail-closeを維持しました。consumer branchはremote共有済みです。2026-08-04のowner指示によりexact procedural packのproject-scoped rightsとLOWPASS production利用は承認済みで、consumerはこの新manifest identityへ更新します。Phase H、Security Cell規則、人間の専用readability採点は境界外です。
+producer slice自体はLOWPASS本体を変更していません。その後、LOWPASS commit `07bd94b5d40a6811e66699bcb58f097d4f59a107`が別repositoryのactual game loaderとして同じGLB SHAとdeclared manifest SHAを読込み、primitive fallbackを維持しながらproject-scoped external build同梱を検証しました。consumer branchはremote共有済みです。2026-08-04のowner指示によりexact procedural packのproject-scoped rightsとLOWPASS production利用は承認済みです。Phase H、Security Cell規則、人間の専用readability採点は境界外です。
 
 2026-07-30のfull local verificationはNode `v24.13.0`、npm `11.6.2`で実行し、Schema、production build、typecheck、lint、9 files / 41 Vitest tests、generic Runtime Bundle、Paper Glider compatibility、LOWPASS check、artifact consumer、Workbench/Paper Glider/LOWPASS/consumer browser proof、`git diff --check`がPASSしました。Vite 1,365.69 kB chunkの既知warningは残しています。
 
@@ -74,9 +74,9 @@ rights境界はtracked project-scoped `DECLARED`とsynthetic `DECLARED`をpositi
 
 ### External LOWPASS game consumer conformance
 
-LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`は、70,892 byte / SHA-256 `54b10bf...e1b4d102`のGLBを実ゲームruntimeでparseし、5 role、15 semantic binding、3 lifecycle disposal、registry / manifest rights parity、external-distribution拒否、primitive fallbackを検証します。importerは7追跡成果物との再現一致を検査し、external buildはinternal GLBを0件にします。34 files / 202 tests、typecheck、external build、diff checkはPASSです。
+LOWPASS commit `07bd94b5d40a6811e66699bcb58f097d4f59a107`は、70,892 byte / SHA-256 `54b10bf...e1b4d102`のGLBとmanifest SHA-256 `9b2e9b...ee9f05`を実ゲームruntimeでparseし、5 role、15 semantic binding、3 lifecycle disposal、registry / manifest / provenance rights parity、primitive fallbackを検証します。importerは7追跡成果物との再現一致を検査し、external buildはexact Canary GLBとproject-scoped LicenseRefを同梱後に再検証します。34 files / 203 tests、typecheck、production/external build、diff check、external-mode browser loadはPASSです。
 
-machine receiptは`artifacts/lowpass-external-consumer-conformance-v1/lowpass-external-consumer-conformance.readback.json`です。consumer branchはremote共有済みです。新しいdeclared manifest identityへのconsumer更新、cross-engine、人間の専用readability採点、PR/main、release/deployは別gateです。
+machine receiptは`artifacts/lowpass-external-consumer-conformance-v1/lowpass-external-consumer-conformance.readback.json`です。consumer branchとdeclared manifest identityはremote共有済みです。cross-engine、人間の専用readability採点、PR/main、release/deployは別gateです。
 
 ## 成果の意味
 
