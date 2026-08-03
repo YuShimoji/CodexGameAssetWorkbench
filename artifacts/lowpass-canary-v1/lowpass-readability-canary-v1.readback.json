@@ -13,8 +13,8 @@
     },
     "manifest": {
       "name": "lowpass-readability-canary-v1.manifest.json",
-      "bytes": 38961,
-      "sha256": "sha256:a1dd222f98c109697849279f3f5644266d685bc7b4d543534c8e4191b225c353"
+      "bytes": 39074,
+      "sha256": "sha256:9b2e9b87805456f72ca66fd0e4915bff1b23c1c4f4f4c6e7052fdfb4c8ee9f05"
     },
     "visualProofs": [
       {
@@ -81,7 +81,8 @@
     "note": "Blender was not available on PATH; this canary proves geometry, stable semantics, materials, and runtime packaging only."
   },
   "rights": {
-    "status": "NOASSERTION",
-    "notice": "Project-owned procedural Recipe source is recorded, but this canary does not make a distribution license assertion."
+    "status": "DECLARED",
+    "licenseId": "LicenseRef-LOWPASS-Project-Owned-Procedural-Canary-v1",
+    "notice": "Project-owned procedural Canary licensed for LOWPASS project development, game builds, maintenance, and distribution only; no standalone or general third-party reuse grant."
   }
 }

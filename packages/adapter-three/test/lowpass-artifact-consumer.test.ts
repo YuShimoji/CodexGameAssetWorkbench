@@ -330,7 +330,7 @@ describe('LOWPASS artifact consumer', () => {
 
   it('fails closed when asset rights disagree with the pack and recovers', async () => {
     const inputs = fixture();
-    inputs.manifest.assets[0].sourceProvenance.rightsStatus = 'DECLARED';
+    inputs.manifest.assets[0].sourceProvenance.rightsStatus = 'NOASSERTION';
     await expectFailClosedThenRecover(inputs, 'RIGHTS_DECLARATION_INVALID');
   });
 

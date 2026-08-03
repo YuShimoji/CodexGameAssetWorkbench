@@ -16,7 +16,7 @@
 - PS1-off / PS1-onの1200 x 675 visual proofで役割と陣営のシルエットを比較する
 - invalid Recipeとinvalid LOWPASS definitionを構造化errorでfail closedにする
 
-Workbench内のartifact-only reference consumer 1.1.0、rights declarationのfail-closed構造検証、exact branchのWindows remote CIに加え、LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`でactual game loader、exact hash、version / rights fail-close、primitive fallback、5 role / 15 semantic binding、3 lifecycle、external build除外が成立しました。consumer branchは未pushで、実在素材のrights承認、production art承認、Phase H、既存Security Cell規則の変更はこの成果に含みません。
+Workbench内のartifact-only reference consumer 1.1.0、rights declarationのfail-closed構造検証、exact branchのWindows remote CIに加え、LOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`でactual game loader、exact hash、version / rights fail-close、primitive fallback、5 role / 15 semantic binding、3 lifecycleが成立しました。両consumer/producer branchはremote共有済みです。2026-08-04のowner指示により、このproject-owned procedural packはLOWPASS project内のproduction利用とgame build同梱を承認されました。Phase Hと既存Security Cell規則の変更はこの成果に含みません。
 
 ## 正本と派生物
 
@@ -88,7 +88,7 @@ npm run lowpass:visual
 
 `npm run verify`は既存Schema、build、typecheck、lint、Vitest、generic Runtime Bundle、Paper Glider compatibility、browser smokeに加えてLOWPASS canary checkとvisual proofを実行します。
 
-Artifact-only consumer conformanceはcontract `cgawe-lowpass-artifact-consumer-1.1.0`で、default `NOASSERTION`とsynthetic `DECLARED`をpositive確認し、次のrights failureをGLB attachment前に拒否します。
+Artifact-only consumer conformanceはcontract `cgawe-lowpass-artifact-consumer-1.1.0`で、tracked packのproject-scoped `DECLARED`とsynthetic `DECLARED`をpositive確認し、次のrights failureをGLB attachment前に拒否します。
 
 - unknown rights status
 - blank notice
@@ -106,7 +106,7 @@ Artifact-only consumer conformanceはcontract `cgawe-lowpass-artifact-consumer-1
 | Root verification | Generic Runtime BundleとPaper Gliderまで | `lowpass:check`とLOWPASS visual proofを追加 | 既存gateを削除・緩和しない | verify時間が増加し、Playwright Chromiumが必要 |
 | Runtime material disposal | Meshごとにdisposeを呼ぶ | geometry/material objectをSetで一度ずつdispose | 重複disposeを避けるだけで公開API不変 | migrationなし |
 | Visual proof output | LOWPASS proofなし | tracked evidenceとignored local proof outputを分離 | 既存`output/playwright`/`output/compat`を維持 | local `output/lowpass-canary-proof/`は非正本 |
-| Consumer rights declaration | license metadataをattachment後まで明示検証しない | consumer 1.1.0、schema/producer alignment、4 rights failure cases | default `NOASSERTION`は維持。synthetic DECLAREDは構造試験のみ | 1.0.0 consumerは1.1.0 contractへ更新が必要 |
+| Consumer rights declaration | license metadataをattachment後まで明示検証しない | consumer 1.1.0、schema/producer alignment、4 rights failure cases | consumer contractは`NOASSERTION`も後方互換。tracked canaryはproject-scoped `DECLARED`へ移行 | 1.0.0 consumerは1.1.0 contractへ更新が必要 |
 
 ## Visual proof
 
@@ -138,7 +138,9 @@ Artifact-only consumer conformanceはcontract `cgawe-lowpass-artifact-consumer-1
 
 geometry、flat material、semantic node、runtime packageは検証済みです。UV unwrap、texture bake、atlas、mipmap、compressionは別sliceです。
 
-source typeは`project-owned-procedural-recipe`ですが、実canaryのrights statusは`NOASSERTION`です。このcanaryは第三者配布許諾や一般licenseを主張しません。Paper Glider固有の`LicenseRef-PaperGlider-Project-Asset`を流用していません。
+source typeは`project-owned-procedural-recipe`で、実canaryのrights statusは`DECLARED`です。identifierは`LicenseRef-LOWPASS-Project-Owned-Procedural-Canary-v1`、全文は`docs/compat/lowpass-v1/RIGHTS.md`です。許諾範囲はLOWPASS projectの開発、保守、game build、同gameの配布に限定し、standalone再配布や一般的な第三者再利用licenseを主張しません。Paper Glider固有の`LicenseRef-PaperGlider-Project-Asset`は流用していません。
+
+2026-08-04のowner指示は、このexact procedural packをLOWPASS productionで使用する判断も承認しています。これは専用のhuman readability採点、release acceptance、publication完了、将来のtexture/audio/第三者素材の権利承認を代替しません。
 
 conformance内の`LicenseRef-CGAWE-Synthetic-Test-Only`は`DECLARED`構造を通過できることだけを示すテスト値です。license registryへの登録、素材の出所確認、rights ownerの宣言、配布許諾を一切与えません。
 
@@ -157,15 +159,15 @@ conformance内の`LicenseRef-CGAWE-Synthetic-Test-Only`は`DECLARED`構造を通
 
 canary assetが不採用でも、既存LOWPASS assetへ即時復帰できるfeature flagまたはfixture-level switchを保持します。実ゲーム統合の技術greenとPhase G人間評価は別gateです。
 
-上記1〜8はLOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`で技術的に成立しました。34 files / 202 tests、typecheck、external build、internal GLB 0件の境界を再確認しています。これはconsumer branchのremote共有、rights、production art、人間評価を完了しません。
+上記1〜8はLOWPASS commit `80c8a7108509d83544c1997e667ad11fe621b3b1`で技術的に成立しました。34 files / 202 tests、typecheck、build境界を再確認しています。consumer branchのremote共有は完了し、project-scoped rightsとproduction利用は2026-08-04のowner指示で承認済みです。専用のhuman readability採点とrelease acceptanceは別gateです。
 
 ## 既知の残作業
 
 | Purpose | Effect | Requirements | State | Owner | Next move |
 |---|---|---|---|---|---|
-| LOWPASS consumer fixture | 実ゲームloaderでcontractを実証 | exact artifact identity、fail-closed version、fallback | local technical green / branch未push | LOWPASS runtime owner | remote共有はowner判断後にnormal push |
-| In-game readability | 実カメラ・霧・距離で役割を判定 | 固定scenario、asset toggle、human rubric | 自動・browser evidenceあり / human未評価 | Human evaluator / art owner | production方向を人間評価 |
+| LOWPASS consumer fixture | 実ゲームloaderでcontractを実証 | exact artifact identity、fail-closed version、fallback | technical green / branch remote共有済み | LOWPASS runtime owner | declared pack identityへconsumer receiptを更新 |
+| In-game readability | 実カメラ・霧・距離で役割を判定 | 固定scenario、asset toggle、human rubric | 自動・browser evidenceあり / production利用承認済み / 専用human採点なし | Human evaluator / art owner | 次のvisual sliceで比較採点 |
 | UV/texture profile | production texturingを可能に | Blenderまたは同等tool、UV contract、bake、budget | tool unavailable | Asset pipeline owner | software導入権限を別途取得 |
 | LOD progression | 距離別costを制御 | LOD1/2、screen-size threshold、popping test | LOD0のみ | Runtime/asset owner | 1 assetでthin slice |
-| Rights declaration | 配布条件を明示 | owner declaration、license registry、provenance audit | 構造検証green、実canaryは`NOASSERTION` | Rights owner | distribution前に実宣言を独立審査 |
+| Rights declaration | 配布条件を明示 | owner declaration、project-scoped license text、provenance audit | `DECLARED` / LOWPASS project scope承認済み | Rights owner | future asset追加時はcovered sourceを再確認 |
 | Remote/CI | 別端末とremote Windowsで再現 | exact branch、Node 24.13.0、space-containing path、Actions run | run `30449320168`、SHA `c1a4f87...` green | Maintainer | branch更新時にexact SHA greenを維持 |

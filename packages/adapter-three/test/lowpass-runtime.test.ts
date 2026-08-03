@@ -63,7 +63,12 @@ describe('LOWPASS runtime asset pack', () => {
     expect(first.manifestText).toBe(second.manifestText);
     expect(first.manifest.schemaVersion).toBe(LOWPASS_ASSET_PACK_SCHEMA_VERSION);
     expect(first.manifest.assets).toHaveLength(5);
-    expect(first.manifest.license.status).toBe('NOASSERTION');
+    expect(first.manifest.license).toEqual({
+      status: 'DECLARED',
+      licenseId: 'LicenseRef-LOWPASS-Project-Owned-Procedural-Canary-v1',
+      notice:
+        'Project-owned procedural Canary licensed for LOWPASS project development, game builds, maintenance, and distribution only; no standalone or general third-party reuse grant.',
+    });
     expect(first.manifest.textureStage).toMatchObject({
       status: 'UNAVAILABLE_NO_BLENDER',
       uvPresent: false,

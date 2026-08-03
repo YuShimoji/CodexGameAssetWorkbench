@@ -212,7 +212,7 @@ export async function runArtifactConsumerConformance() {
   );
   assert(
     sha256(manifestBytes) ===
-      'sha256:a1dd222f98c109697849279f3f5644266d685bc7b4d543534c8e4191b225c353',
+      'sha256:9b2e9b87805456f72ca66fd0e4915bff1b23c1c4f4f4c6e7052fdfb4c8ee9f05',
     'Tracked manifest identity differs from the reconciled Mission input.',
   );
   assert(
@@ -409,7 +409,7 @@ export async function runArtifactConsumerConformance() {
     );
     const inconsistentAssetRights = cloneInputs(glb, manifest);
     inconsistentAssetRights.manifest.assets[0].sourceProvenance.rightsStatus =
-      'DECLARED';
+      'NOASSERTION';
     negativeCases.push(
       await failClosedCase({
         name: 'asset-rights-status-mismatch',
@@ -515,6 +515,7 @@ export async function runArtifactConsumerConformance() {
         schemaValidated: true,
         loaded: true,
         defaultRightsStatus: loaded.result.manifest.license.status,
+        licenseId: loaded.result.manifest.license.licenseId ?? null,
         syntheticDeclaredRightsAccepted:
           declared.ok && declared.state === 'loaded',
         attachedRoots: 1,

@@ -95,8 +95,9 @@
     "maxTextureDimension": 256
   },
   "rights": {
-    "status": "NOASSERTION",
-    "notice": "Project-owned procedural Recipe source is recorded, but this canary does not make a distribution license assertion."
+    "status": "DECLARED",
+    "licenseId": "LicenseRef-LOWPASS-Project-Owned-Procedural-Canary-v1",
+    "notice": "Project-owned procedural Canary licensed for LOWPASS project development, game builds, maintenance, and distribution only; no standalone or general third-party reuse grant."
   },
   "provenance": {
     "authoringTool": "CodexGameAssetWorkbench Recipe 0.1.0",
