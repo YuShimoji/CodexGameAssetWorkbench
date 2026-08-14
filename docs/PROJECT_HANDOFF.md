@@ -1,8 +1,12 @@
 # CodexGameAssetWorkbench project handoff
 
-この文書は、別端末のAgentまたは開発者が外部添付や過去のCodex taskなしで現在地点から再開する正本です。2026-07-21のcross-device handoff時点の判定は **READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION** です。Owner Decision AによりArchive GateのPaper Glider project-scoped public-use rightsが正本化され、実物bundle、再生成、fixture、hash、次Promptと一致しています。
+この文書は、別端末のAgentまたは開発者が外部添付や過去のCodex taskなしで現在地点から再開する正本です。Workbench packet自体の判定は **READY_FOR_PAPERGLIDER_PUBLIC_INTEGRATION** のままですが、その後Paper Glider側のruntime統合、technical acceptance、`main`統合、legacy GitHub Pages公開まで完了しています。
 
-この判定はPaper Glider側で統合・main merge・GitHub Pages deploymentを開始できることを意味します。Paper Glider runtime統合済み、technical acceptance済み、physical-device受入済み、公開済みを意味しません。
+2026-07-21の別端末local refreshでは、Paper Glider `main` / `origin/main`が`48520ba62c417102552354a177406512b662e3b0`で`0/0`、54 unit testsとChromium desktop/mobile E2E・visual 53 pass / 13 intentional skipsがgreenでした。公開bundleのGLB SHA-256 `e91d1a4b87c2c0a7d3c6698c320c13239b3751c03884b3a4c6b5b6853be1d019`とmanifest SHA-256 `b9c41a053e97d061ac4795c77d8f628e93f0a40adef6f718614e614c861e1bd5`もWorkbench canonical packetと一致しています。
+
+同じrefreshで、Node 22/24間のsRGB末尾1 ULP差と旧端末固有path assertionを解消するlocal検証修正を`paper-glider-compat-lib.mjs`と`verify-paper-glider-compat.mjs`へ加え、Node 22上の`npm run verify`をgreenにしました。修正はcanonical GLB/manifest/schema/rights/Recipeとpinned hashを変更していません。これらは未commit・未pushなので、review後の履歴化が次のWorkbench作業です。
+
+以下のpacket生成・rights・hash・当時の検証記録は引き続き正本です。ただし「Paper Glider未統合」「次にPaper統合を行う」という時点表現はpre-integration履歴として読み、実行指示には使わないでください。現在のゲーム側次missionはPaper Glider `PROJECT_HANDOFF.md`のPG-V1です。physical-device、Firefox/WebKit、低性能端末、人間による長時間playtestは依然未確認です。
 
 ## Gitとscope
 

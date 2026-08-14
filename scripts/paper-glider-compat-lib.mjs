@@ -65,6 +65,45 @@ const colliderDefinitions = [
   },
 ];
 
+// V8's sRGB transfer calculation can differ by one ULP between supported Node
+// majors. The compatibility packet promises byte-identical GLB regeneration,
+// so snap the canary's known linear color components to the already-published
+// values before GLTFExporter serializes them. Values outside the pinned canary
+// palette are left alone and therefore still surface intentional Recipe edits.
+const canonicalCanaryColorComponents = [
+  0.181164244239483,
+  0.08228270712149792,
+  0.04518620437910499,
+  0.7835377915215659,
+  0.6866853124288864,
+  0.508881320845802,
+  0.4793201830913402,
+  0.11193242782769693,
+  0.06480326668529614,
+  0.4735314961384573,
+  0.1844749944900301,
+  0.06301001764564068,
+  0.9215818562755338,
+  0.5647115056965487,
+  0.15292615198613213,
+];
+
+function stabilizeCanaryMaterialColors(rootObject) {
+  rootObject.traverse((object) => {
+    if (!(object instanceof Mesh)) return;
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    materials.forEach((material) => {
+      if (!material.color) return;
+      for (const channel of ['r', 'g', 'b']) {
+        const canonical = canonicalCanaryColorComponents.find(
+          (value) => Math.abs(value - material.color[channel]) <= Number.EPSILON,
+        );
+        if (canonical !== undefined) material.color[channel] = canonical;
+      }
+    });
+  });
+}
+
 class NodeFileReader {
   result = null;
   error = null;
@@ -167,6 +206,7 @@ export function buildCanaryScene(recipe) {
   splineMaterials.forEach((material) => { material.name = spline.materialId; });
 
   rootObject.add(assetObject, splineObject);
+  stabilizeCanaryMaterialColors(rootObject);
   rootObject.updateMatrixWorld(true);
   return { rootObject, resolvedAsset, spline, room };
 }

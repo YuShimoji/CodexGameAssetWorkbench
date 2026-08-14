@@ -1,5 +1,7 @@
 # Paper GliderへArchive Gateを統合・公開する次Prompt
 
+> **2026-07-21 状態更新:** 以下のPromptは履歴です。実行しないでください。Archive Gate、決定論的選択、timeout/fallback、collision/ring clearance、recycling、`main`統合、CI、legacy Pages、公開readbackはPaper Glider `48520ba62c417102552354a177406512b662e3b0`までに完了しました。Workbenchで次に許可されているのは、localのcross-Node/cross-path検証修正2ファイルをreviewし、owner判断に従って履歴化することです。Workbench `main`昇格、PR、tag、releaseはowner未判断です。ゲーム実装を進める場合はPaper Glider `PROJECT_HANDOFF.md`のPG-V1を正本にしてください。
+
 以下を単独で次のAgentへ渡してください。
 
 ---

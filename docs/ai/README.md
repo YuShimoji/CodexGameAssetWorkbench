@@ -1,6 +1,6 @@
 # Archived implementation prompts
 
-このディレクトリは、Codex desktopの外部添付にだけ存在していた実装依頼を、別端末でも参照できるよう原文で保存します。これらは履歴と受入条件の記録であり、現在の実装状態は`docs/PROJECT_HANDOFF.md`、現在有効な次作業は`docs/NEXT_AGENT_PROMPT.md`を正本とします。
+このディレクトリは、Codex desktopの外部添付にだけ存在していた実装依頼を、別端末でも参照できるよう原文で保存します。これらは履歴と受入条件の記録であり、現在の実装状態は`docs/PROJECT_HANDOFF.md`を正本とします。`docs/NEXT_AGENT_PROMPT.md`のPaper Glider統合Promptは公開完了により履歴化され、同ファイル先頭の2026-07-21状態更新だけが現在有効です。
 
 | ファイル | 対象 |
 |---|---|
